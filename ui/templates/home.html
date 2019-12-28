@@ -11,7 +11,12 @@
     <title>Home!</title>
   </head>
   <body>
+  {{if .}}
     <h1>hello,{{.}} welcome back!</h1>
+  {{else }}
+  <a href="/login">Login</a>
+  <a href="/register">SignUp</a>
+  {{end}}
 
 
 
