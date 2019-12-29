@@ -173,5 +173,6 @@ func(uh *UserHandler) Logout(w http.ResponseWriter,req *http.Request){
 		MaxAge:-1,
 	}
 	http.SetCookie(w,c)
+	http.Redirect(w,req,"/",http.StatusSeeOther)
 
 }
