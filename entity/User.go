@@ -2,7 +2,7 @@ package entity
 
 //User ... represents users of our system
 type User struct {
-	//UserID    int
+	UserID    int 
 	FirstName string
 	LastName  string
 	UserName  string

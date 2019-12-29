@@ -1,16 +1,17 @@
 package handler
 
 import (
-	"errors"
+	"fmt"
+	
 	"golang.org/x/crypto/bcrypt"
 	"html/template"
 	"net/http"
 
-	"github.com/EventListing/entity"
+	"github.com/goEventListing/entity"
 
 	uuid "github.com/satori/go.uuid"
 
-	"github.com/EventListing/user"
+	"github.com/goEventListing/user"
 )
 
 //UserHandler handles user related requests
@@ -134,17 +135,22 @@ func(uh *UserHandler) Register(w http.ResponseWriter,r *http.Request){
 		http.SetCookie(w,c)
 		dbSessions[c.Value] = un
 		//store user in the database
-		bs,err := bcrypt.GenerateFromPassword([]byte(pass),bcrypt.MinCost)
+		ps,err := bcrypt.GenerateFromPassword([]byte(pass),bcrypt.MinCost)
 if err != nil{
 	http.Error(w,"Internal server error",http.StatusInternalServerError)
 	return
 }
-//?? what should i put int he place of user id???????????
-u =entity.User{fn,ln,un,email,bs,phone,img}
 
-uh.userSrv.RegisterUser(u)
+u =entity.User{FirstName:fn,LastName:ln,UserName:un,Email:email,Password:ps,Phone:phone,Image:img}
+
+check := uh.userSrv.RegisterUser(u)
+if check == nil{
+	fmt.Println("sucessful")
+}else{
+ fmt.Println("not successful")
+}
 //redirect
-http.Redirect(w,r,"/",http.StatusSeeOther)
+http.Redirect(w,r,"/login",http.StatusSeeOther)
 return
 	}
 	//IF THE REQUES IS GET

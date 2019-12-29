@@ -1,11 +1,12 @@
 package repository
 
 import (
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"database/sql"
 	"errors"
 
-	"github.com/EventListing/entity"
+	"github.com/goEventListing/entity"
 )
 
 //UserRepositoryImpl ... implements the User.UserRepository interface
@@ -25,13 +26,16 @@ func NewUserRepositoryImpl(Conn *sql.DB) *UserRepositoryImpl {
 func (uri *UserRepositoryImpl) RegisterUser(user entity.User) error {
 
 	//username taken?
-	_, err := uri.conn.Query("SELECT * FROM users where username = $1", user.UserName)
-	if err == nil {
+	_,err := uri.conn.Query("SELECT * FROM users where username = $1", user.UserName)
+	if err != nil {
+		//fmt.Println("here is the problem")
+		//panic(err)
 		return errors.New("user name already taken try other")
 	}
-	_, err = uri.conn.Exec("INSERT INTO users(first_name,last_name,username,email,password,phone,image) values($1,$2,$3,$4,$5,$6,$7", user.FirstName, user.LastName, user.UserName, user.Email,user.Password, user.Phone, user.Image)
+	_, err = uri.conn.Exec("INSERT INTO users (username,first_name,last_name,email,password,phone,image) VALUES ($1,$2,$3,$4,$5,$6,$7)", user.UserName, user.FirstName,user.LastName, user.Email,user.Password, user.Phone, user.Image)
 
 	if err != nil {
+		fmt.Println("check me")
 		return errors.New("insertion has failed")
 	}
 	return nil

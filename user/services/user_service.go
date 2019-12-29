@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/EventListing/entity"
-	"github.com/EventListing/user"
+	"github.com/goEventListing/entity"
+	"github.com/goEventListing/user"
 )
 
 //UserServiceImpl implements user.UserService interface
