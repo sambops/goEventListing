@@ -5,7 +5,7 @@ import (
 
 	"github.com/EventListing/delivery/http/handler"
 	"github.com/EventListing/user/services"
-
+	_ "github.com/lib/pq"
 	"database/sql"
 	"html/template"
 
@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	dbconn, err := sql.Open("postgres", "postgres://app_admin:post.dalvic.gres@localhost/eventListingdb?sslmode = disable")
+	dbconn, err := sql.Open("postgres", "postgres://postgres:password@localhost/goeventlisting?sslmode=disable")
 	if err != nil {
 		panic(err)
 	}
@@ -21,7 +21,7 @@ func main() {
 	if err := dbconn.Ping(); err != nil {
 		panic(err)
 	}
-	tmpl := template.Must(template.ParseGlob("ui/templates/*"))
+	tmpl := template.Must(template.ParseGlob("../../ui/templates/*"))
 	userRepo := repository.NewUserRepositoryImpl(dbconn)
 	userService := services.NewUserServiceImpl(userRepo)
 

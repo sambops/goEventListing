@@ -25,11 +25,11 @@ func NewUserRepositoryImpl(Conn *sql.DB) *UserRepositoryImpl {
 func (uri *UserRepositoryImpl) RegisterUser(user entity.User) error {
 
 	//username taken?
-	_, err := uri.conn.Query("SELECT * FROM users where UserName = $1", user.UserName)
+	_, err := uri.conn.Query("SELECT * FROM users where username = $1", user.UserName)
 	if err == nil {
 		return errors.New("user name already taken try other")
 	}
-	_, err = uri.conn.Exec("INSERT INTO users(FirstName,LastName,UserName,Email,Password,Phone,Image) values($1,$2,$3,$4,$5,$6,$7", user.FirstName, user.LastName, user.UserName, user.Email,user.Password, user.Phone, user.Image)
+	_, err = uri.conn.Exec("INSERT INTO users(first_name,last_name,username,email,password,phone,image) values($1,$2,$3,$4,$5,$6,$7", user.FirstName, user.LastName, user.UserName, user.Email,user.Password, user.Phone, user.Image)
 
 	if err != nil {
 		return errors.New("insertion has failed")
@@ -42,7 +42,7 @@ func (uri *UserRepositoryImpl) RegisterUser(user entity.User) error {
 func (uri *UserRepositoryImpl) AuthenticateUser(userName string, password string) (entity.User, error) {
 
 	//is there a username?
-	row := uri.conn.QueryRow("SELECT * FROM users where UserName = $1", userName)
+	row := uri.conn.QueryRow("SELECT * FROM users where username = $1", userName)
 	
 	user := entity.User{}
 	if row != nil {
@@ -59,7 +59,7 @@ func (uri *UserRepositoryImpl) AuthenticateUser(userName string, password string
 		
 		return user, nil
 	}
-	return user, errors.New("username and/or passwod do not match")
+	return user, errors.New("username and/or password do not match")
 
 
 	
@@ -68,7 +68,7 @@ func (uri *UserRepositoryImpl) AuthenticateUser(userName string, password string
 //GetUser ... 
 func (uri *UserRepositoryImpl) GetUser(userName string) (entity.User, error) {
 	// check username if exist return users
-	row := uri.conn.QueryRow("SELECT * FROM users where UserName = $1", userName)
+	row := uri.conn.QueryRow("SELECT * FROM users where username = $1", userName)
 	user := entity.User{}
 	if row != nil {
 		err := row.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.UserName, &user.Email,&user.Password, &user.Phone, &user.Image)
@@ -83,7 +83,7 @@ func (uri *UserRepositoryImpl) GetUser(userName string) (entity.User, error) {
 
 //EditUser ... edit our user entiity
 func (uri *UserRepositoryImpl) EditUser(user entity.User) error {
-	_, err := uri.conn.Exec("UPDATE users SET FirstName = $1,LastName = $2,UserName = $3,Email = $4,Password= $5, Phone = $6,Image = $7 WHERE id = $8", user.FirstName, user.LastName, user.UserName, user.Email,user.Password, user.Phone, user.Image,user.UserID)
+	_, err := uri.conn.Exec("UPDATE users SET first_name = $1,last_name = $2,username = $3,email = $4,password= $5, phone = $6,image = $7 WHERE id = $8", user.FirstName, user.LastName, user.UserName, user.Email,user.Password, user.Phone, user.Image,user.UserID)
 	if err != nil {
 		return errors.New("Update has faild")
 	}

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"html/template"
 	"net/http"
@@ -17,6 +18,7 @@ type UserHandler struct {
 	tmpl    *template.Template
 	userSrv user.UserService
 }
+
 
 var dbSessions = map[string]string{} //session ID,user ID
 
@@ -52,6 +54,7 @@ func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) entity.
 		}
 	}
 	http.SetCookie(w, c)
+
 	//if the user exists already,get user
 	var u entity.User
 	if un, ok := dbSessions[c.Value]; ok {
@@ -77,12 +80,13 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 
-		userName := r.FormValue("userName")
-		password := r.FormValue("password")
+		userName := r.FormValue("uname")
+		password := r.FormValue("psw")
 
 		_, err := uh.userSrv.AuthenticateUser(userName, password)
 		if err != nil {
-			panic(err)
+			//panic(err)
+			http.Error(w,"hey check what u wrote please",404)
 		}
 
 		sID, _ := uuid.NewV4()
@@ -107,16 +111,16 @@ func(uh *UserHandler) Register(w http.ResponseWriter,r *http.Request){
 	}
 	var u entity.User
 	if r.Method == http.MethodPost{
-		fn := r.FormValue("FirstName")
-		ln := r.FormValue("LastName")
-		un:=r.FormValue("UserName")
-		email:=r.FormValue("Email")
-		pass :=r.FormValue("Password")
-		phone:=r.FormValue("Phone")
-		img :=r.FormValue("Image")
+		fn := r.FormValue("firstName")
+		ln := r.FormValue("lastName")
+		un:=r.FormValue("userName")
+		email:=r.FormValue("email")
+		pass :=r.FormValue("psw")
+		phone:=r.FormValue("phone")
+		img :=r.FormValue("img")
 
 		_,err := uh.userSrv.GetUser(un)
-		if err != nil{
+		if err == nil{
 			http.Error(w,"username already taken",http.StatusForbidden)
 			return
 		}
@@ -136,13 +140,14 @@ if err != nil{
 	return
 }
 //?? what should i put int he place of user id???????????
-u =entity.User{0,fn,ln,un,email,bs,phone,img}
+u =entity.User{fn,ln,un,email,bs,phone,img}
 
 uh.userSrv.RegisterUser(u)
 //redirect
 http.Redirect(w,r,"/",http.StatusSeeOther)
 return
 	}
+	//IF THE REQUES IS GET
 	uh.tmpl.ExecuteTemplate(w,"signup.html",u)
 
 }
