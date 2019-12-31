@@ -2,8 +2,8 @@ package events
 
 import "github.com/birukbelay/Aprojects/EventListing/entity"
 
-// EventRepository repository
-type EventRepository interface {
+// EventServices repository
+type EventServices interface {
 	Events() ([]entity.Event, error) //get list of events
 	Event(id int) (entity.Event, error)
 	UpcomingEvents() ([]entity.Event, error)

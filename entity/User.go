@@ -1,13 +1,7 @@
 package entity
 
-//User ... represents users of our system
+//User users participate in events
 type User struct {
-	UserID    int
-	FirstName string
-	LastName  string
-	UserName  string
-	Email     string
-	Password  []byte
-	Phone     string
-	Image     string
+	ID                                          int
+	FName, LName, Username, Email, Phone, Image string
 }
