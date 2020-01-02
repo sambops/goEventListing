@@ -81,6 +81,7 @@ func (eri *EventRepoImpl) upcomingEvents() ([]entity.Event, error) {
         return event, err
     }
 }
+
 func (eri *EventRepoImpl) rate(id, rating int) {
     _, err := cri.conn.Exec("UPDATE events SET rating=$1 WHERE EId=$2", rating, EId)
     if err != nil {
