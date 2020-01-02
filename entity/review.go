@@ -7,9 +7,8 @@ type Review struct {
 	ID              int
 	UserID, EventID int
 	Body            string
-	rating          int
-	reviewedAt         time.Time
+
+	rating     int
+	reviewedAt time.Time
+	// isempty    bool
 }
-
-
-

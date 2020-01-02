@@ -2,9 +2,10 @@ package entity
 
 //Tag there are multiple tags for the user to choose from
 type Tag struct {
-	ID         int
-	Name       string
-	categoryID int
+	ID          int
+	Name        string
+	description string
+	icon        string
 }
 
 //User_tags is used when a user register to tags
