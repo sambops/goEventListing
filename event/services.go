@@ -1,14 +1,23 @@
 package event
 
 import (
-	"github.com/EventListing/entity"
+	"github.com/birukbelay/Aprojects/goEventListing/entity"
 )
 
 //USECASE
-//this is our event usescase(has (interface)abstract classes that outer layers can use)
-type EventService interface {
-	Events() ([]entity.Event, error)
-	AddEvent(event entity.Event) error
-	EditEvent(event entity.Event) error
+type EventServices interface {
+	Events() ([]entity.Event, error) //get list of events
+	Event(id int) (entity.Event, error)
+
+	UpcomingEvents() ([]entity.Event, error)
+
+	getTags() ([]entity.Tag, error)
+
+	Post(event entity.Event) error
+	addTag(id []int) error //?? how do we add multiple tags
+
+	notify(eventID int, tagsID []int) error
+
+	UpdateEvent(event entity.Event) error
 	DeleteEvent(id int) error
 }
