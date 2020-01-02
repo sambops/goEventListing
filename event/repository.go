@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package events
 
 import "github.com/birukbelay/Aprojects/EventListing/entity"
@@ -15,4 +16,19 @@ type EventRepository interface {
 	DeleteEvent(id int) error
 
 	notify(eventID int, tagsID []int) error
+=======
+package event
+
+import (
+	"github.com/EventListing/entity"
+)
+
+//EXTERNALINTERFACE(DATABASE)
+//EventRepository repository(interface)
+type EventRepository interface {
+	Events() ([]entity.Event, error)
+	AddEvent(event entity.Event) error
+	EditEvent(event entity.Event) error
+	DeleteEvent(id int) error
+>>>>>>> e18614362e5300c66820568db16e16c72c4c3f76
 }

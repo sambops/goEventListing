@@ -2,6 +2,7 @@ package handler
 
 import (
 	"html/template"
+	"net/http"
 
 	"github.com/birukbelay/Aprojects/eventListing/events"
 )
@@ -15,3 +16,4 @@ func NewEventHandler(T *template.Template, ES events.EventService) *EventHandler
 	return &EventHandler{templ: T, eventServ: ES}
 
 }
+
