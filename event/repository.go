@@ -1,12 +1,8 @@
 package event
 
-<<<<<<< HEAD
 import (
 	"github.com/goEventListing/entity"
 )
-=======
-import "github.com/birukbelay/Aprojects/goEventListing/entity"
->>>>>>> 88892e25e6fb176ea4f4ccd0ea65914deaca56f9
 
 // EventRepository repository
 type EventRepository interface {

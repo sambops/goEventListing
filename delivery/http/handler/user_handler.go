@@ -171,9 +171,9 @@ func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, c)
-
+}
 //Register ... handles request on /register
-func(uh *UserHandler) Register(w http.ResponseWriter ,r *http.Request){
+func(uh *UserHandler) Register(w http.ResponseWriter,r *http.Request){
 	if uh.alreadyLoggedIn(r){
 		http.Redirect(w,r,"/",http.StatusSeeOther)
 		return
@@ -225,6 +225,7 @@ return
 	uh.tmpl.ExecuteTemplate(w,"signup.html",u)
 
 }
+
 //Logout ... 
 func(uh *UserHandler) Logout(w http.ResponseWriter,req *http.Request){
 	if !uh.alreadyLoggedIn(req){

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/goEventListing/event"
 	"html/template"
 
 	
@@ -11,6 +12,7 @@ import (
 type EventHandler struct {
 	templ     *template.Template
 	eventServ events.EventService
+	
 	
 }
 
