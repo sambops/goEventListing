@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 	
-
+	"net/http"
 
 	"github.com/goEventListing/entity"
 
@@ -173,7 +173,7 @@ func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request) {
 	http.SetCookie(w, c)
 
 //Register ... handles request on /register
-func(uh *UserHandler) Register(w http.ResponseWriter,r *http.Request){
+func(uh *UserHandler) Register(w http.ResponseWriter ,r *http.Request){
 	if uh.alreadyLoggedIn(r){
 		http.Redirect(w,r,"/",http.StatusSeeOther)
 		return
