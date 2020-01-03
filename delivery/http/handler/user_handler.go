@@ -1,28 +1,14 @@
 package handler
 
 import (
-<<<<<<< HEAD
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 	
-=======
-<<<<<<< HEAD
-	"html/template"
-	"net/http"
 
-	"golang.org/x/crypto/bcrypt"
 
-=======
->>>>>>> 88892e25e6fb176ea4f4ccd0ea65914deaca56f9
-	"golang.org/x/crypto/bcrypt"
-	"html/template"
-	"net/http"
-
-<<<<<<< HEAD
 	"github.com/goEventListing/entity"
-=======
->>>>>>> e18614362e5300c66820568db16e16c72c4c3f76
-	"github.com/EventListing/entity"
->>>>>>> 88892e25e6fb176ea4f4ccd0ea65914deaca56f9
+
 
 	uuid "github.com/satori/go.uuid"
 
@@ -119,7 +105,7 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	uh.tmpl.ExecuteTemplate(w, "login.html", nil)
 }
-<<<<<<< HEAD
+
 
 //Register ... handles request on /register
 func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
@@ -185,7 +171,7 @@ func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, c)
-=======
+
 //Register ... handles request on /register
 func(uh *UserHandler) Register(w http.ResponseWriter,r *http.Request){
 	if uh.alreadyLoggedIn(r){
@@ -255,10 +241,6 @@ func(uh *UserHandler) Logout(w http.ResponseWriter,req *http.Request){
 		MaxAge:-1,
 	}
 	http.SetCookie(w,c)
-<<<<<<< HEAD
 	http.Redirect(w,req,"/",http.StatusSeeOther)
-=======
->>>>>>> e18614362e5300c66820568db16e16c72c4c3f76
->>>>>>> 88892e25e6fb176ea4f4ccd0ea65914deaca56f9
 
 }
