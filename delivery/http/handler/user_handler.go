@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"fmt"
+	"html/template"
+
 
 	"golang.org/x/crypto/bcrypt"
 	
@@ -171,77 +172,5 @@ func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, c)
-}
-//Register ... handles request on /register
-func(uh *UserHandler) Register(w http.ResponseWriter,r *http.Request){
-	if uh.alreadyLoggedIn(r){
-		http.Redirect(w,r,"/",http.StatusSeeOther)
-		return
-	}
-	var u entity.User
-	if r.Method == http.MethodPost{
-		fn := r.FormValue("firstName")
-		ln := r.FormValue("lastName")
-		un:=r.FormValue("userName")
-		email:=r.FormValue("email")
-		pass :=r.FormValue("psw")
-		phone:=r.FormValue("phone")
-		img :=r.FormValue("img")
-
-		_,err := uh.userSrv.GetUser(un)
-		if err == nil{
-			http.Error(w,"username already taken",http.StatusForbidden)
-			return
-		}
-			
-		//create a session
-		sID,_ := uuid.NewV4()
-		c := &http.Cookie{
-			Name:"session",
-			Value:sID.String(),
-		}
-		http.SetCookie(w,c)
-		dbSessions[c.Value] = un
-		//store user in the database
-		ps,err := bcrypt.GenerateFromPassword([]byte(pass),bcrypt.MinCost)
-if err != nil{
-	http.Error(w,"Internal server error",http.StatusInternalServerError)
-	return
-}
-
-u =entity.User{FirstName:fn,LastName:ln,UserName:un,Email:email,Password:ps,Phone:phone,Image:img}
-
-check := uh.userSrv.RegisterUser(u)
-if check == nil{
-	fmt.Println("sucessful")
-}else{
- fmt.Println("not successful")
-}
-//redirect
-http.Redirect(w,r,"/login",http.StatusSeeOther)
-return
-	}
-	//IF THE REQUES IS GET
-	uh.tmpl.ExecuteTemplate(w,"signup.html",u)
-
-}
-
-//Logout ... 
-func(uh *UserHandler) Logout(w http.ResponseWriter,req *http.Request){
-	if !uh.alreadyLoggedIn(req){
-		http.Redirect(w,req,"/",http.StatusSeeOther)
-		return
-	}
-	c,_ := req.Cookie("session")
-	//delete the session
-	delete(dbSessions,c.Value)
-	//remove the cooke
-	c = &http.Cookie{
-		Name:"session",
-		Value:"",
-		MaxAge:-1,
-	}
-	http.SetCookie(w,c)
-	http.Redirect(w,req,"/",http.StatusSeeOther)
-
+	http.Redirect(w,req,"/", http.StatusSeeOther)
 }

@@ -11,12 +11,12 @@ import (
 
 type EventHandler struct {
 	templ     *template.Template
-	eventServ events.EventService
+	eventServ event.EventServices
 	
 	
 }
 
-func NewEventHandler(T *template.Template, ES events.EventService) *EventHandler {
+func NewEventHandler(T *template.Template, ES event.EventServices) *EventHandler {
 	return &EventHandler{templ: T, eventServ: ES}
 
 }
