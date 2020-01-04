@@ -2,9 +2,10 @@ package repository
 
 import (
 	"database/sql"
-	"errors"
-
-	"github.com/birukbelay/Aprojects/goEventListing/entity"
+//	"errors"
+//
+//	"github.com/goEventListing/entity"
+//)
 )
 
 
@@ -15,7 +16,7 @@ type ReviewRepoImpl struct {
 
 
 
-func NewReviewRepoImp(con *sql.DB) *EventRepoImpl {
-    return &ReviewRepoImpl{conn: con}
-}
+//func NewReviewRepoImp(con *sql.DB) *EventRepoImpl {
+//    return &ReviewRepoImpl{conn: con}
+//}
 

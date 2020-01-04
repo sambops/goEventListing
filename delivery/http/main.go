@@ -3,13 +3,14 @@ package main
 import (
 	"net/http"
 
-	"github.com/EventListing/delivery/http/handler"
-	"github.com/EventListing/user/services"
+	"github.com/goEventListing/delivery/http/handler"
+
+	"github.com/goEventListing/user/services"
 
 	"database/sql"
 	"html/template"
 
-	"github.com/EventListing/user/repository"
+	"github.com/goEventListing/user/repository"
 )
 
 func main() {

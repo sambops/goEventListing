@@ -2,9 +2,9 @@ package repository
 
 import (
 	"database/sql"
-	"errors"
+	//"errors"
 
-	"github.com/birukbelay/Aprojects/eventListing/entity"
+	//"github.com/goEventListing/entity"
 )
 
 // EventRepoImpl implements the event.EventRepository interface
@@ -15,6 +15,6 @@ type EventRepoImpl struct {
 
 // NewEventRepoImp will create an object of EventRepoImpl
 
-func NewEventRepoImp(con *sql.DB) *EventRepoImpl {
-    return &EventRepoImpl{conn: con}
-}
+//func NewEventRepoImp(con *sql.DB) *EventRepoImpl {
+//  return &EventRepoImpl{conn: con}
+

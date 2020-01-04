@@ -1,6 +1,6 @@
 package events
 
-import "github.com/birukbelay/Aprojects/EventListing/entity"
+import "github.com/goEventListing/entity"
 
 // ReviewRepository repository
 type ReviewRepository interface {

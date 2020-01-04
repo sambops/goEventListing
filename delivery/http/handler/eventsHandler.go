@@ -2,9 +2,9 @@ package handler
 
 import (
 	"html/template"
-	"net/http"
-
-	"github.com/birukbelay/Aprojects/eventListing/events"
+	//"net/http"
+	//
+	//"github.com/goEventListing/event"
 )
 
 type EventHandler struct {
