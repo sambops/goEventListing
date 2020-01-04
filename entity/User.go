@@ -1,8 +1,13 @@
 package entity
 
+import (
+	"github.com/jinzhu/gorm"
+)
+
 //User ... represents users of our system
 type User struct {
-	UserID    int 
+	gorm.Model
+	ID    int 
 	FirstName string
 	LastName  string
 	UserName  string
@@ -10,6 +15,8 @@ type User struct {
 	Password  []byte
 	Phone     string
 	Image     string
+	Event []Event `gorm:"foreignkey:UserRefer"`
+	Tag []Tag `gorm:"many2many:user_tag"`
 }
 // CREATE TABLE users(
 // 	user_id serial PRIMARY KEY,
