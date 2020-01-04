@@ -20,8 +20,7 @@ type Event struct {
 	TagRefer uint //this is a forign key referencing EVENTTAGE
 	IsPassed   *bool `gorm:"type:bool;not null;DEFAULT:false"`
 	Tag []Tag `gorm:"many2many:event_tag"`
-
-
 	
 }
+
 

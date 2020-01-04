@@ -13,4 +13,6 @@ type EventRepository interface {
 	AddEvent(event *entity.Event)(*entity.Event, []error)
 	UpdateEvent(event *entity.Event) (*entity.Event, []error)
 	DeleteEvent(id uint) (*entity.Event,[]error)
+	//user specific events
+	GetUserSubscribedEvents(id uint)([]entity.Event,error)
 }

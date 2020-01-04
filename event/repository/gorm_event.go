@@ -78,6 +78,43 @@ func (eri *EventRepoImpl) DeleteEvent(id uint) (*entity.Event,[]error){
 		return nil,errs
 	}
 	return evnt,errs
+}
+//GetUserSubscribedEvents ... return events which are subscribed by the current user
+func(eri *EventRepoImpl) GetUserSubscribedEvents(id uint)([]entity.Event,error){
+	userTag := entity.UserTag{}
+	eventTag := entity.EventTag{}
+	actualEvent := []entity.Event{}
+	//we select * from user_tag where user id =1 and we get the tag_id
+	tagidrows,err:= eri.conn.Raw("SELECT tag_id FROM user_tag WHERE userID = ?",id).Rows()
+	if err != nil{
+		return nil,err
+	}
+	defer tagidrows.Close()
+
+	for tagidrows.Next(){
+		eri.conn.ScanRows(tagidrows,&userTag)
+		//then select event_id from event_tag where tagID = the user_id we get from the above query
+		eventidrows,err := eri.conn.Raw("SELECT event_id FROM event_tag WHERE tagID = ?",userTag.TagID).Rows()
+		if err != nil{
+			return nil,err
+		}
+		defer eventidrows.Close()
+		for eventidrows.Next(){
+			eri.conn.ScanRows(eventidrows,&eventTag)
+			//then finally select from event where event_id = the result form the above query
+			event,err := eri.conn.Raw("SELECT * FROM events WHERE eventID = ?",eventTag.EventID).Rows() 
+			if err != nil{
+				return nil,err
+			}
+			defer event.Close()
+
+			for event.Next(){
+				eri.conn.ScanRows(event,&actualEvent)
+			}
+		}
+
+	}
+	return actualEvent,err
 
 }
 
