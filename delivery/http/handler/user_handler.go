@@ -1,15 +1,16 @@
 package handler
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"html/template"
 	"net/http"
 
-	"github.com/EventListing/entity"
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/goEventListing/entity"
 
 	uuid "github.com/satori/go.uuid"
 
-	"github.com/EventListing/user"
+	"github.com/goEventListing/user"
 )
 
 //UserHandler handles user related requests
@@ -99,68 +100,70 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	uh.tmpl.ExecuteTemplate(w, "login.html", nil)
 }
+
 //Register ... handles request on /register
-func(uh *UserHandler) Register(w http.ResponseWriter,r *http.Request){
-	if uh.alreadyLoggedIn(r){
-		http.Redirect(w,r,"/",http.StatusSeeOther)
+func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
+	if uh.alreadyLoggedIn(r) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 	var u entity.User
-	if r.Method == http.MethodPost{
+	if r.Method == http.MethodPost {
 		fn := r.FormValue("FirstName")
 		ln := r.FormValue("LastName")
-		un:=r.FormValue("UserName")
-		email:=r.FormValue("Email")
-		pass :=r.FormValue("Password")
-		phone:=r.FormValue("Phone")
-		img :=r.FormValue("Image")
+		un := r.FormValue("UserName")
+		email := r.FormValue("Email")
+		pass := r.FormValue("Password")
+		phone := r.FormValue("Phone")
+		img := r.FormValue("Image")
 
-		_,err := uh.userSrv.GetUser(un)
-		if err != nil{
-			http.Error(w,"username already taken",http.StatusForbidden)
+		_, err := uh.userSrv.GetUser(un)
+		if err != nil {
+			http.Error(w, "username already taken", http.StatusForbidden)
 			return
 		}
-			
+
 		//create a session
-		sID,_ := uuid.NewV4()
+		sID, _ := uuid.NewV4()
 		c := &http.Cookie{
-			Name:"session",
-			Value:sID.String(),
+			Name:  "session",
+			Value: sID.String(),
 		}
-		http.SetCookie(w,c)
+		http.SetCookie(w, c)
 		dbSessions[c.Value] = un
 		//store user in the database
-		bs,err := bcrypt.GenerateFromPassword([]byte(pass),bcrypt.MinCost)
-if err != nil{
-	http.Error(w,"Internal server error",http.StatusInternalServerError)
-	return
-}
-//?? what should i put int he place of user id???????????
-u =entity.User{0,fn,ln,un,email,bs,phone,img}
+		bs, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.MinCost)
+		if err != nil {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		//?? what should i put int he place of user id???????????
+		u = entity.User{0, fn, ln, un, email, bs, phone, img}
 
-uh.userSrv.RegisterUser(u)
-//redirect
-http.Redirect(w,r,"/",http.StatusSeeOther)
-return
-	}
-	uh.tmpl.ExecuteTemplate(w,"signup.html",u)
-
-}
-//Logout ... 
-func(uh *UserHandler) Logout(w http.ResponseWriter,req *http.Request){
-	if !uh.alreadyLoggedIn(req){
-		http.Redirect(w,req,"/",http.StatusSeeOther)
+		uh.userSrv.RegisterUser(u)
+		//redirect
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	c,_ := req.Cookie("session")
+	uh.tmpl.ExecuteTemplate(w, "signup.html", u)
+
+}
+
+//Logout ...
+func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request) {
+	if !uh.alreadyLoggedIn(req) {
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+	c, _ := req.Cookie("session")
 	//delete the session
-	delete(dbSessions,c.Value)
+	delete(dbSessions, c.Value)
 	//remove the cooke
 	c = &http.Cookie{
-		Name:"session",
-		Value:"",
-		MaxAge:-1,
+		Name:   "session",
+		Value:  "",
+		MaxAge: -1,
 	}
-	http.SetCookie(w,c)
+	http.SetCookie(w, c)
 
 }

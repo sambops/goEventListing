@@ -1,14 +1,23 @@
 package event
 
 import (
-	"github.com/EventListing/entity"
+	"github.com/goEventListing/entity"
 )
 
-//EXTERNALINTERFACE(DATABASE)
-//EventRepository repository(interface)
+// EventRepository repository
 type EventRepository interface {
-	Events() ([]entity.Event, error)
-	AddEvent(event entity.Event) error
-	EditEvent(event entity.Event) error
+	Events() ([]entity.Event, error) //get list of events
+	Event(id int) (entity.Event, error)
+
+	UpcomingEvents() ([]entity.Event, error)
+
+	getTags() ([]entity.Tag, error)
+
+	Post(event entity.Event) error
+	addTag(id []int) error //?? how do we add multiple tags
+
+	notify(eventID int, tagsID []int) error
+
+	UpdateEvent(event entity.Event) error
 	DeleteEvent(id int) error
 }

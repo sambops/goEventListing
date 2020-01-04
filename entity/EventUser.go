@@ -6,3 +6,4 @@ type EventUser struct {
 	UserID  int
 	EventID int
 }
+ 
