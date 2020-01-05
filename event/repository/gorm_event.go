@@ -117,6 +117,7 @@ func(eri *EventRepoImpl) GetUserSubscribedEvents(id uint)([]entity.Event,error){
 	return actualEvent,err
 
 }
+//
 
 
 

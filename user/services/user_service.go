@@ -16,7 +16,7 @@ func NewUserServiceImpl(UserRep user.UserRepository) *UserServiceImpl {
 }
 
 //RegisterUser ... registers a new user
-func (usi *UserServiceImpl) RegisterUser(user entity.User) error {
+func (usi *UserServiceImpl) RegisterUser(user *entity.User) error {
 	err := usi.userRepo.RegisterUser(user)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func (usi *UserServiceImpl) GetUser(userName string) (entity.User, error) {
 }
 
 //EditUser ... edit existing user data(profile)
-func (usi *UserServiceImpl) EditUser(user entity.User) error {
+func (usi *UserServiceImpl) EditUser(user *entity.User) []error {
 	err := usi.userRepo.EditUser(user)
 	if err != nil {
 		return err

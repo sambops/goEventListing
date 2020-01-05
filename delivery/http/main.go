@@ -13,11 +13,13 @@ import (
 )
 
 func main() {
-	dbconn, err := sql.Open("postgres", "postgres://postgres:password@localhost/goeventlisting?sslmode=disable")
+	dbconn, err := gorm.Open("postgres", "postgres://postgres:password@localhost/goeventlisting?sslmode=disable")
 	if err != nil {
 		panic(err)
 	}
 	defer dbconn.Close()
+
+
 	if err := dbconn.Ping(); err != nil {
 		panic(err)
 	}

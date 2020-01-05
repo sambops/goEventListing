@@ -30,8 +30,7 @@ func NewUserHandler(T *template.Template, US user.UserService) *UserHandler {
 	return &UserHandler{tmpl: T, userSrv: US}
 }
 
-//********************************************************************************************************
-
+//**************************************
 //checks whether the user is already logged in or not
 func (uh *UserHandler) alreadyLoggedIn(req *http.Request) bool {
 	c, err := req.Cookie("session")
@@ -66,7 +65,7 @@ func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) entity.
 	return u
 }
 
-//*****************************************************************************************************
+// d<********************************************/>
 
 //Index ... home page
 func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request) {
@@ -145,7 +144,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		//?? what should i put int he place of user id???????????
-		u = entity.User{0, fn, ln, un, email, bs, phone, img}
+		u = entity.User{0,fn, ln, un, email, bs, phone, img}
 
 		uh.userSrv.RegisterUser(u)
 		//redirect
