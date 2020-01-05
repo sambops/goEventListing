@@ -7,7 +7,6 @@ import (
 //User ... represents users of our system
 type User struct {
 	gorm.Model
-	ID    int 
 	FirstName string
 	LastName  string
 	UserName  string

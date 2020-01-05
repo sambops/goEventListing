@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"github.com/jinzhu/gorm"
-	"time"
 	"html/template"
 
 
@@ -146,7 +144,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		//?? what should i put int he place of user id???????????
-		u = &entity.User{gorm.Model{},fn, ln, un, email, bs, phone, img}
+		u = &entity.User{FirstName:fn,LastName:ln,UserName:un,Email:email,Password:bs,Phone:phone,Image:img}
 		
 
 		uh.userSrv.RegisterUser(u)
