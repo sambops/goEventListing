@@ -67,7 +67,7 @@ func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) entity.
 
 // d<********************************************/>
 
-//Index ... home page
+//Index ... home page before login
 func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request) {
 	u := uh.getUser(w, req)
 	uh.tmpl.ExecuteTemplate(w, "home.html", u)
