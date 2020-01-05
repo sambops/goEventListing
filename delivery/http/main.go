@@ -25,25 +25,42 @@ func main() {
 
 	
 	tmpl := template.Must(template.ParseGlob("../../ui/templates/*"))
+		
+	fs := http.FileServer(http.Dir("ui/assets"))
+	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
 	//user
 	userRepo := repository.NewUserRepositoryImpl(dbconn)
 	userService := services.NewUserServiceImpl(userRepo)
 	userHandler := handler.NewUserHandler(tmpl, userService)
 
+
+	
+	http.HandleFunc("user/", userHandler.Index)
+	http.HandleFunc("user/login", userHandler.Login)
+	http.HandleFunc("user/register",userHandler.Register)
+	http.HandleFunc("user/logout",userHandler.Logout)
+
+
 	//event
 	eventRepo := eventRepo.NewEventRepoImp(dbconn)
 	eventService := eventService.NewEventServiceImpl(eventRepo)
 	eventHandler := handler.NewEventHandler(tmpl,eventService)
 
-	fs := http.FileServer(http.Dir("ui/assets"))
-	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+	http.HandleFunc("event/allevents",eventHandler.AllEvents)
+	http.HandleFunc("event/event",eventHandler.Event)
+	http.HandleFunc("event/upcoming",eventHandler.UpcomingEvents)
+	http.HandleFunc("event/create",eventHandler.CreateEvent)
+	http.HandleFunc("event/foru",eventHandler.GetUserSpecificEvent)
+
+	
 	
 
-	http.HandleFunc("user/", userHandler.Index)
-	http.HandleFunc("user/login", userHandler.Login)
-	http.HandleFunc("user/register",userHandler.Register)
-	http.HandleFunc("user/logout",userHandler.Logout)
+	
+
+
+
+
 
 	http.ListenAndServe(":8080", nil)
 

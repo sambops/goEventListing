@@ -5,14 +5,6 @@ import (
 	"github.com/goEventListing/event"
 )
 
-// Events() ([]entity.Event, []error) //get list of events
-// Event(id uint) (*entity.Event, []error)
-// //where isPassed is false
-// UpcomingEvents() ([]entity.Event, []error)
-// AddEvent(event *entity.Event)(*entity.Event, []error)
-// UpdateEvent(event *entity.Event) (*entity.Event, []error)
-// DeleteEvent(id uint) (*entity.Event,[]error)
-
 //EventServicesImpl ... implements event.Event
 type EventServicesImpl struct{
 	eventRepo event.EventRepository
@@ -22,6 +14,7 @@ type EventServicesImpl struct{
 func NewEventServiceImpl(evntRepo event.EventRepository) *EventServicesImpl{
 	return &EventServicesImpl{eventRepo: evntRepo}
 }
+
 //Events ... return list of events
 func(esi *EventServicesImpl) Events() ([]entity.Event, []error){
 	evts,errs := esi.eventRepo.Events()
@@ -76,4 +69,12 @@ if len(errs)>0 {
 }
 return evnt,errs
 
+}
+//GetUserSubscribedEvents ... returns user specific event(based on subscription/hobby)
+func(esi *EventServicesImpl) GetUserSubscribedEvents(id uint)([]entity.Event,error){
+	evnts,err := esi.eventRepo.GetUserSubscribedEvents(id)
+	if err != nil{
+		return nil,err
+	}
+	return evnts,nil
 }
