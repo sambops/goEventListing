@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/goEventListing/entity"
-	"github.com/goEventListing/user"
+	"github.com/goEventListing/API/entity"
+	"github.com/goEventListing/API/user"
 )
 
 //UserServiceImpl implements user.UserService interface
@@ -16,16 +16,16 @@ func NewUserServiceImpl(UserRep user.UserRepository) *UserServiceImpl {
 }
 
 //RegisterUser ... registers a new user
-func (usi *UserServiceImpl) RegisterUser(user *entity.User) error {
-	err := usi.userRepo.RegisterUser(user)
+func (usi *UserServiceImpl) RegisterUser(user *entity.User) (*entity.User,error) {
+	usr,err := usi.userRepo.RegisterUser(user)
 	if err != nil {
-		return err
+		return usr,err
 	}
-	return nil
+	return usr,nil
 }
 
 //AuthenticateUser ... checks username and password validity
-func (usi *UserServiceImpl) AuthenticateUser(userName string, password string) (entity.User, error) {
+func (usi *UserServiceImpl) AuthenticateUser(userName string, password string) (*entity.User, error) {
 	user, err := usi.userRepo.AuthenticateUser(userName, password)
 	if err != nil {
 		return user, err
@@ -34,9 +34,9 @@ func (usi *UserServiceImpl) AuthenticateUser(userName string, password string) (
 }
 
 //GetUser ... returns one user row with the given user name
-func (usi *UserServiceImpl) GetUser(userName string) (entity.User, error) {
+func (usi *UserServiceImpl) GetUser(id uint) (*entity.User, error) {
 	//check username?
-	user, err := usi.userRepo.GetUser(userName)
+	user, err := usi.userRepo.GetUser(id)
 	if err != nil {
 		return user, err
 	}
@@ -45,19 +45,19 @@ func (usi *UserServiceImpl) GetUser(userName string) (entity.User, error) {
 }
 
 //EditUser ... edit existing user data(profile)
-func (usi *UserServiceImpl) EditUser(user *entity.User) []error {
-	err := usi.userRepo.EditUser(user)
+func (usi *UserServiceImpl) EditUser(user *entity.User)(*entity.User,[]error) {
+	urs,err := usi.userRepo.EditUser(user)
 	if err != nil {
-		return err
+		return urs,err
 	}
-	return nil
+	return urs,nil
 }
 
 //DeleteUser ... delete existing user with the given id
-func (usi *UserServiceImpl) DeleteUser(id int) error {
-	err := usi.userRepo.DeleteUser(id)
+func (usi *UserServiceImpl) DeleteUser(id uint)(*entity.User,error) {
+	urs,err := usi.userRepo.DeleteUser(id)
 	if err != nil {
-		return err
+		return urs,nil
 	}
-	return nil
+	return urs,nil
 }

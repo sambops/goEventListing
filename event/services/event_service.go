@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/goEventListing/entity"
-	"github.com/goEventListing/event"
+	"github.com/goEventListing/API/entity"
+	"github.com/goEventListing/API/event"
 )
 
 //EventServicesImpl ... implements event.Event

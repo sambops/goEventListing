@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"github.com/goEventListing/API/event"
 	"net/http"
-	"github.com/goEventListing/event"
 	"html/template"
 )
 
@@ -21,13 +21,25 @@ func NewEventHandler(T *template.Template, ES event.EventServices) *EventHandler
 func(eh *EventHandler) Index(w http.ResponseWriter,req *http.Request){
 	
 }
+
 //AllEvents ... return all events form the datbase based on some condition(linke posted time)
 func (eh *EventHandler) AllEvents(w http.ResponseWriter,req *http.Request){
+evnt,err := eh.eventServ.Events()
+
+if err != nil{
+	http.Error(w,"/",http.StatusSeeOther)
+	return
+}
+eh.templ.ExecuteTemplate(w,"charity.html",evnt)
 
 }
 
 //Event ... selects a specific event on select by event id
 func (eh *EventHandler) Event(w http.ResponseWriter,req *http.Request){
+	// if req.Method == http.MethodGet{
+	// 	id := req.FormValue()
+	// }
+	// evnt,err := eh.eventServ.Event()
 
 }
 //UpcomingEvents ... events that r not closed and event that r not colsed related to the user in the first order

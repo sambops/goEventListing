@@ -1,18 +1,18 @@
 package main
 
 import (
-	eventRepo"github.com/goEventListing/event/repository"
-	eventService "github.com/goEventListing/event/services"
+	eventRepo"github.com/goEventListing/API/event/repository"
+	eventService "github.com/goEventListing/API/event/services"
 	"github.com/jinzhu/gorm"
 	"net/http"
 
-	"github.com/goEventListing/delivery/http/handler"
-	"github.com/goEventListing/user/services"
+	"github.com/goEventListing/API/delivery/http/handler"
+	"github.com/goEventListing/API/user/services"
 	_ "github.com/lib/pq"
 
 	"html/template"
 
-	"github.com/goEventListing/user/repository"
+	"github.com/goEventListing/API/user/repository"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 
 
 	
-	http.HandleFunc("user/", userHandler.Index)
+	http.HandleFunc("/", userHandler.Index)
 	http.HandleFunc("user/login", userHandler.Login)
 	http.HandleFunc("user/register",userHandler.Register)
 	http.HandleFunc("user/logout",userHandler.Logout)

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/goEventListing/entity"
-	"github.com/goEventListing/tag"
+	"github.com/goEventListing/API/entity"
+	"github.com/goEventListing/API/tag"
 )
 
 // Tags()([]entity.Tag,[]error)

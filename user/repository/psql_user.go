@@ -5,7 +5,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"errors"
 
-	"github.com/goEventListing/entity"
+	"github.com/goEventListing/API/entity"
 )
 
 //UserRepositoryImpl ... implements the User.UserRepository interface
@@ -24,18 +24,18 @@ func NewUserRepositoryImpl(Conn *gorm.DB) *UserRepositoryImpl {
 
 
 //RegisterUser ... this is a method to register our users int to the user table
-func (uri *UserRepositoryImpl) RegisterUser(user *entity.User) error {
+func (uri *UserRepositoryImpl) RegisterUser(user *entity.User)(*entity.User ,error) {
 	userr := user
 //username taken?
 _,err := uri.conn.Raw("SELECT * FROM users WHERE username = ?",user.UserName).Rows() 
 if err != nil{
-	return errors.New("user name already taken try other")
+	return nil,errors.New("user name already taken try other")
 }
 errs := uri.conn.Create(userr).GetErrors()
 if len(errs) > 0 {
-	return errors.New("insertion has failed")
+	return nil, errors.New("insertion has failed")
 }
-return nil
+return userr,nil
 
 	// //username taken?
 	// _,err := uri.conn.Query("SELECT * FROM users where username = $1", user.UserName)
@@ -55,8 +55,8 @@ return nil
 }
 
 //AuthenticateUser ... this is a  method to authenticate a user before logining in
-func (uri *UserRepositoryImpl) AuthenticateUser(userName string, password string) (entity.User, error) {
-	user:=entity.User{}
+func (uri *UserRepositoryImpl) AuthenticateUser(userName string, password string) (*entity.User, error) {
+	user:= entity.User{}
 
 //is there a username?
 rows,err := uri.conn.Raw("SELECT * FROM  users WHERE username = ?",userName).Rows()
@@ -64,7 +64,7 @@ defer rows.Close()
 
 if (rows != nil){
 	if err != nil{
-		return user,errors.New("usernae and/or password do not match")
+		return &user,errors.New("usernae and/or password do not match")
 	}
 	for rows.Next(){
 		uri.conn.ScanRows(rows,&user)
@@ -72,11 +72,11 @@ if (rows != nil){
 		//does the entered password match with the stred password?
 		err = bcrypt.CompareHashAndPassword(user.Password,[]byte(password))
 		if err!= nil{
-			return user,errors.New("username and/or password do not match")
+			return &user,errors.New("username and/or password do not match")
 		}
-		return user,nil
+		return &user,nil
 }
-return user,errors.New("username and/or password do not match")
+return &user,errors.New("username and/or password do not match")
 
 
 	// //is there a username?
@@ -101,7 +101,7 @@ return user,errors.New("username and/or password do not match")
 }
 
 //GetUser ... 
-func (uri *UserRepositoryImpl) GetUser(userName string) (entity.User, error) {
+func (uri *UserRepositoryImpl) GetUser(userName string) (*entity.User, error) {
 	user:=entity.User{}
 
 
@@ -112,11 +112,11 @@ func (uri *UserRepositoryImpl) GetUser(userName string) (entity.User, error) {
 			uri.conn.ScanRows(rows,&user)
 		}
 		if err != nil{
-			return user,err
+			return &user,err
 		}
-		return user,nil
+		return &user,nil
 	}
-	return user,errors.New("user not found")
+	return &user,errors.New("user not found")
 
 
 
@@ -135,14 +135,14 @@ func (uri *UserRepositoryImpl) GetUser(userName string) (entity.User, error) {
 }
 
 //EditUser ... edit our user entiity
-func (uri *UserRepositoryImpl) EditUser(user *entity.User) []error {
+func (uri *UserRepositoryImpl) EditUser(user *entity.User)(*entity.User ,[]error) {
 usr:= user
 errs :=uri.conn.Save(usr).GetErrors()
 
 if len(errs)>0{
-	return errs
+	return nil,errs
 }
-return nil
+return usr,nil
 
 	// _, err := uri.conn.Exec("UPDATE users SET first_name = $1,last_name = $2,username = $3,email = $4,password= $5, phone = $6,image = $7 WHERE id = $8", user.FirstName, user.LastName, user.UserName, user.Email,user.Password, user.Phone, user.Image,user.UserID)
 	// if err != nil {
@@ -153,17 +153,27 @@ return nil
 }
 
 //DeleteUser ... Delete user
-func (uri *UserRepositoryImpl) DeleteUser(id int) error {
-	
-_,err:= uri.conn.Raw("DELETE FROM users WHERE id = ?",id).Rows()
-if err != nil{
-	return errors.New("Delete has faild")
+func (uri *UserRepositoryImpl) DeleteUser(id int) (*entity.User,error) {
+	user := entity.User{}
+rows,err:= uri.conn.Raw("DELETE FROM users WHERE id = ?",id).Rows()
+if rows != nil{
+for rows.Next(){
+	uri.conn.ScanRows(rows,&user)
 }
-return nil
+if err != nil{
+	return &user,err
+}
+return &user,nil
+	
+}
+return &user,errors.New("user not found")
+
+
 	// _, err := uri.conn.Exec("DELETE FROM users WHERE id = $1", id)
 	// if err != nil {
 	// 	return errors.New("Delete has faild")
 	// }
 	// return nil
+	
 	
 }

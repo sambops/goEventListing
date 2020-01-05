@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/goEventListing/entity"
+	"github.com/goEventListing/API/entity"
 )
 
 // EventRepository repository

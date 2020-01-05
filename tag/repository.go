@@ -1,7 +1,7 @@
 package tag
 
 import (
-	"github.com/goEventListing/entity"
+	"github.com/goEventListing/API/entity"
 )
 
 //add event tags

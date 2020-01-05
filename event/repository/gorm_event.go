@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/goEventListing/entity"
+	"github.com/goEventListing/API/entity"
 
 	
 )

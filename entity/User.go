@@ -1,12 +1,13 @@
 package entity
 
 import (
-	"github.com/jinzhu/gorm"
+	"time"
+	
 )
 
 //User ... represents users of our system
 type User struct {
-	gorm.Model
+	ID uint
 	FirstName string
 	LastName  string
 	UserName  string
@@ -16,6 +17,7 @@ type User struct {
 	Image     string
 	Event []Event `gorm:"foreignkey:UserRefer"`
 	Tag []Tag `gorm:"many2many:user_tag"`
+	PlacedAt time.Time
 }
 // CREATE TABLE users(
 // 	user_id serial PRIMARY KEY,

@@ -8,12 +8,8 @@ import (
 	
 	"net/http"
 
-	"github.com/goEventListing/entity"
-
-
 	uuid "github.com/satori/go.uuid"
 
-	"github.com/goEventListing/user"
 )
 
 //UserHandler handles user related requests
@@ -30,7 +26,6 @@ func NewUserHandler(T *template.Template, US user.UserService) *UserHandler {
 	return &UserHandler{tmpl: T, userSrv: US}
 }
 
-//**************************************
 //checks whether the user is already logged in or not
 func (uh *UserHandler) alreadyLoggedIn(req *http.Request) bool {
 	c, err := req.Cookie("session")
@@ -65,7 +60,6 @@ func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) entity.
 	return u
 }
 
-// d<********************************************/>
 
 //Index ... home page before login
 func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request) {
