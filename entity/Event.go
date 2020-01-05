@@ -8,7 +8,7 @@ import (
 //Event shows event intity
 type Event struct {
 	gorm.Model //i use it to get when the event is CreatedAt
-	ID uint  
+	//ID uint  already included in the gorm.Model 
 	Name string `gorm:"type:varchar(255);not null"`
 	Details string `gorm:"type:text;not null"`
 	Country string `gorm:"type:varchar(255)"`

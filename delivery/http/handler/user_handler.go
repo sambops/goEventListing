@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"github.com/jinzhu/gorm"
+	"time"
 	"html/template"
 
 
@@ -113,7 +115,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	var u entity.User
+	var u *entity.User
 	if r.Method == http.MethodPost {
 		fn := r.FormValue("FirstName")
 		ln := r.FormValue("LastName")
@@ -144,7 +146,8 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		//?? what should i put int he place of user id???????????
-		u = entity.User{0,fn, ln, un, email, bs, phone, img}
+		u = &entity.User{gorm.Model{},fn, ln, un, email, bs, phone, img}
+		
 
 		uh.userSrv.RegisterUser(u)
 		//redirect
