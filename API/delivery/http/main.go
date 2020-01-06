@@ -36,6 +36,7 @@ func main() {
 	// router.GET("/", userHandler.Index)
 	// router.POST("/el/user/login", userHandler.Login)
 	// router.POST("/el/user/register",userHandler.Register)
+	// router.POST("/el/user/register",userHandler.Register)
 	// router.PUT("/el/user/edit",userHandler.Register)
 	// router.POST("/el/user/remove",userHandler.Register)
 	// router.GET("/el/user/logout",userHandler.Logout)

@@ -81,32 +81,41 @@ func(uh *UserHandler) RegisterUser(w http.ResponseWriter,req *http.Request,ps ht
 	w.WriteHeader(http.StatusCreated)
 	return
 }
-//AuthenticateUser ... handle POST /el/user/login/:userName:password  
+//AuthenticateUser ... handle POST /el/user/login/
 func(uh *UserHandler) AuthenticateUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 //AuthenticateUser(userName string, password string) (*entity.User, error)
-userName:=ps.ByName("userName")
-password :=ps.ByName("password")
+	l := req.ContentLength
+	body := make([]byte,l)
+	req.Body.Read(body)
 
-usr,err:=uh.userSrv.AuthenticateUser(userName,password)
+	authenticate := &entity.Authenticate{}
+	err := json.Unmarshal(body,authenticate)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
 
-if err != nil{
+	usr,err:=uh.userSrv.AuthenticateUser(authenticate.UserName,authenticate.Password)
+
+	if err != nil{
 	w.Header().Set("Content-Type", "application/json")
 	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	return
-}
+	}
 
-output,err:= json.MarshalIndent(usr,"","\t\t")
-if err != nil{
+	output,err:= json.MarshalIndent(usr,"","\t\t")
+	if err != nil{
 	w.Header().Set("Content-Type", "application/json")
 	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	return
-}
-w.Header().Set("Content-Type","application/json")
-w.Write(output)
-return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
 }
 
-//EditUser ... handle POST /el/user/edit:id
+//EditUser ... handle PUT /el/user/edit:id
 func(uh *UserHandler) EditUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 //EditUser(user *entity.User)(*entity.User,[]error)
 
