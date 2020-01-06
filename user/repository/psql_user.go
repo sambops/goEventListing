@@ -153,7 +153,7 @@ return usr,nil
 }
 
 //DeleteUser ... Delete user
-func (uri *UserRepositoryImpl) DeleteUser(id int) (*entity.User,error) {
+func (uri *UserRepositoryImpl) DeleteUser(id uint) (*entity.User,error) {
 	user := entity.User{}
 rows,err:= uri.conn.Raw("DELETE FROM users WHERE id = ?",id).Rows()
 if rows != nil{

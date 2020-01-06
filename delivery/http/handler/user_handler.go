@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"github.com/goEventListing/API/entity"
+	"github.com/goEventListing/API/user"
 	"html/template"
 
 
@@ -40,7 +42,7 @@ func (uh *UserHandler) alreadyLoggedIn(req *http.Request) bool {
 	return true
 
 }
-func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) entity.User {
+func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) *entity.User {
 	//get cookie
 	c, err := req.Cookie("session")
 	if err != nil {
@@ -53,7 +55,7 @@ func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) entity.
 	http.SetCookie(w, c)
 
 	//if the user exists already,get user
-	var u entity.User
+	var u *entity.User
 	if un, ok := dbSessions[c.Value]; ok {
 		u, _ = uh.userSrv.GetUser(un)
 	}

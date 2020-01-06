@@ -1,59 +1,148 @@
 package handler
 
 import (
+	"fmt"
+	"github.com/goEventListing/API/entity"
+	"strconv"
+	"encoding/json"
+	"github.com/julienschmidt/httprouter"
 	"github.com/goEventListing/API/event"
 	"net/http"
-	"html/template"
+	
 )
 
 //EventHandler handles event related requests
 type EventHandler struct {
-	templ     *template.Template
 	eventServ event.EventServices
 }
 
 //NewEventHandler initializes and returns newEventHandler
-func NewEventHandler(T *template.Template, ES event.EventServices) *EventHandler {
-	return &EventHandler{templ: T, eventServ: ES}
+func NewEventHandler(ES event.EventServices) *EventHandler {
+	return &EventHandler{eventServ: ES}
 }
 
 //Index ... home page after login
-func(eh *EventHandler) Index(w http.ResponseWriter,req *http.Request){
+func(eh *EventHandler) Index(w http.ResponseWriter,req *http.Request, _ httprouter.Params){
 	
 }
 
-//AllEvents ... return all events form the datbase based on some condition(linke posted time)
-func (eh *EventHandler) AllEvents(w http.ResponseWriter,req *http.Request){
+//AllEvents ... handles GET /event/allevents request
+func (eh *EventHandler) AllEvents(w http.ResponseWriter,req *http.Request,_ httprouter.Params){
 evnt,err := eh.eventServ.Events()
 
 if err != nil{
-	http.Error(w,"/",http.StatusSeeOther)
+	w.Header().Set("Content-Type","application/json")
+	http.Error(w,http.StatusText(http.StatusNotFound),http.StatusNotFound)
 	return
 }
-eh.templ.ExecuteTemplate(w,"charity.html",evnt)
+output,errr := json.MarshalIndent(evnt,"","\t\t")
+if errr!=nil{
+	w.Header().Set("Content-Type","application/json")
+	http.Error(w,http.StatusText(http.StatusNotFound),http.StatusNotFound)
+	return
+}
+w.Header().Set("Content-Type","application/json")
+w.Write(output)
+return
 
 }
 
-//Event ... selects a specific event on select by event id
-func (eh *EventHandler) Event(w http.ResponseWriter,req *http.Request){
-	// if req.Method == http.MethodGet{
-	// 	id := req.FormValue()
-	// }
-	// evnt,err := eh.eventServ.Event()
+//Event ... handles GET /event/event/:id request
+func (eh *EventHandler) Event(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	id,err := strconv.Atoi(ps.ByName("id"))
+	if err != nil{
+		w.Header().Set("Content-Type","application/json")
+		http.Error(w,http.StatusText(http.StatusNotFound),http.StatusNotFound)
+		return
+	}
+	evnt,errs := eh.eventServ.Event(uint(id))
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	output,err := json.MarshalIndent(evnt,"","\t\t")
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
+	
 
 }
-//UpcomingEvents ... events that r not closed and event that r not colsed related to the user in the first order
-func (eh *EventHandler) UpcomingEvents(w http.ResponseWriter,req *http.Request){
+//UpcomingEvents ...  handles GET /event/upcoming request
+func (eh *EventHandler) UpcomingEvents(w http.ResponseWriter,req *http.Request,_ httprouter.Params){
+	evnts,errs := eh.eventServ.UpcomingEvents()
+	if errs != nil{
+		w.Header().Set("Content-Type","application/json")
+		http.Error(w,http.StatusText(http.StatusNotFound),http.StatusNotFound)
+		return
+	}
+	output,err := json.MarshalIndent(evnts,"","\t\t")
+	if err!=nil{
+		w.Header().Set("Content-Type","application/json")
+		http.Error(w,http.StatusText(http.StatusNotFound),http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
+	
+}
+
+//CreateEvent ...  handles GET /event/create request
+func (eh *EventHandler) CreateEvent(w http.ResponseWriter,req *http.Request,_ httprouter.Params){
+	l :=req.ContentLength
+	body := make([]byte,l)
+	req.Body.Read(body)
+	event := &entity.Event{}
+
+	err:= json.Unmarshal(body,event)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	event,errs := eh.eventServ.AddEvent(event)
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	p := fmt.Sprintf("/event/create/%d", event.ID)
+	w.Header().Set("Location", p)
+	w.WriteHeader(http.StatusCreated)
+	return
 
 }
 
-//CreateEvent ... creates new event
-func (eh *EventHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
+//GetUserSpecificEvent ... handles GET /event/foru request
+func (eh *EventHandler) GetUserSpecificEvent(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	id,err := strconv.Atoi(ps.ByName("id"))
 
-}
-
-//GetUserSpecificEvent ... display events based on the peron hobby
-func (eh *EventHandler) GetUserSpecificEvent(w http.ResponseWriter,req *http.Request){
+	if err != nil{
+		w.Header().Set("Content-Type","application/json")
+		http.Error(w,http.StatusText(http.StatusNotFound),http.StatusNotFound)
+		return
+	}
+	events,err := eh.eventServ.GetUserSubscribedEvents(uint (id))
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	output,err := json.MarshalIndent(events,"","\t\t")
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
 
 }
 

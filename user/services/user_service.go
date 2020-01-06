@@ -34,9 +34,9 @@ func (usi *UserServiceImpl) AuthenticateUser(userName string, password string) (
 }
 
 //GetUser ... returns one user row with the given user name
-func (usi *UserServiceImpl) GetUser(id uint) (*entity.User, error) {
+func (usi *UserServiceImpl) GetUser(userName string) (*entity.User, error) {
 	//check username?
-	user, err := usi.userRepo.GetUser(id)
+	user, err := usi.userRepo.GetUser(userName)
 	if err != nil {
 		return user, err
 	}

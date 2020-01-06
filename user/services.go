@@ -6,11 +6,11 @@ import (
 
 //USECASE
 
-//this is our service usescase(has (interface)abstract classes that outer layers can use)
+//UserService ... this is our service usescase(has (interface)abstract classes that outer layers can use)
 type UserService interface {
 	RegisterUser(user *entity.User)(*entity.User,error)
 	AuthenticateUser(userName string, password string) (*entity.User, error)
-	GetUser(id uint) (*entity.User, error)
+	GetUser(userName string) (*entity.User, error)
 	//Logout() error
 	EditUser(user *entity.User)(*entity.User,[]error)
 	DeleteUser(id uint)(*entity.User,error)
