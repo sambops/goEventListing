@@ -1,8 +1,7 @@
 package handler
 
 import (
-	"github.com/goEventListing/API/entity"
-	"github.com/goEventListing/API/user"
+
 	"html/template"
 
 
@@ -29,7 +28,7 @@ func NewUserHandler(T *template.Template, US user.UserService) *UserHandler {
 }
 
 //checks whether the user is already logged in or not
-func (uh *UserHandler) alreadyLoggedIn(req *http.Request) bool {
+func alreadyLoggedIn(req *http.Request) bool {
 	c, err := req.Cookie("session")
 	if err != nil {
 		return false
@@ -60,6 +59,8 @@ func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) *entity
 		u, _ = uh.userSrv.GetUser(un)
 	}
 	return u
+
+	
 }
 
 

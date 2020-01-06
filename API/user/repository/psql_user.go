@@ -101,12 +101,12 @@ return &user,errors.New("username and/or password do not match")
 }
 
 //GetUser ... 
-func (uri *UserRepositoryImpl) GetUser(userName string) (*entity.User, error) {
+func (uri *UserRepositoryImpl) GetUser(id uint) (*entity.User, error) {
 	user:=entity.User{}
 
 
 	//check username if exist reutrn users
-	rows,err := uri.conn.Raw("SELECT * FROM users WHERE username = ?",userName).Rows()
+	rows,err := uri.conn.Raw("SELECT * FROM users WHERE username = ?",id).Rows()
 	if rows != nil{
 		for rows.Next(){
 			uri.conn.ScanRows(rows,&user)

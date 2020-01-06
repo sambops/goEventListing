@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"fmt"
 	"net/http"
-	
-
 )
 
 var baseURL = "http://localhost:8080/el/"

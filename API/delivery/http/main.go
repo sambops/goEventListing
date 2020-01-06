@@ -34,9 +34,11 @@ func main() {
 	
 	
 	// router.GET("/", userHandler.Index)
-	// router.POST("user/login", userHandler.Login)
-	// router.POST("user/register",userHandler.Register)
-	// router.GET("user/logout",userHandler.Logout)
+	// router.POST("/el/user/login", userHandler.Login)
+	// router.POST("/el/user/register",userHandler.Register)
+	// router.PUT("/el/user/edit",userHandler.Register)
+	// router.POST("/el/user/remove",userHandler.Register)
+	// router.GET("/el/user/logout",userHandler.Logout)
 	//dbconn.AutoMigrate(&database.Event{},&database.EventTag{},&database.Tag{},&database.User{},&database.UserTag{})
 
 	//event

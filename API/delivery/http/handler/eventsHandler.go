@@ -116,7 +116,6 @@ func (eh *EventHandler) CreateEvent(w http.ResponseWriter,req *http.Request,_ ht
 	w.Header().Set("Location", p)
 	w.WriteHeader(http.StatusCreated)
 	return
-
 }
 
 //GetUserSpecificEvent ... handles GET /event/foru request
