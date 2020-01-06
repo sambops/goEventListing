@@ -11,6 +11,7 @@ type UserService interface {
 	RegisterUser(user *entity.User)(*entity.User,error)
 	AuthenticateUser(userName string, password string) (*entity.User, error)
 	GetUser(id uint) (*entity.User, error)
+	GetUserByUserName(userName string) (*entity.User, error)
 	//Logout() error
 	EditUser(user *entity.User)(*entity.User,[]error)
 	DeleteUser(id uint)(*entity.User,error)

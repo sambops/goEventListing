@@ -56,6 +56,30 @@ func(uh *UserHandler) GetUser (w http.ResponseWriter,req *http.Request,ps httpro
 	return
 	
 }
+//GetUserByUserName ... 
+func(uh *UserHandler) GetUserByUserName (w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	//(id unit) (*entity.User, error)
+
+	name:= ps.ByName("userName")
+
+	user,err := uh.userSrv.GetUserByUserName(name)
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	output,err:= json.MarshalIndent(user,"","\t\t")
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
+	
+}
 //RegisterUser ... handle POST /el/user/register/:user   ....
 func(uh *UserHandler) RegisterUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	//RegisterUser(user *entity.User)(*entity.User,error)

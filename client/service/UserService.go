@@ -37,6 +37,31 @@ func GetUser(id uint) (*entity.User,error){
 	}
 	return userdata,nil
 }
+
+//GetUserByUserName ... request on baseUserURL/userName
+func GetUserByUserName(userName string) (*entity.User,error){
+	client := &http.Client{}
+
+	URL := fmt.Sprintf("%s%s",baseUserURL,userName)
+	req,_ := http.NewRequest("GET",URL,nil)
+	//DO return an http responce
+	res,err := client.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+	userdata := &entity.User{}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(body,userdata)
+	if err != nil{
+		return nil,err
+	}
+	return userdata,nil
+}
 //DeleteUser ... request on baseUserURL/remove
 func DeleteUser(id uint)(*entity.User,error){
 	client := &http.Client{}

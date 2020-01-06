@@ -100,6 +100,24 @@ return &user,errors.New("username and/or password do not match")
 	// return user, errors.New("username and/or password do not match")	
 }
 
+//GetUserByUserName ... 
+func (uri *UserRepositoryImpl) GetUserByUserName(userName string) (*entity.User, error) {
+	user:=entity.User{}
+
+
+	//check username if exist reutrn users
+	rows,err := uri.conn.Raw("SELECT * FROM users WHERE username = ?",userName).Rows()
+	if rows != nil{
+		for rows.Next(){
+			uri.conn.ScanRows(rows,&user)
+		}
+		if err != nil{
+			return &user,err
+		}
+		return &user,nil
+	}
+	return &user,errors.New("user not found")
+}
 //GetUser ... 
 func (uri *UserRepositoryImpl) GetUser(id uint) (*entity.User, error) {
 	user:=entity.User{}
