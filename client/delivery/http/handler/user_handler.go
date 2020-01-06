@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/julienschmidt/httprouter"
 	"github.com/goEventListing/client/entity"
 	"github.com/goEventListing/client/service"
 
@@ -67,13 +68,13 @@ func getUser(w http.ResponseWriter, req *http.Request) *entity.User {
 
 
 //Index ... home page before login
-func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request) {
+func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request,ps httprouter.Params) {
 	u := getUser(w, req)
 	uh.tmpl.ExecuteTemplate(w, "home.html", u)
 }
 
 //Login handle request on route /login
-func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
 	if alreadyLoggedIn(r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -107,7 +108,7 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 
 //Register ... handles request on /register
-func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
 	if alreadyLoggedIn(r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -157,7 +158,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 //Logout ...
-func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request) {
+func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request,ps httprouter.Params) {
 	if !alreadyLoggedIn(req) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return

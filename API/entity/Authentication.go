@@ -2,6 +2,6 @@ package entity
 
 //Authenticate ... used for Authentication() in user handler
 type Authenticate struct{
-UserName string
-Password string
+UserName string `json:"username"`
+Password string	 `json:"password"`
 }

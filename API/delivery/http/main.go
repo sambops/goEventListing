@@ -1,6 +1,9 @@
 package main
 
 import (
+	// "github.com/goEventListing/API/entity"
+	"github.com/goEventListing/API/user/services"
+	"github.com/goEventListing/API/user/repository"
 	"github.com/julienschmidt/httprouter"
 	eventRepo"github.com/goEventListing/API/event/repository"
 	eventService "github.com/goEventListing/API/event/services"
@@ -27,19 +30,27 @@ func main() {
 	//http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
 	//user
-	// userRepo := repository.NewUserRepositoryImpl(dbconn)
-	// userService := services.NewUserServiceImpl(userRepo)
-	// userHandler := handler.NewUserHandler(tmpl, userService)
+
+	// errs := dbconn.CreateTable(entity.User{}).GetErrors()
+
+	// if len(errs) > 0 {
+	// 	panic(err)
+	// }
+
+	userRepo := repository.NewUserRepositoryImpl(dbconn)
+	userService := services.NewUserServiceImpl(userRepo)
+	userHandler := handler.NewUserHandler(userService)
 
 	
 	
-	// router.GET("/", userHandler.Index)
-	// router.POST("/el/user/login", userHandler.Login)
-	// router.POST("/el/user/register",userHandler.Register)
-	// router.POST("/el/user/register",userHandler.Register)
-	// router.PUT("/el/user/edit",userHandler.Register)
-	// router.POST("/el/user/remove",userHandler.Register)
-	// router.GET("/el/user/logout",userHandler.Logout)
+	router.GET("/el/user/:id", userHandler.GetUser)
+
+	router.POST("/el/user/login", userHandler.AuthenticateUser)
+	router.POST("/el/user/register",userHandler.RegisterUser)
+	router.PUT("/el/user/edit",userHandler.EditUser)
+	router.POST("/el/user/remove",userHandler.DeleteUser)
+	//router.GET("/el/user/logout",userHandler.Logout)
+	
 	//dbconn.AutoMigrate(&database.Event{},&database.EventTag{},&database.Tag{},&database.User{},&database.UserTag{})
 
 	//event
@@ -56,13 +67,12 @@ func main() {
 	
 	
 
-	
 
 
 
 
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8181", router)
 
 }
 		

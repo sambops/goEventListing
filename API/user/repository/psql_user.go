@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	"errors"
@@ -27,12 +28,14 @@ func NewUserRepositoryImpl(Conn *gorm.DB) *UserRepositoryImpl {
 func (uri *UserRepositoryImpl) RegisterUser(user *entity.User)(*entity.User ,error) {
 	userr := user
 //username taken?
-_,err := uri.conn.Raw("SELECT * FROM users WHERE username = ?",user.UserName).Rows() 
+_,err := uri.conn.Raw("SELECT * FROM users WHERE user_name = ?",user.UserName).Rows() 
 if err != nil{
 	return nil,errors.New("user name already taken try other")
 }
 errs := uri.conn.Create(userr).GetErrors()
+
 if len(errs) > 0 {
+	
 	return nil, errors.New("insertion has failed")
 }
 return userr,nil
@@ -59,10 +62,11 @@ func (uri *UserRepositoryImpl) AuthenticateUser(userName string, password string
 	user:= entity.User{}
 
 //is there a username?
-rows,err := uri.conn.Raw("SELECT * FROM  users WHERE username = ?",userName).Rows()
+rows,err := uri.conn.Raw("SELECT * FROM  users WHERE user_name = ?",userName).Rows()
 defer rows.Close()
 
 if (rows != nil){
+	
 	if err != nil{
 		return &user,errors.New("usernae and/or password do not match")
 	}
@@ -72,6 +76,7 @@ if (rows != nil){
 		//does the entered password match with the stred password?
 		err = bcrypt.CompareHashAndPassword(user.Password,[]byte(password))
 		if err!= nil{
+			fmt.Println("password err")
 			return &user,errors.New("username and/or password do not match")
 		}
 		return &user,nil
@@ -124,17 +129,24 @@ func (uri *UserRepositoryImpl) GetUser(id uint) (*entity.User, error) {
 
 
 	//check username if exist reutrn users
-	rows,err := uri.conn.Raw("SELECT * FROM users WHERE username = ?",id).Rows()
-	if rows != nil{
-		for rows.Next(){
-			uri.conn.ScanRows(rows,&user)
-		}
-		if err != nil{
-			return &user,err
-		}
-		return &user,nil
+	// rows,err := uri.conn.Raw("SELECT * FROM users WHERE id = ?",id).Rows()
+	// if rows != nil{
+	// 	for rows.Next(){
+	// 		uri.conn.ScanRows(rows,&user)
+	// 	}
+	// 	if err != nil{
+	// 		return &user,err
+	// 	}
+	// 	return &user,nil
+	// }
+
+	errs := uri.conn.First(&user, id).GetErrors()
+
+	if len(errs) > 0{
+		return nil, errors.New("user not found")
 	}
-	return &user,errors.New("user not found")
+
+	return &user,nil
 
 
 

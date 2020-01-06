@@ -51,7 +51,7 @@ func (usi *UserServiceImpl) GetUser(id uint) (*entity.User, error) {
 	//check username?
 	user, err := usi.userRepo.GetUser(id)
 	if err != nil {
-		return user, err
+		return nil, err
 	}
 	return user, nil
 

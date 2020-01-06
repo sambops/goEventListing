@@ -124,7 +124,7 @@ func EditUser(user *entity.User)(*entity.User,error){
 	
 	client := &http.Client{}
 	URL := fmt.Sprintf("%s%s/%d",baseUserURL,"edit",user.ID)
-	req,_ := http.NewRequest("POST",URL,bytes.NewBuffer(ouput))
+	req,_ := http.NewRequest("PUT",URL,bytes.NewBuffer(ouput))
 	//DO return an http responce
 	res,err := client.Do(req)
 	
