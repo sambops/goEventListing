@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/EventListing/entity"
+	"github.com/goEventListing/entity"
 )
 
 //EXTERNALINTERFACE(DATABASE)

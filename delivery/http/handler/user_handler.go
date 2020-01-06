@@ -1,15 +1,17 @@
 package handler
 
 import (
+	"fmt"
+	
 	"golang.org/x/crypto/bcrypt"
 	"html/template"
 	"net/http"
 
-	"github.com/EventListing/entity"
+	"github.com/goEventListing/entity"
 
 	uuid "github.com/satori/go.uuid"
 
-	"github.com/EventListing/user"
+	"github.com/goEventListing/user"
 )
 
 //UserHandler handles user related requests
@@ -17,6 +19,7 @@ type UserHandler struct {
 	tmpl    *template.Template
 	userSrv user.UserService
 }
+
 
 var dbSessions = map[string]string{} //session ID,user ID
 
@@ -52,6 +55,7 @@ func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) entity.
 		}
 	}
 	http.SetCookie(w, c)
+
 	//if the user exists already,get user
 	var u entity.User
 	if un, ok := dbSessions[c.Value]; ok {
@@ -77,12 +81,13 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 
-		userName := r.FormValue("userName")
-		password := r.FormValue("password")
+		userName := r.FormValue("uname")
+		password := r.FormValue("psw")
 
 		_, err := uh.userSrv.AuthenticateUser(userName, password)
 		if err != nil {
-			panic(err)
+			//panic(err)
+			http.Error(w,"hey check what u wrote please",404)
 		}
 
 		sID, _ := uuid.NewV4()
@@ -107,16 +112,16 @@ func(uh *UserHandler) Register(w http.ResponseWriter,r *http.Request){
 	}
 	var u entity.User
 	if r.Method == http.MethodPost{
-		fn := r.FormValue("FirstName")
-		ln := r.FormValue("LastName")
-		un:=r.FormValue("UserName")
-		email:=r.FormValue("Email")
-		pass :=r.FormValue("Password")
-		phone:=r.FormValue("Phone")
-		img :=r.FormValue("Image")
+		fn := r.FormValue("firstName")
+		ln := r.FormValue("lastName")
+		un:=r.FormValue("userName")
+		email:=r.FormValue("email")
+		pass :=r.FormValue("psw")
+		phone:=r.FormValue("phone")
+		img :=r.FormValue("img")
 
 		_,err := uh.userSrv.GetUser(un)
-		if err != nil{
+		if err == nil{
 			http.Error(w,"username already taken",http.StatusForbidden)
 			return
 		}
@@ -130,19 +135,25 @@ func(uh *UserHandler) Register(w http.ResponseWriter,r *http.Request){
 		http.SetCookie(w,c)
 		dbSessions[c.Value] = un
 		//store user in the database
-		bs,err := bcrypt.GenerateFromPassword([]byte(pass),bcrypt.MinCost)
+		ps,err := bcrypt.GenerateFromPassword([]byte(pass),bcrypt.MinCost)
 if err != nil{
 	http.Error(w,"Internal server error",http.StatusInternalServerError)
 	return
 }
-//?? what should i put int he place of user id???????????
-u =entity.User{0,fn,ln,un,email,bs,phone,img}
 
-uh.userSrv.RegisterUser(u)
+u =entity.User{FirstName:fn,LastName:ln,UserName:un,Email:email,Password:ps,Phone:phone,Image:img}
+
+check := uh.userSrv.RegisterUser(u)
+if check == nil{
+	fmt.Println("sucessful")
+}else{
+ fmt.Println("not successful")
+}
 //redirect
-http.Redirect(w,r,"/",http.StatusSeeOther)
+http.Redirect(w,r,"/login",http.StatusSeeOther)
 return
 	}
+	//IF THE REQUES IS GET
 	uh.tmpl.ExecuteTemplate(w,"signup.html",u)
 
 }
@@ -162,5 +173,6 @@ func(uh *UserHandler) Logout(w http.ResponseWriter,req *http.Request){
 		MaxAge:-1,
 	}
 	http.SetCookie(w,c)
+	http.Redirect(w,req,"/",http.StatusSeeOther)
 
 }
