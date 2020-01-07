@@ -5,10 +5,12 @@ import "time"
 // Review is when a user rates to an event
 type Review struct {
 	ID              int
-	UserID, EventID int
-	Body            string
+	Rating     int
+	EventID int
+	UserID int
+	Message            string
 
-	rating     int
-	reviewedAt time.Time
+	
+	ReviewedAt time.Time
 	// isempty    bool
 }
