@@ -10,9 +10,9 @@ import (
 type Event struct {
 	ID int
 
-	Name, Details, Image              string
-	UserID                            int
-	City, Country, Place, Coordinates string
+	Name, Details, Image                    string
+	UserID                                  int
+	City, Country, Place, Coordinates, Date string
 
 	IsPassed   bool
 	Rating     int
@@ -20,4 +20,5 @@ type Event struct {
 	price      float32
 	Reviews    []entity.Review
 	Tags       []entity.Tag
+	user       []entity.User
 }
