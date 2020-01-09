@@ -9,6 +9,8 @@ type EventRepository interface {
 
 	UpcomingEvents() ([]entity.Event, error)
 
+	getTags() ([]entity.Tag, error)
+
 	Post(event entity.Event) error
 	addTag(id []int) error //?? how do we add multiple tags
 

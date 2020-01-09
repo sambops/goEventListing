@@ -4,8 +4,13 @@ package entity
 type Tag struct {
 	ID          int
 	Name        string
+<<<<<<< HEAD
 	Description string
 	Icon        string
+=======
+	description string
+	icon        string
+>>>>>>> 88892e25e6fb176ea4f4ccd0ea65914deaca56f9
 }
 
 //User_tags is used when a user register to tags
