@@ -5,6 +5,7 @@ import "github.com/birukbelay/Aprojects/goEventListing/entity"
 // ReviewRepository specifies application review related operations
 type ReviewRepository interface {
 	Reviews() ([]entity.Review, error)
+	EventReviews(id int) ([]entity.Review, error)
 	Review(id int) (entity.Review, error)
 	MakeReview(r entity.Review) error
 	SetRating(Eid int) error

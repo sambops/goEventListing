@@ -5,6 +5,7 @@ import "github.com/birukbelay/Aprojects/goEventListing/entity"
 // ReviewService specifies application review related services
 type ReviewService interface {
 	Reviews() ([]entity.Review, error)
+	EventReviews(id int) ([]entity.Review, error)
 	Review(id int) (entity.Review, error)
 	MakeReview(r entity.Review) error
 	SetRating(Eid int) error

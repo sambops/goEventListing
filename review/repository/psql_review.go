@@ -42,6 +42,32 @@ func (rri *ReviewRepoImpl) Reviews() ([]entity.Review, error) {
 	return rvws, nil
 }
 
+// GetMyReviews returns the reviews of a single Event
+func (rri *ReviewRepoImpl) EventReviews(id int) ([]entity.Review, error) {
+
+	query := "SELECT * FROM review WHERE Event_id = $1"
+	rows, err := rri.conn.Query(query, id)
+
+	if err != nil {
+		return nil, errors.New("Could not query the database")
+	}
+	defer rows.Close()
+
+	rvws := []entity.Review{}
+
+	for rows.Next() {
+		review := entity.Review{}
+		err = rows.Scan(&review.ID, &review.Rating, &review.ReviewedAt, &review.UserID, &review.EventID, &review.Message)
+		if err != nil {
+			return nil, err
+		}
+
+		rvws = append(rvws, review)
+	}
+
+	return rvws, nil
+}
+
 // Review returns a Review with a given id
 func (rri *ReviewRepoImpl) Review(id int) (entity.Review, error) {
 
@@ -97,7 +123,7 @@ func (rri *ReviewRepoImpl) DeleteReview(id int) error {
 // GetMyReviews returns the reviews of a single user
 func (rri *ReviewRepoImpl) GetMyReviews(id int) ([]entity.Review, error) {
 
-	query := "SELECT * FROM review WHERE User_id = $1";
+	query := "SELECT * FROM review WHERE User_id = $1"
 	rows, err := rri.conn.Query(query, id)
 
 	if err != nil {
@@ -123,7 +149,7 @@ func (rri *ReviewRepoImpl) GetMyReviews(id int) ([]entity.Review, error) {
 //SetRating sets the average rating of an event after every reviews
 func (rri *ReviewRepoImpl) SetRating(Eid int) error {
 
-	query :="SELECT AVG(rating) FROM review WHERE Event_id = $1"
+	query := "SELECT AVG(rating) FROM review WHERE Event_id = $1"
 	row := rri.conn.QueryRow(query, Eid)
 
 	var rating float32

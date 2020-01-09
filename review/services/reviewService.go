@@ -27,6 +27,18 @@ func (rs *ReviweServiceImpl) Reviews() ([]entity.Review, error) {
 	return rvs, nil
 }
 
+// GetEventReviews returns list of Reviews for an event
+func (rs *ReviweServiceImpl) EventReviews(id int) ([]entity.Review, error) {
+
+	rvs, err := rs.ReviewRepo.GetEventReviews(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rvs, nil
+}
+
 // Review returns a Review with a given id
 func (rs *ReviweServiceImpl) Review(id int) (entity.Review, error) {
 

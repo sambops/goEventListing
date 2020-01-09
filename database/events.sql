@@ -10,7 +10,7 @@ create table events (
   town varchar(255),
   rating numeric NOT NULL DEFAULT 0,
   users_id integer REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  tag_id integer REFERENCES tags(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  
   ispassed boolean NOT NULL DEFAULT false
 );
 -- c
