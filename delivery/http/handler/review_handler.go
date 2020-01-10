@@ -1,26 +1,26 @@
 package handler
 
 import (
-	"github.com/birukbelay/Aprojects/goEventListing/entity"
-	"github.com/birukbelay/Aprojects/goEventListing/review"
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"github.com/birukbelay/Aprojects/goEventListing/entity"
+	"github.com/birukbelay/Aprojects/goEventListing/review"
 )
 
+// ReviewHandler ...
 type ReviewHandler struct {
-	tmpl        *template.Template
-	ReviewServ Review.ReviewService
+	tmpl       *template.Template
+	ReviewServ review.ReviewService
 }
 
-func NewReviewHandler(T *template.Template, rs Review.ReviewService) *ReviewHandler {
-	return &ReviewHandler{
-		tmpl:        T,
-		ReviewServ: rs
-	}
+// NewReviewHandler ...
+func NewReviewHandler(T *template.Template, rs review.ReviewService) *ReviewHandler {
+	return &ReviewHandler{tmpl: T, ReviewServ: rs}
 }
 
-// Reviews handle requests on route 
+// Reviews handle requests on route
 func (rh *ReviewHandler) Reviews(w http.ResponseWriter, r *http.Request) {
 
 	reviews, err := rh.ReviewServ.Reviews()
@@ -30,7 +30,7 @@ func (rh *ReviewHandler) Reviews(w http.ResponseWriter, r *http.Request) {
 	rh.tmpl.ExecuteTemplate(w, "", reviews)
 }
 
-// Reviews handle requests on route 
+// EventReviews handle requests on route
 func (rh *ReviewHandler) EventReviews(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
@@ -56,6 +56,7 @@ func (rh *ReviewHandler) EventReviews(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "..", http.StatusSeeOther)
 }
 
+// Review ...
 func (rh *ReviewHandler) Review(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
@@ -81,6 +82,7 @@ func (rh *ReviewHandler) Review(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "..", http.StatusSeeOther)
 }
 
+// GetMyReviews ...
 func (rh *ReviewHandler) GetMyReviews(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
@@ -105,18 +107,38 @@ func (rh *ReviewHandler) GetMyReviews(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "..", http.StatusSeeOther)
 }
-// ReviewsNew hanlde requests on route
+
+// NewReview hanlde requests on route
 func (rh *ReviewHandler) NewReview(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 
 		rvw := entity.Review{}
-		rvw.Rating = r.FormValue("rating")
-		rvw.Message = r.FormValue("message")
-		rvw.EventID = r.FormValue("Eid")
-		rvw.UserID = r.FormValue("Uid")
+		var ratingRaw = r.FormValue("rating")
 
-		
+		var rating, err = strconv.Atoi(ratingRaw)
+		if err != nil {
+			panic(err)
+		}
+		rvw.Rating = rating
+
+		rvw.Message = r.FormValue("message")
+
+		var EidRaw = r.FormValue("Eid")
+
+		var Eid, er = strconv.Atoi(EidRaw)
+		if er != nil {
+			panic(err)
+		}
+		rvw.EventID = Eid
+
+		var UIDRaw = r.FormValue("Uid")
+		var UID, e = strconv.Atoi(UIDRaw)
+		if e != nil {
+			panic(err)
+		}
+		rvw.UserID = UID
+
 		err = rh.ReviewServ.MakeReview(rvw)
 
 		if err != nil {
@@ -132,11 +154,9 @@ func (rh *ReviewHandler) NewReview(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-// ReviewsNew hanlde requests on route
+//UpdateReview ...
 func (rh *ReviewHandler) UpdateReview(w http.ResponseWriter, r *http.Request) {
 
-	
 	if r.Method == http.MethodGet {
 
 		idRaw := r.URL.Query().Get("id")
@@ -156,16 +176,33 @@ func (rh *ReviewHandler) UpdateReview(w http.ResponseWriter, r *http.Request) {
 
 	} else if r.Method == http.MethodPost {
 
-		
 		rvw := entity.Review{}
-		rvw.Rating = r.FormValue("rating")
+
+		var ratingRaw = r.FormValue("rating")
+
+		var rating, err = strconv.Atoi(ratingRaw)
+		if err != nil {
+			panic(err)
+		}
+		rvw.Rating = rating
+
 		rvw.Message = r.FormValue("message")
-		rvw.EventID = r.FormValue("Eid")
-		rvw.UserID = r.FormValue("Uid")
 
-		
+		var EidRaw = r.FormValue("Eid")
 
-		
+		var Eid, er = strconv.Atoi(EidRaw)
+		if er != nil {
+			panic(err)
+		}
+		rvw.EventID = Eid
+
+		var UIDRaw = r.FormValue("Uid")
+		var UID, e = strconv.Atoi(UIDRaw)
+		if e != nil {
+			panic(err)
+		}
+		rvw.UserID = UID
+
 		err = rh.ReviewServ.UpdateReview(rvw)
 
 		if err != nil {
@@ -179,14 +216,11 @@ func (rh *ReviewHandler) UpdateReview(w http.ResponseWriter, r *http.Request) {
 
 }
 
-
-// ReviewsNew hanlde requests on route
+// DeleteReview ..
 func (rh *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
 
-		
-		
 		idRaw := r.URL.Query().Get("id")
 
 		id, err := strconv.Atoi(idRaw)
@@ -195,20 +229,14 @@ func (rh *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		
 		err = rh.ReviewServ.DeleteReview(id)
 
 		if err != nil {
 			panic(err)
 		}
 
-		
+	}
 
-	} 
+	http.Redirect(w, r, "...", http.StatusSeeOther)
 
-		http.Redirect(w, r, "...", http.StatusSeeOther)
-
-	
 }
-	
-	

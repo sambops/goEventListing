@@ -1,0 +1,5 @@
+{{ define "event.single" }}
+{{ template "header" . }}
+{{ template "event.single.layout" . }}
+{{ template "footer" . }}
+{{ end }}

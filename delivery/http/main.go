@@ -6,15 +6,12 @@ import (
 	"html/template"
 	"net/http"
 
-	_ "github.com/lib/pq"
-
 	"github.com/birukbelay/Aprojects/goEventListing/delivery/http/handler"
+	_ "github.com/birukbelay/Aprojects/goEventListing/entity"
+	_ "github.com/lib/pq"
 
 	"github.com/birukbelay/Aprojects/goEventListing/event/repository"
 	"github.com/birukbelay/Aprojects/goEventListing/event/services"
-
-	"github.com/birukbelay/Aprojects/goEventListing/user/repository"
-	"github.com/birukbelay/Aprojects/goEventListing/user/services"
 
 	"github.com/birukbelay/Aprojects/goEventListing/review/repository"
 	"github.com/birukbelay/Aprojects/goEventListing/review/services"
@@ -31,25 +28,27 @@ func main() {
 	}
 
 	tmpl := template.Must(template.ParseGlob("ui/templates/*"))
-	fs := http.FileServer(http.Dir("ui/assets"))
+	fs := http.FileServer(http.Dir("../../ui/assets"))
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
-	reviewRepo := repository.NewReviewRepositoryImpl(dbconn)
-	ReviewServ := services.NewUserServiceImpl(reviewRepo)
-	reviewHandler := handler.NewReviewHandler(templ, ReviewServ)
+	reviewRepo := repository.NewReviewRepoImpl(dbconn)
+	ReviewServ := services.NewReviewServiceImpl(reviewRepo)
+	reviewHandler := handler.NewReviewHandler(tmpl, ReviewServ)
 
-	userRepo := repository.NewUserRepositoryImpl(dbconn)
-	userService := services.NewUserServiceImpl(userRepo)
+	eventRepo := repository.NewEventRepoImp(dbconn)
+	eventService := services.NewEventServicesImpl(eventRepo)
+	eventHandler := handler.NewEventHandler(eventService)
 
-	userHandler := handler.NewUserHandler(tmpl, userService)
+	// userRepo := repository.NewUserRepositoryImpl(dbconn)
+	// userService := services.NewUserServiceImpl(userRepo)
+	// userHandler := handler.NewUserHandler(tmpl, userService)
 
+	// http.HandleFunc("/", userHandler.userIndex)
+	// http.HandleFunc("/login", userHandler.Login)
+	// http.HandleFunc("/register", userHandler.Register)
+	// http.HandleFunc("/logout", userHandler.Logout)
 
-	
-	http.HandleFunc("/", userHandler.userIndex)
-	http.HandleFunc("/login", userHandler.Login)
-	http.HandleFunc("/register", userHandler.Register)
-	http.HandleFunc("/logout", userHandler.Logout)
-
+	http.HandleFunc("/", eventHandler.Event)
 	fmt.Println("server starting")
 	http.ListenAndServe(":8080", nil)
 
