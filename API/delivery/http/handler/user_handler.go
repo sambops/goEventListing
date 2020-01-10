@@ -101,10 +101,6 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	uh.tmpl.ExecuteTemplate(w, "login.html", nil)
 }
-<<<<<<< HEAD:delivery/http/handler/user_handler.go
-=======
-
->>>>>>> master:API/delivery/http/handler/user_handler.go
 
 //Register ... handles request on /register
 func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
@@ -171,9 +167,5 @@ func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request) {
 		MaxAge: -1,
 	}
 	http.SetCookie(w, c)
-<<<<<<< HEAD:delivery/http/handler/user_handler.go
-
-=======
 	http.Redirect(w,req,"/", http.StatusSeeOther)
->>>>>>> master:API/delivery/http/handler/user_handler.go
 }
