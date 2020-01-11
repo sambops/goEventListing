@@ -17,6 +17,7 @@ type User struct {
 	Image     string `json:"image"`
 	Event []Event `gorm:"foreignkey:UserRefer"`
 	Tag []Tag `gorm:"many2many:user_tag"`
+	Review []Review `gorm:"many2many:user_review"`
 	PlacedAt time.Time
 }
 // CREATE TABLE users(

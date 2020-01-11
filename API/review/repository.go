@@ -1,18 +1,23 @@
 package review
 
+import "github.com/goEventListing/API/entity"
 
-import 	"github.com/goEventListing/API/entity"
-
-
-// ReviewRepository ... repository
+// ReviewRepository specifies application review related operations
 type ReviewRepository interface {
 	Reviews() ([]entity.Review, []error)
-	//MakeReview(review *entity.Review, comment entity.Comment) error
-	getMyReviews(user *entity.User) ([]entity.Review, []error)
-	setRating(eventID int) error //this is done in the back
-	notify(eventID int, tagsID []int) error
-	getMyRating(UID, EventID int) int
-	deleteComment(id int) error
-	//getcomments(eventID int) []entity.Comment
+
+	Review(id uint) (*entity.Review, []error)
+	MakeReview(r *entity.Review) (*entity.Review, []error)
+
+	UpdateReview(r *entity.Review) (*entity.Review, []error)
+	DeleteReview(id uint) (*entity.Review, []error)
+	EventReviews(id uint) ([]entity.Review, []error)
+	GetMyReviews(id uint) ([]entity.Review, []error)
+	SetRating(Eid uint) error
+
+	// getMyRating(UID, EventID int) int
+	// deleteComment(id int) error
+	// getcomments(eventID int) []entity.Comment// reviews with no comments
+	// justrate(EventID, UserID, rating int) error	Reviews() ([]entity.Review, []error)
 
 }

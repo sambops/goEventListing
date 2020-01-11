@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"strconv"
 	"github.com/goEventListing/client/entity"
 	"github.com/goEventListing/client/service"
@@ -23,11 +24,11 @@ func NewEventHandler(T *template.Template) *EventHandler{
 
 //Events handle reques on route/events
 func(eh *EventHandler) Events(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-	
+	fmt.Println("kiki")
 	usr := GetUser(w,req)
 	usr, errr := service.GetUser(usr.ID)
 	if errr != nil {
-			http.Error(w,http.StatusText(http.StatusInternalServerError),http.StatusInternalServerError)
+			// http.Error(w,http.StatusText(http.StatusInternalServerError),http.StatusInternalServerError)
 	
 		}
 	evt,err := service.AllEvents()
@@ -43,6 +44,7 @@ func(eh *EventHandler) Events(w http.ResponseWriter,req *http.Request,ps httprou
 
 
 	if err != nil{
+		println("check")
 		http.Error(w,http.StatusText(http.StatusInternalServerError),http.StatusInternalServerError)
 	}
 	eh.tmpl.ExecuteTemplate(w,"allevent.html",tmplData)
