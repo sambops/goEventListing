@@ -19,6 +19,7 @@ import (
 //UserHandler handles user related requests
 type UserHandler struct {
 	tmpl   *template.Template
+
 }
 
 
@@ -29,8 +30,8 @@ func NewUserHandler(T *template.Template) *UserHandler {
 	return &UserHandler{tmpl: T}
 }
 
-//checks whether the user is already logged in or not
-func alreadyLoggedIn(req *http.Request) bool {
+//AlreadyLoggedIn .... checks whether the user is already logged in or not
+func AlreadyLoggedIn(req *http.Request) bool {
 	c, err := req.Cookie("session")
 	if err != nil {
 		return false
@@ -44,7 +45,8 @@ func alreadyLoggedIn(req *http.Request) bool {
 	return true
 
 }
-func getUser(w http.ResponseWriter, req *http.Request) *entity.User {
+//GetUser .... gets currently logged user
+func GetUser(w http.ResponseWriter, req *http.Request) *entity.User {
 	//get cookie
 	c, err := req.Cookie("session")
 	if err != nil {
@@ -52,6 +54,7 @@ func getUser(w http.ResponseWriter, req *http.Request) *entity.User {
 		c = &http.Cookie{
 			Name:  "session",
 			Value: sID.String(),
+			MaxAge: 60 * 3,
 		}
 	}
 	http.SetCookie(w, c)
@@ -62,20 +65,19 @@ func getUser(w http.ResponseWriter, req *http.Request) *entity.User {
 		u, _ = service.GetUser(id)
 	}
 	return u
-
 	
 }
 
 
 //Index ... home page before login
 func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request,ps httprouter.Params) {
-	u := getUser(w, req)
+	u := GetUser(w, req)
 	uh.tmpl.ExecuteTemplate(w, "home.html", u)
 }
 
 //Login handle request on route /login
 func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
-	if alreadyLoggedIn(r) {
+	if AlreadyLoggedIn(r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -109,7 +111,7 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request,ps httproute
 
 //Register ... handles request on /register
 func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
-	if alreadyLoggedIn(r) {
+	if AlreadyLoggedIn(r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -159,7 +161,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 
 //Logout ...
 func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request,ps httprouter.Params) {
-	if !alreadyLoggedIn(req) {
+	if !AlreadyLoggedIn(req) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}

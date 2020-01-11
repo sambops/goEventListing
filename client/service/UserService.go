@@ -9,7 +9,7 @@ import (
 	"github.com/goEventListing/client/entity"
 )
 
-var baseUserURL = "http://localhost:8080/el/user/"
+var baseUserURL = "http://localhost:8181/el/user/"
 
 
 
@@ -19,7 +19,7 @@ func GetUser(id uint) (*entity.User,error){
 
 	URL := fmt.Sprintf("%s%d",baseUserURL,id)
 	req,_ := http.NewRequest("GET",URL,nil)
-	//DO return an http responce
+	//DO return an http response
 	res,err := client.Do(req)
 
 	if err != nil {
@@ -125,7 +125,7 @@ func EditUser(user *entity.User)(*entity.User,error){
 	client := &http.Client{}
 	URL := fmt.Sprintf("%s%s/%d",baseUserURL,"edit",user.ID)
 	req,_ := http.NewRequest("PUT",URL,bytes.NewBuffer(ouput))
-	//DO return an http responce
+	//DO return an http response
 	res,err := client.Do(req)
 	
 	if err != nil {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "github.com/goEventListing/API/entity"
+	//"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/user/services"
 	"github.com/goEventListing/API/user/repository"
 	"github.com/julienschmidt/httprouter"
@@ -24,19 +24,17 @@ func main() {
 
 
 	router :=httprouter.New()
-	//tmpl := template.Must(template.ParseGlob("../../ui/templates/*"))
-		
-	//fs := http.FileServer(http.Dir("ui/assets"))
-	//http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
-	//user
+	
 
-	// errs := dbconn.CreateTable(entity.User{}).GetErrors()
+	// errs := dbconn.CreateTable(entity.Tag{}).GetErrors()
 
 	// if len(errs) > 0 {
 	// 	panic(err)
 	// }
 
+
+	//user
 	userRepo := repository.NewUserRepositoryImpl(dbconn)
 	userService := services.NewUserServiceImpl(userRepo)
 	userHandler := handler.NewUserHandler(userService)
@@ -62,15 +60,9 @@ func main() {
 	router.GET("/el/event/event/:id",eventHandler.Event)
 	router.GET("/el/event/upcoming",eventHandler.UpcomingEvents)
 	router.POST("/el/event/create",eventHandler.CreateEvent)
-	router.GET("/el/event/foru",eventHandler.GetUserSpecificEvent)
-
-	
-	
-
-
-
-
-
+	router.PUT("/el/event/update",eventHandler.UpdateEvent)
+	router.GET("/el/event/foru/:id",eventHandler.GetUserSpecificEvent)
+	router.POST("/el/event/remove",eventHandler.RemoveEvent)
 
 	http.ListenAndServe(":8181", router)
 

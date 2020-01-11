@@ -15,4 +15,5 @@ type EventServices interface {
 	DeleteEvent(id uint) (*entity.Event,[]error)
 	//user specific events
 	GetUserSubscribedEvents(id uint)([]entity.Event,error)
+	//AddEventTags(tag *entity.Tag)(*entity.Tag,[]error)
 }
