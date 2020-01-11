@@ -46,16 +46,16 @@ func main() {
 	reviewservice := rs.NewReviewServiceImpl(reviewRepo)
 	reviewHandler := handler.NewReviewHandler(reviewservice)
 
-	router.GET("/reviews", reviewHandler.Reviews)
-	router.GET("/event/review/:id", reviewHandler.Review)
+	router.GET("/el/reviews", reviewHandler.Reviews)
+	router.GET("/el/review/single/:id", reviewHandler.Review)
 
-	router.GET("/user/review/:id", reviewHandler.GetMyReviews)
-	router.GET("/reviews/event/:id", reviewHandler.EventReviews)
+	router.GET("/el/user/review/:id", reviewHandler.GetMyReviews)
+	router.GET("/el/event/reviews/:id", reviewHandler.EventReviews)
 
-	router.POST("/review/make", reviewHandler.MakeReview)
-	router.PUT("/review/edit/", reviewHandler.PutReview)
+	router.POST("/el/review/make", reviewHandler.MakeReview)
+	router.PUT("/el/review/edit/", reviewHandler.EditReview)
 
-	router.DELETE("/review/delete/:id", reviewHandler.DeleteReview)
+	router.DELETE("/el/review/delete/:id", reviewHandler.DeleteReview)
 
 	// user hanndler
 	userRepo := repository.NewUserRepositoryImpl(dbconn)

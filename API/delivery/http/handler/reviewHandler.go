@@ -155,7 +155,7 @@ func (rh *ReviewHandler) GetMyReviews(w http.ResponseWriter, req *http.Request, 
 }
 
 // PutReview handles PUT /event/review/:id request
-func (rh *ReviewHandler) PutReview(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rh *ReviewHandler) EditReview(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	id, err := strconv.Atoi(ps.ByName("id"))
 	if err != nil {
