@@ -10,6 +10,9 @@ import (
 	eventService "github.com/goEventListing/API/event/services"
 	"github.com/goEventListing/API/user/repository"
 	"github.com/goEventListing/API/user/services"
+
+	rr "github.com/goEventListing/API/review/repository"
+	rs "github.com/goEventListing/API/review/services"
 	"github.com/jinzhu/gorm"
 	"github.com/julienschmidt/httprouter"
 
@@ -34,6 +37,9 @@ func main() {
 	// }
 
 	//user
+	reviewRepo := rr.NewReviewGormRepo(dbconn)
+	reviewRepo := rs.ReviweServiceImpl(reviewRepo)
+
 	userRepo := repository.NewUserRepositoryImpl(dbconn)
 	userService := services.NewUserServiceImpl(userRepo)
 	userHandler := handler.NewUserHandler(userService)

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/birukbelay/Aprojects/goEventListing/entity"
-	"github.com/birukbelay/Aprojects/goEventListing/review"
+	"github.com/goEventListing/API/entity"
+	"github.com/goEventListing/API/review"
 )
 
 // ReviweServiceImpl implements review.Reviewservice interface

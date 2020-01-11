@@ -1,6 +1,6 @@
 package review
 
-import "github.com/birukbelay/Aprojects/goEventListing/entity"
+import "github.com/goEventListing/API/entity"
 
 // ReviewRepository specifies application review related operations
 type ReviewRepository interface {

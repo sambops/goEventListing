@@ -1,6 +1,6 @@
 package review
 
-import "github.com/birukbelay/Aprojects/goEventListing/entity"
+import "github.com/goEventListing/API/entity"
 
 // ReviewService specifies application review related services
 type ReviewService interface {
@@ -12,7 +12,6 @@ type ReviewService interface {
 	UpdateReview(r entity.Review) error
 	DeleteReview(id int) error
 	GetMyReviews(id int) ([]entity.Review, error)
-
 	// getMyRating(UID, EventID int) int
 	// deleteComment(id int) error
 	// getcomments(eventID int) []entity.Comment// reviews with no comments
