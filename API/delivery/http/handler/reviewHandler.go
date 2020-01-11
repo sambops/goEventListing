@@ -1,80 +1,63 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
+
+	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/goEventListing/API/entity"
-	"github.com/goEventListing/API/user"
+	"github.com/goEventListing/API/review"
 	"github.com/julienschmidt/httprouter"
 )
 
-//UserHandler handles user related requests
-type UserHandler struct {
-	userSrv user.UserService
+//ReviewHandler ...
+type ReviewHandler struct {
+	revserv review.ReviewService
 }
 
-//GETUSER
-
-//NewUserHandler initializes and returns new UserHandler
-func NewUserHandler(US user.UserService) *UserHandler {
-	return &UserHandler{userSrv: US}
+// NewReviewHandler ...
+func NewReviewHandler(rs review.ReviewService) *ReviewHandler {
+	return &ReviewHandler{revserv: rs}
 }
 
-//GetUser ... handles GET /el/user/:id request
-func (uh *UserHandler) GetUser(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	//(id unit) (*entity.User, error)
-	fmt.Println("here....")
+//Reviews ... handles GET reviews
+func (rh *ReviewHandler) Reviews(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	rvws, err := rh.revserv.Reviews()
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	output, errr := json.MarshalIndent(rvws, "", "\t\t")
+	if errr != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(output)
+	return
+
+}
+
+//Review ... handles GET /event/Review/:id request
+func (rh *ReviewHandler) Review(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	id, err := strconv.Atoi(ps.ByName("id"))
-	fmt.Println(err)
-
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-
-	user, err := uh.userSrv.GetUser(uint(id))
-	fmt.Println(err)
-	if err != nil {
+	rvw, errs := rh.revserv.Review(uint(id))
+	if errs != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-
-	fmt.Println(user)
-
-	output, err := json.MarshalIndent(user, "", "\t\t")
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	fmt.Println(err)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(output)
-	return
-
-}
-
-//GetUserByUserName ...
-func (uh *UserHandler) GetUserByUserName(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	//(id unit) (*entity.User, error)
-
-	name := ps.ByName("userName")
-
-	user, err := uh.userSrv.GetUserByUserName(name)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	output, err := json.MarshalIndent(user, "", "\t\t")
+	output, err := json.MarshalIndent(rvw, "", "\t\t")
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -86,131 +69,48 @@ func (uh *UserHandler) GetUserByUserName(w http.ResponseWriter, req *http.Reques
 
 }
 
-//RegisterUser ... handle POST /el/user/register/:user   ....
-func (uh *UserHandler) RegisterUser(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	//RegisterUser(user *entity.User)(*entity.User,error)
+//MakeReview ...  handles Post /event/make request
+func (rh *ReviewHandler) MakeReview(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	l := req.ContentLength
 	body := make([]byte, l)
 	req.Body.Read(body)
+	review := &entity.Review{}
 
-	user := &entity.User{}
-	err := json.Unmarshal(body, user)
-
-	fmt.Println(user)
-
-	if err != nil {
-		fmt.Println("errorroing 3")
-		fmt.Println(err)
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-	user, err = uh.userSrv.RegisterUser(user)
-
-	if err != nil {
-
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	output, err := json.MarshalIndent(user, "", "\t\t")
-	if err != nil {
-
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(output)
-
-	// p := fmt.Sprintf("/el/user/register/%d", user.ID)
-	// w.Header().Set("Location",p)
-	// w.WriteHeader(http.StatusCreated)
-	return
-}
-
-//AuthenticateUser ... handle POST /el/user/login/
-func (uh *UserHandler) AuthenticateUser(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	//AuthenticateUser(userName string, password string) (*entity.User, error)
-
-	l := req.ContentLength
-	body := make([]byte, l)
-	req.Body.Read(body)
-
-	authenticate := &entity.Authenticate{}
-
-	//fmt.Println("check here")
-
-	err := json.Unmarshal(body, authenticate)
-
-	if err != nil {
-		//fmt.Println("i'm here")
-		//fmt.Println(err)
-
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-	//fmt.Println("check check")
-
-	usr, err := uh.userSrv.AuthenticateUser(authenticate.UserName, authenticate.Password)
-
-	if err != nil {
-		//fmt.Print("check me again..")
-		fmt.Println(err)
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	output, err := json.MarshalIndent(usr, "", "\t\t")
-
+	err := json.Unmarshal(body, review)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(output)
-	return
-}
-
-//EditUser ... handle PUT /el/user/edit:id
-func (uh *UserHandler) EditUser(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	//EditUser(user *entity.User)(*entity.User,[]error)
-
-	id, err := strconv.Atoi(ps.ByName("id"))
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-	user, err := uh.userSrv.GetUser(uint(id))
-
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	l := req.ContentLength
-	body := make([]byte, l)
-	req.Body.Read(body)
-
-	json.Unmarshal(body, &user)
-
-	user, errs := uh.userSrv.EditUser(user)
+	review, errs := rh.revserv.MakeReview(review)
 	if len(errs) > 0 {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	output, err := json.MarshalIndent(user, "", "\t\t")
+	p := fmt.Sprintf("/event/review/%d", review.ID)
+	w.Header().Set("Location", p)
+	w.WriteHeader(http.StatusCreated)
+	return
+}
 
+//EventReviews ...  handles GET /event/reviews/:id request
+func (rh *ReviewHandler) EventReviews(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+
+	id, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	rvws, errs := rh.revserv.EventReviews(uint(id))
+	if errs != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	output, err := json.MarshalIndent(rvws, "", "\t\t")
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -222,8 +122,8 @@ func (uh *UserHandler) EditUser(w http.ResponseWriter, req *http.Request, ps htt
 
 }
 
-//DeleteUser ... handle POST /el/user/remove:id
-func (uh *UserHandler) DeleteUser(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+//GetMyReviews ... handles GET /user/reviews
+func (rh *ReviewHandler) GetMyReviews(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	id, err := strconv.Atoi(ps.ByName("id"))
 
 	if err != nil {
@@ -231,13 +131,90 @@ func (uh *UserHandler) DeleteUser(w http.ResponseWriter, req *http.Request, ps h
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	_, err = uh.userSrv.DeleteUser(uint(id))
+	rvws, errs := rh.revserv.GetMyReviews(uint(id))
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	output, err := json.MarshalIndent(rvws, "", "\t\t")
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(output)
+	return
+
+}
+
+// PutReview handles PUT /event/review/:id request
+func (rh *ReviewHandler) PutReview(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+	id, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	review, errs := rh.revserv.Review(uint(id))
+
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	l := r.ContentLength
+
+	body := make([]byte, l)
+
+	r.Body.Read(body)
+
+	json.Unmarshal(body, &review)
+
+	review, errs = rh.revserv.UpdateReview(review)
+
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	output, err := json.MarshalIndent(review, "", "\t\t")
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(output)
+	return
+}
+
+// DeleteReview handles DELETE /event/review/:id request
+func (rh *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+	id, err := strconv.Atoi(ps.ByName("id"))
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	_, errs := rh.revserv.DeleteReview(uint(id))
+
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
 	return

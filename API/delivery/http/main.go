@@ -1,10 +1,11 @@
 package main
 
 import (
-	//"github.com/goEventListing/API/entity"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/goEventListing/API/entity"
 
 	eventRepo "github.com/goEventListing/API/event/repository"
 	eventService "github.com/goEventListing/API/event/services"
@@ -21,25 +22,40 @@ import (
 	_ "github.com/lib/pq"
 )
 
+func createTables(dbconn *gorm.DB) []error {
+	errs := dbconn.CreateTable(&entity.Event{}, &entity.Review{}, &entity.User{}, &entity.Notification{}, &entity.Tag{}).GetErrors()
+	if errs != nil {
+		return errs
+	}
+	return nil
+}
+
 func main() {
-	dbconn, err := gorm.Open("postgres", "postgres://postgres:bura@localhost/goeventlisting?sslmode=disable")
+	dbconn, err := gorm.Open("postgres", "postgres://postgres:bura@localhost/eventlisting?sslmode=disable")
 	if err != nil {
 		panic(err)
 	}
 	defer dbconn.Close()
 
 	router := httprouter.New()
+	dbconn.AutoMigrate(&entity.Event{}, &entity.EventTag{}, &entity.Tag{}, &entity.User{}, &entity.Review{})
+	// createTables(dbconn)
 
-	// errs := dbconn.CreateTable(entity.Tag{}).GetErrors()
-
-	// if len(errs) > 0 {
-	// 	panic(err)
-	// }
-
-	//user
+	//review handler
 	reviewRepo := rr.NewReviewGormRepo(dbconn)
-	reviewRepo := rs.ReviweServiceImpl(reviewRepo)
+	reviewservice := rs.NewReviewServiceImpl(reviewRepo)
+	reviewHandler := handler.NewReviewHandler(reviewservice)
 
+	router.GET("/reviews", reviewHandler.Reviews)
+	router.GET("/event/review/:id", reviewHandler.Review)
+
+	router.POST("/event/make", reviewHandler.MakeReview)
+	router.GET("/user/review/:id", reviewHandler.GetMyReviews)
+	router.GET("/event/reviews/:id", reviewHandler.EventReviews)
+	router.PUT("/event/review/:id", reviewHandler.PutReview)
+	router.GET("/event/revie/:id", reviewHandler.DeleteReview)
+
+	// user hanndler
 	userRepo := repository.NewUserRepositoryImpl(dbconn)
 	userService := services.NewUserServiceImpl(userRepo)
 	userHandler := handler.NewUserHandler(userService)
@@ -52,9 +68,7 @@ func main() {
 	router.POST("/el/user/remove", userHandler.DeleteUser)
 	//router.GET("/el/user/logout",userHandler.Logout)
 
-	//dbconn.AutoMigrate(&database.Event{},&database.EventTag{},&database.Tag{},&database.User{},&database.UserTag{})
-
-	//event
+	//event handler
 	eventRepo := eventRepo.NewEventRepoImp(dbconn)
 	eventService := eventService.NewEventServiceImpl(eventRepo)
 	eventHandler := handler.NewEventHandler(eventService)
