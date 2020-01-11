@@ -4,14 +4,16 @@ import "github.com/goEventListing/API/entity"
 
 // ReviewService specifies application review related services
 type ReviewService interface {
-	Reviews() ([]entity.Review, error)
-	EventReviews(id int) ([]entity.Review, error)
-	Review(id int) (entity.Review, error)
-	MakeReview(r entity.Review) error
-	SetRating(Eid int) error
-	UpdateReview(r entity.Review) error
-	DeleteReview(id int) error
-	GetMyReviews(id int) ([]entity.Review, error)
+	Reviews() ([]entity.Review, []error)
+
+	Review(id uint) (*entity.Review, []error)
+	MakeReview(r *entity.Review) (*entity.Review, []error)
+
+	UpdateReview(r *entity.Review) (*entity.Review, []error)
+	DeleteReview(id uint) (*entity.Review, []error)
+	EventReviews(id uint) ([]entity.Review, []error)
+	GetMyReviews(id uint) ([]entity.Review, []error)
+	SetRating(Eid uint) error
 	// getMyRating(UID, EventID int) int
 	// deleteComment(id int) error
 	// getcomments(eventID int) []entity.Comment// reviews with no comments

@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/review"
 )
@@ -16,97 +18,97 @@ func NewReviewServiceImpl(RevRepo review.ReviewRepository) *ReviweServiceImpl {
 }
 
 // Reviews returns list of Reviews
-func (rs *ReviweServiceImpl) Reviews() ([]entity.Review, error) {
+func (rs *ReviweServiceImpl) Reviews() ([]entity.Review, []error) {
 
-	rvs, err := rs.ReviewRepo.Reviews()
+	rvs, errs := rs.ReviewRepo.Reviews()
 
-	if err != nil {
-		return nil, err
+	if len(errs) > 0 {
+		return nil, errs
 	}
-
-	return rvs, nil
-}
-
-//EventReviews ...
-func (rs *ReviweServiceImpl) EventReviews(id int) ([]entity.Review, error) {
-
-	rvs, err := rs.ReviewRepo.EventReviews(id)
-
-	if err != nil {
-		return nil, err
-	}
-
 	return rvs, nil
 }
 
 // Review returns a Review with a given id
-func (rs *ReviweServiceImpl) Review(id int) (entity.Review, error) {
+func (rs *ReviweServiceImpl) Review(id uint) (*entity.Review, []error) {
 
-	rvw, err := rs.ReviewRepo.Review(id)
+	rvw, errs := rs.ReviewRepo.Review(id)
 
-	if err != nil {
-		return rvw, err
+	if len(errs) > 0 {
+		return nil, errs
 	}
 
 	return rvw, nil
 
 }
 
-// MakeReview stores new review information
-func (rs *ReviweServiceImpl) MakeReview(r entity.Review) error {
-
-	err := rs.ReviewRepo.MakeReview(r)
-
-	if err != nil {
-		return err
-	}
-	er := rs.ReviewRepo.SetRating(r.EventID)
-
-	if er != nil {
-		return er
-	}
-
-	return nil
-}
-
 // UpdateReview updates a given review with a new data
-func (rs *ReviweServiceImpl) UpdateReview(r entity.Review) error {
+func (rs *ReviweServiceImpl) UpdateReview(r *entity.Review) (*entity.Review, []error) {
 
-	err := rs.ReviewRepo.UpdateReview(r)
+	revw, err := rs.ReviewRepo.UpdateReview(r)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// DeleteReview removes a review by its id
-func (rs *ReviweServiceImpl) DeleteReview(id int) error {
-
-	err := rs.ReviewRepo.DeleteReview(id)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// GetMyReviews returns the reviews of a single user
-func (rs *ReviweServiceImpl) GetMyReviews(id int) ([]entity.Review, error) {
-
-	reviews, err := rs.ReviewRepo.GetMyReviews(id)
-
-	if err != nil {
+	if len(err) > 0 {
 		return nil, err
 	}
 
-	return reviews, nil
+	return revw, nil
+}
+
+// DeleteReview removes a review by its id
+func (rs *ReviweServiceImpl) DeleteReview(id uint) (*entity.Review, []error) {
+
+	rvws, errs := rs.ReviewRepo.DeleteReview(id)
+
+	if len(errs) > 0 {
+		return nil, errs
+	}
+
+	return rvws, nil
+}
+
+// MakeReview stores new review information
+func (rs *ReviweServiceImpl) MakeReview(r *entity.Review) (*entity.Review, []error) {
+
+	rvws, errs := rs.ReviewRepo.MakeReview(r)
+
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	// er := rs.ReviewRepo.SetRating(r.EventID)
+
+	// if er != nil {
+	// 	return er
+	// }
+
+	return rvws, nil
+}
+
+// GetMyReviews returns the reviews of a single user
+func (rs *ReviweServiceImpl) GetMyReviews(id uint) ([]entity.Review, []error) {
+	fmt.Println("calling repo-----------")
+	revi, errs := rs.ReviewRepo.GetMyReviews(id)
+	fmt.Println("called repo-----------------", revi)
+
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	fmt.Println("userRev-----------------", revi, errs)
+	return revi, nil
+}
+
+//EventReviews ...
+func (rs *ReviweServiceImpl) EventReviews(id uint) ([]entity.Review, []error) {
+
+	rvs, errs := rs.ReviewRepo.EventReviews(id)
+
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	fmt.Println("eventRev-----------------", rvs)
+	return rvs, nil
 }
 
 // SetRating ...
-func (rs *ReviweServiceImpl) SetRating(eventID int) error {
+func (rs *ReviweServiceImpl) SetRating(eventID uint) error {
 
 	err := rs.ReviewRepo.SetRating(eventID)
 

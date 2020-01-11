@@ -70,7 +70,7 @@ rating integer NOT NULL DEFAULT 0,
 event_id integer REFERENCES events(id) ON UPDATE CASCADE ON DELETE CASCADE,
 user_id integer REFERENCES users(id) ON UPDATE CASCADE,
 message text NOT NULL,
-  posted_at timestamp NOT NULL
+  posted_at timestamp NOT NULL DEFAULT TIMESTAMP
   
 );
 

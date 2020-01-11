@@ -49,11 +49,13 @@ func main() {
 	router.GET("/reviews", reviewHandler.Reviews)
 	router.GET("/event/review/:id", reviewHandler.Review)
 
-	router.POST("/event/make", reviewHandler.MakeReview)
 	router.GET("/user/review/:id", reviewHandler.GetMyReviews)
-	router.GET("/event/reviews/:id", reviewHandler.EventReviews)
-	router.PUT("/event/review/:id", reviewHandler.PutReview)
-	router.GET("/event/revie/:id", reviewHandler.DeleteReview)
+	router.GET("/reviews/event/:id", reviewHandler.EventReviews)
+
+	router.POST("/review/make", reviewHandler.MakeReview)
+	router.PUT("/review/edit/", reviewHandler.PutReview)
+
+	router.DELETE("/review/delete/:id", reviewHandler.DeleteReview)
 
 	// user hanndler
 	userRepo := repository.NewUserRepositoryImpl(dbconn)

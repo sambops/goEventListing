@@ -131,13 +131,18 @@ func (rh *ReviewHandler) GetMyReviews(w http.ResponseWriter, req *http.Request, 
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
+
 	rvws, errs := rh.revserv.GetMyReviews(uint(id))
+
 	if len(errs) > 0 {
+
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
+	fmt.Println("rvws,,---", rvws) //prints the reviews
 	output, err := json.MarshalIndent(rvws, "", "\t\t")
+	fmt.Println("output---", output)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
