@@ -28,7 +28,7 @@
                 <div class="tags ">
 
 
-                 {{ with .[]Tags }}
+                 {{ with .Tags }}
                    {{ range . }}
                     <span class="badge badge-info">.Name</span>
                    {{end}}
@@ -65,9 +65,9 @@
                         <div class="location">
                             <div class="loc">country:{{.Country}}</div>
                             <div class="loc">city:{{.City}}}</div>
-                        <div class="loc">place:{{}}</div>
-                            <div class="loc">date:{{}}</div>
-                            <div class="loc">coordinates:{{}}}</div>
+                        <div class="loc">place:{{.Place}}</div>
+                            <div class="loc">date:{{.Date}}</div>
+                            <div class="loc">coordinates:{{.Coordinates}}}</div>
                         </div>
                         <div
                         class="desc overflow-hidden"
@@ -161,9 +161,9 @@
         </div>
     </div>
     <!--/tab1      -->
-{{end}}}
+{{end}}
     <!--tab2-->
-    {{ with .[]Reviews }}
+    {{ with .Reviews }}
     <div
     class="tab-pane fade"
     id="pills-profile"
@@ -194,7 +194,7 @@
                 </ul>
             </div>
         </div>
-
+{{end}}
         <!--/reviews-->
         <!--make review-->
         <div class="col-md-4">
@@ -317,7 +317,3 @@ aria-labelledby="pills-contact-tab"
 </div>
 <!--/container-->
 {{end}}
-<script src="../assets/js/jquery-3.2.1.slim.min.js"></script>
-<script src="../assets/js/bootstrap.min.js"></script>
-</body>
-</html>

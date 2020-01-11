@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"html/template"
+	"net/http"
+
 	"github.com/goEventListing/client/delivery/http/handler"
 	"github.com/julienschmidt/httprouter"
-	"net/http"
-	"html/template"
 )
-
 
 var tmpl = template.Must(template.ParseGlob("../../ui/templates/*.html"))
 
@@ -15,17 +16,15 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
 	router := httprouter.New()
-	// http.HandleFunc("/", userHandler.Index)
-	// http.HandleFunc("user/login", userHandler.Login)
-	// http.HandleFunc("user/register",userHandler.Register)
-	// http.HandleFunc("user/logout",userHandler.Logout)
+	eventhandler := handler.NewEventHandler(tmpl)
+	router.GET("/event/:id", eventhandler.Event)
 
 	usrHandler := handler.NewUserHandler(tmpl)
-	router.GET("/",usrHandler.Index)
-	router.POST("/el/user/register",usrHandler.Register)
-	router.POST("/el/user/login",usrHandler.Login)
-	router.GET("/el/user/logout",usrHandler.Logout)
+	router.GET("/", usrHandler.Index)
+	router.POST("/el/user/register", usrHandler.Register)
+	router.POST("/el/user/login", usrHandler.Login)
+	router.GET("/el/user/logout", usrHandler.Logout)
 
-
-	http.ListenAndServe(":8080",nil)
+	fmt.Println("...8082...")
+	http.ListenAndServe(":8082", nil)
 }

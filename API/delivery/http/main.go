@@ -47,14 +47,15 @@ func main() {
 	reviewHandler := handler.NewReviewHandler(reviewservice)
 
 	router.GET("/el/reviews", reviewHandler.Reviews)
-	router.GET("/el/review/single/:id", reviewHandler.Review)
+	router.GET("/el/review/single/review/:ids", reviewHandler.Review)
 
 	router.GET("/el/user/review/:id", reviewHandler.GetMyReviews)
+
 	router.GET("/el/event/reviews/:id", reviewHandler.EventReviews)
 
 	router.POST("/el/review/make", reviewHandler.MakeReview)
-	router.PUT("/el/review/edit/", reviewHandler.EditReview)
 
+	router.PUT("/el/review/edit/", reviewHandler.EditReview)
 	router.DELETE("/el/review/delete/:id", reviewHandler.DeleteReview)
 
 	// user hanndler
@@ -62,7 +63,7 @@ func main() {
 	userService := services.NewUserServiceImpl(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
-	router.GET("/el/user/:id", userHandler.GetUser)
+	router.GET("/el/user/my/:id", userHandler.GetUser)
 
 	router.POST("/el/user/login", userHandler.AuthenticateUser)
 	router.POST("/el/user/register", userHandler.RegisterUser)
@@ -81,7 +82,7 @@ func main() {
 	router.POST("/el/event/create", eventHandler.CreateEvent)
 	router.GET("/el/event/foru/:id", eventHandler.GetUserSpecificEvent)
 
-	fmt.Printf("...")
+	fmt.Printf("...8081...")
 	log.Fatal(http.ListenAndServe(":8081", router))
 
 }
