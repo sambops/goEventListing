@@ -4,6 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 
 )
+//ALL ENTITIES MUST BE EXPORTED , CAPITALIZED TO UNMARSHAL JSON ON TO THEM
 
 //Event shows event intity
 type Event struct {

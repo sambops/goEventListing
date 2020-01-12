@@ -32,13 +32,26 @@ func (usi *UserServiceImpl) AuthenticateUser(userName string, password string) (
 	}
 	return user, nil
 }
+//	GetUserByUserName(userName string) (*entity.User, error)
 
-//GetUser ... returns one user row with the given user name
-func (usi *UserServiceImpl) GetUser(userName string) (*entity.User, error) {
+//GetUserByUserName ... 
+func (usi *UserServiceImpl) GetUserByUserName(userName string) (*entity.User, error) {
 	//check username?
-	user, err := usi.userRepo.GetUser(userName)
+	user, err := usi.userRepo.GetUserByUserName(userName)
 	if err != nil {
 		return user, err
+	}
+	return user, nil
+
+}
+
+
+//GetUser ... returns one user row with the given user name
+func (usi *UserServiceImpl) GetUser(id uint) (*entity.User, error) {
+	//check username?
+	user, err := usi.userRepo.GetUser(id)
+	if err != nil {
+		return nil, err
 	}
 	return user, nil
 

@@ -8,13 +8,13 @@ import (
 //User ... represents users of our system
 type User struct {
 	ID uint
-	FirstName string
-	LastName  string
-	UserName  string
-	Email     string
-	Password  []byte
-	Phone     string
-	Image     string
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	UserName  string `json:"username"`
+	Email     string `json:"email"`
+	Password  []byte `json:"password"`
+	Phone     string `json:"phone"`
+	Image     string `json:"image"`
 	Event []Event `gorm:"foreignkey:UserRefer"`
 	Tag []Tag `gorm:"many2many:user_tag"`
 	PlacedAt time.Time
