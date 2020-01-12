@@ -1,6 +1,9 @@
 package main
 
 import (
+	//"github.com/goEventListing/API/entity"
+	"github.com/goEventListing/API/user/services"
+	"github.com/goEventListing/API/user/repository"
 	"github.com/julienschmidt/httprouter"
 	eventRepo"github.com/goEventListing/API/event/repository"
 	eventService "github.com/goEventListing/API/event/services"
@@ -21,22 +24,31 @@ func main() {
 
 
 	router :=httprouter.New()
-	//tmpl := template.Must(template.ParseGlob("../../ui/templates/*"))
-		
-	//fs := http.FileServer(http.Dir("ui/assets"))
-	//http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+
+	
+
+	// errs := dbconn.CreateTable(entity.Tag{}).GetErrors()
+
+	// if len(errs) > 0 {
+	// 	panic(err)
+	// }
+
 
 	//user
-	// userRepo := repository.NewUserRepositoryImpl(dbconn)
-	// userService := services.NewUserServiceImpl(userRepo)
-	// userHandler := handler.NewUserHandler(tmpl, userService)
+	userRepo := repository.NewUserRepositoryImpl(dbconn)
+	userService := services.NewUserServiceImpl(userRepo)
+	userHandler := handler.NewUserHandler(userService)
 
 	
 	
-	// router.GET("/", userHandler.Index)
-	// router.POST("user/login", userHandler.Login)
-	// router.POST("user/register",userHandler.Register)
-	// router.GET("user/logout",userHandler.Logout)
+	router.GET("/el/user/:id", userHandler.GetUser)
+
+	router.POST("/el/user/login", userHandler.AuthenticateUser)
+	router.POST("/el/user/register",userHandler.RegisterUser)
+	router.PUT("/el/user/edit",userHandler.EditUser)
+	router.POST("/el/user/remove",userHandler.DeleteUser)
+	//router.GET("/el/user/logout",userHandler.Logout)
+	
 	//dbconn.AutoMigrate(&database.Event{},&database.EventTag{},&database.Tag{},&database.User{},&database.UserTag{})
 
 	//event
@@ -48,18 +60,11 @@ func main() {
 	router.GET("/el/event/event/:id",eventHandler.Event)
 	router.GET("/el/event/upcoming",eventHandler.UpcomingEvents)
 	router.POST("/el/event/create",eventHandler.CreateEvent)
-	router.GET("/el/event/foru",eventHandler.GetUserSpecificEvent)
+	router.PUT("/el/event/update",eventHandler.UpdateEvent)
+	router.GET("/el/event/foru/:id",eventHandler.GetUserSpecificEvent)
+	router.POST("/el/event/remove",eventHandler.RemoveEvent)
 
-	
-	
-
-	
-
-
-
-
-
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8181", router)
 
 }
 		

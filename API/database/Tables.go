@@ -51,7 +51,7 @@ type User struct {
 	LastName  string `gorm:"type:varchar(64);not null"`
 	UserName  string `gorm:"type:varchar(64);not null;unique"`
 	Email     string `gorm:"type:varchar(255);not null;unique"`
-	Password  []byte `gorm:"type:bytea;not null;unique"`
+	Password  []byte `gorm:"type:bytea;not null"`
 	Phone     string `gorm:"type:varchar(64);not null"`
 	Image     string `gorm:"type:varchar(255);not null"`
 	Event []Event `gorm:"foreignkey:UserRefer"`
