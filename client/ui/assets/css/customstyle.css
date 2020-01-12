@@ -1,0 +1,30 @@
+
+.BODY1 {
+    z-index: -1;
+    background-image: url("../image/myimage1.jpg");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+}
+.main-body{
+
+    text-align: center;
+
+}
+.main-body h1{
+    font-style: unset;
+    color: white;
+}
+.first{
+    text-align: center;
+    min-height: 150px;
+
+    font-size: xx-large;
+}
+.second{
+    font-size: small;
+}
+.mystyle{
+    min-height: 250px;
+}

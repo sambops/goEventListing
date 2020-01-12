@@ -1,0 +1,60 @@
+
+{{ define "signin.content" }}
+<style>
+  .form{
+      margin: 20px;        
+      width: 50%;
+      margin-left: 25%;
+  }
+  .label{
+    font-size: large;
+    font-weight: bolder;
+    margin-left: 50%;
+    margin-top: 4%;
+  }
+  .lablefrom{
+    text-overflow: ellipsis;
+    overflow: visible;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+  <div>
+  <label class="label">Sign In</label>    
+  </div>
+
+<div class="form">
+  <form action="/examples/actions/confirmation.php" method="post">
+      <div class="form-group row">
+        <label for="inputEmail" class="col-sm-2 col-form-label" class="lableform">User Name</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="uname" placeholder="User Name" required>
+        </div>
+      </div>
+     
+      <div class="form-group row">
+          <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+          <div class="col-sm-10">
+              <input type="password" class="form-control" name="psw" placeholder="Password" required>
+          </div>
+      </div>
+     
+      <!--<div class="form-group row">
+          <div class="col-sm-10 offset-sm-2">
+              <label class="form-check-label"><input type="checkbox"> Remember me</label>
+          </div>
+      </div>-->
+      <div class="form-group row">
+        <div class="col-sm-10 offset-sm-2">
+            <label class="form-check-label">Sign up know <a href="signup.html">Sign up</a></label>
+        </div>
+    </div>
+      <div class="form-group row">
+          <div class="col-sm-10 offset-sm-2">
+              <button type="submit" class="btn btn-primary">Sign In</button>
+          </div>
+      </div>
+  </form>
+</div>
+{{end}}                     
