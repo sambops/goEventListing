@@ -7,6 +7,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 	eventRepo"github.com/goEventListing/API/event/repository"
 	eventService "github.com/goEventListing/API/event/services"
+	
+	rr "github.com/goEventListing/API/review/repository"
+	rs "github.com/goEventListing/API/review/services"
+	
 	"github.com/jinzhu/gorm"
 	"net/http"
 
@@ -63,6 +67,23 @@ func main() {
 	router.PUT("/el/event/update",eventHandler.UpdateEvent)
 	router.GET("/el/event/foru/:id",eventHandler.GetUserSpecificEvent)
 	router.POST("/el/event/remove",eventHandler.RemoveEvent)
+
+	//review 
+	reviewRepo := rr.NewReviewGormRepo(dbconn)
+	reviewservice := rs.NewReviewServiceImpl(reviewRepo)
+	reviewHandler := handler.NewReviewHandler(reviewservice)
+
+	router.GET("/el/reviews", reviewHandler.Reviews)
+	router.GET("/el/review/single/review/:ids", reviewHandler.Review)
+
+	router.GET("/el/user/review/:id", reviewHandler.GetMyReviews)
+
+	router.GET("/el/event/reviews/:id", reviewHandler.EventReviews)
+
+	router.POST("/el/review/make", reviewHandler.MakeReview)
+
+	router.PUT("/el/review/edit/", reviewHandler.EditReview)
+	router.DELETE("/el/review/delete/:id", reviewHandler.DeleteReview)
 
 	http.ListenAndServe(":8181", router)
 

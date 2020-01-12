@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	//"fmt"
 	"strconv"
 	"github.com/goEventListing/client/entity"
 	"github.com/goEventListing/client/service"
@@ -24,7 +24,7 @@ func NewEventHandler(T *template.Template) *EventHandler{
 
 //Events handle reques on route/events
 func(eh *EventHandler) Events(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-	fmt.Println("kiki")
+	//fmt.Println("kiki")
 	usr := GetUser(w,req)
 	usr, errr := service.GetUser(usr.ID)
 	if errr != nil {

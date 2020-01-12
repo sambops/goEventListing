@@ -9,7 +9,7 @@ type Review struct {
 	Rating  int `json:"rating"`
 	EventID uint 
 	UserID  uint  
-	Event []Event `gorm:"many2many:user_event"`
+	Event []Event `gorm:"many2many:event_review"`
 	User []User `gorm:"many2many:user_review"`
 	Message string `json:"message" gorm:"type:text;not null"`
 
