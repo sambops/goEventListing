@@ -1,12 +1,15 @@
 package main
 
 import (
-	//"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/user/services"
 	"github.com/goEventListing/API/user/repository"
 	"github.com/julienschmidt/httprouter"
 	eventRepo"github.com/goEventListing/API/event/repository"
 	eventService "github.com/goEventListing/API/event/services"
+	
+	rr "github.com/goEventListing/API/review/repository"
+	rs "github.com/goEventListing/API/review/services"
+	
 	"github.com/jinzhu/gorm"
 	"net/http"
 
@@ -49,7 +52,7 @@ func main() {
 	router.POST("/el/user/remove",userHandler.DeleteUser)
 	//router.GET("/el/user/logout",userHandler.Logout)
 	
-	//dbconn.AutoMigrate(&database.Event{},&database.EventTag{},&database.Tag{},&database.User{},&database.UserTag{})
+	//dbconn.AutoMigrate(&database.Event{},&database.Tag{},&database.User{},&entity.Review{})
 
 	//event
 	eventRepo := eventRepo.NewEventRepoImp(dbconn)
@@ -63,6 +66,19 @@ func main() {
 	router.PUT("/el/event/update",eventHandler.UpdateEvent)
 	router.GET("/el/event/foru/:id",eventHandler.GetUserSpecificEvent)
 	router.POST("/el/event/remove",eventHandler.RemoveEvent)
+
+	//review 
+	reviewRepo := rr.NewReviewGormRepo(dbconn)
+	reviewservice := rs.NewReviewServiceImpl(reviewRepo)	
+	reviewHandler := handler.NewReviewHandler(reviewservice)
+
+	router.GET("/el/reviews", reviewHandler.Reviews)
+	router.GET("/el/review/:id", reviewHandler.Review)
+	// router.GET("/el/review/:id", reviewHandler.GetMyReviews)
+	// router.GET("/el/review/:id", reviewHandler.EventReviews)
+	router.POST("/el/review/make", reviewHandler.MakeReview)
+	router.PUT("/el/review/edit/", reviewHandler.EditReview)
+	router.DELETE("/el/review/delete/:id", reviewHandler.DeleteReview)
 
 	http.ListenAndServe(":8181", router)
 

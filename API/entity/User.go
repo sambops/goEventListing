@@ -16,6 +16,7 @@ type User struct {
 	Phone     string `json:"phone"`
 	Image     string `json:"image"`
 	Event []Event `gorm:"foreignkey:UserRefer"`
+	Review []Review `gorm:"foreignkey:UserRefer"`
 	Tag []Tag `gorm:"many2many:user_tag"`
 	PlacedAt time.Time
 }

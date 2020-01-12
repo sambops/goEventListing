@@ -26,12 +26,14 @@ func NewUserHandler(US user.UserService) *UserHandler {
 	return &UserHandler{userSrv: US}
 }
 
+
 //GetUser ... handles GET /el/user/:id request
 func(uh *UserHandler) GetUser (w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	//(id unit) (*entity.User, error)	
 	fmt.Println("here....")
 	id,err := strconv.Atoi(ps.ByName("id"))
 	fmt.Println(err)
+
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -42,16 +44,20 @@ func(uh *UserHandler) GetUser (w http.ResponseWriter,req *http.Request,ps httpro
 
 	user,err := uh.userSrv.GetUser(uint(id))
 	fmt.Println(err)
+
 	if err != nil{
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
+
 	}
 
 	fmt.Println(user)
 
 	output,err:= json.MarshalIndent(user,"","\t\t")
 	if err != nil{
+
+
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -63,12 +69,14 @@ func(uh *UserHandler) GetUser (w http.ResponseWriter,req *http.Request,ps httpro
 	w.Write(output)
 	return
 	
+
 }
 //GetUserByUserName ... 
 func(uh *UserHandler) GetUserByUserName (w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	//(id unit) (*entity.User, error)
 
 	name:= ps.ByName("userName")
+
 
 	user,err := uh.userSrv.GetUserByUserName(name)
 	if err != nil{
@@ -175,11 +183,49 @@ func(uh *UserHandler) AuthenticateUser(w http.ResponseWriter,req *http.Request,p
 	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	return
 	}
+=======
+//EditUser ... handle POST /el/user/edit:id
+func(uh *UserHandler) EditUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+//EditUser(user *entity.User)(*entity.User,[]error)
 
-	w.Header().Set("Content-Type","application/json")
-	w.Write(output)
+id,err := strconv.Atoi(ps.ByName("id"))
+
+if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	return
 }
+user,err := uh.userSrv.GetUser(uint(id))
+
+if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
+}
+
+l :=req.ContentLength
+body := make([]byte,l)
+req.Body.Read(body)
+
+json.Unmarshal(body, &user)
+
+user,errs := uh.userSrv.EditUser(user)
+if len(errs) > 0 {
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
+}
+output, err := json.MarshalIndent(user, "", "\t\t")
+
+if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
+}
+w.Header().Set("Content-Type", "application/json")
+w.Write(output)
+return
+
 
 //EditUser ... handle PUT /el/user/edit:id
 func(uh *UserHandler) EditUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
@@ -227,6 +273,7 @@ return
 //DeleteUser ... handle POST /el/user/remove:id
 func(uh *UserHandler) DeleteUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	id, err := strconv.Atoi(ps.ByName("id"))
+
 
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
