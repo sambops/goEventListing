@@ -116,6 +116,18 @@ func (eh *EventHandler) CreateEvent(w http.ResponseWriter,req *http.Request,_ ht
 	p := fmt.Sprintf("/event/create/%d", event.ID)
 	w.Header().Set("Location", p)
 	w.WriteHeader(http.StatusCreated)
+
+	output,err:= json.MarshalIndent(event,"","\t\t")
+	if err != nil{
+		
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+
 	return
 }
 
