@@ -1,172 +1,252 @@
 package handler
 
 import (
+	"strconv"
+	"fmt"
+	"encoding/json"
+	"net/http"
+	"github.com/julienschmidt/httprouter"
 	"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/user"
-	"html/template"
-
-
-	"golang.org/x/crypto/bcrypt"
 	
-	"net/http"
 
-	uuid "github.com/satori/go.uuid"
+
 
 )
 
 //UserHandler handles user related requests
 type UserHandler struct {
-	tmpl    *template.Template
 	userSrv user.UserService
 }
+//GETUSER
 
-
-var dbSessions = map[string]string{} //session ID,user ID
 
 //NewUserHandler initializes and returns new UserHandler
-func NewUserHandler(T *template.Template, US user.UserService) *UserHandler {
-	return &UserHandler{tmpl: T, userSrv: US}
+func NewUserHandler(US user.UserService) *UserHandler {
+	return &UserHandler{userSrv: US}
 }
 
-//checks whether the user is already logged in or not
-func (uh *UserHandler) alreadyLoggedIn(req *http.Request) bool {
-	c, err := req.Cookie("session")
+//GetUser ... handles GET /el/user/:id request
+func(uh *UserHandler) GetUser (w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	//(id unit) (*entity.User, error)	
+	fmt.Println("here....")
+	id,err := strconv.Atoi(ps.ByName("id"))
+	fmt.Println(err)
+
 	if err != nil {
-		return false
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
 	}
-	un := dbSessions[c.Value]
-	_, errr := uh.userSrv.GetUser(un)
-	if errr != nil {
-		return false
-	}
-	return true
 
+
+	user,err := uh.userSrv.GetUser(uint(id))
+	fmt.Println(err)
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	fmt.Println(user)
+
+	output,err:= json.MarshalIndent(user,"","\t\t")
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	fmt.Println(err)
+
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
+	
 }
-func (uh *UserHandler) getUser(w http.ResponseWriter, req *http.Request) *entity.User {
-	//get cookie
-	c, err := req.Cookie("session")
+//GetUserByUserName ... 
+func(uh *UserHandler) GetUserByUserName (w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	//(id unit) (*entity.User, error)
+
+	name:= ps.ByName("userName")
+
+	user,err := uh.userSrv.GetUserByUserName(name)
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	output,err:= json.MarshalIndent(user,"","\t\t")
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
+	
+}
+//RegisterUser ... handle POST /el/user/register/:user   ....
+func(uh *UserHandler) RegisterUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	//RegisterUser(user *entity.User)(*entity.User,error)
+	l := req.ContentLength
+	body := make([]byte,l)
+	req.Body.Read(body)
+
+	user := &entity.User{}
+	err := json.Unmarshal(body,user)
+
+	fmt.Println(user)
+	
 	if err != nil {
-		sID, _ := uuid.NewV4()
-		c = &http.Cookie{
-			Name:  "session",
-			Value: sID.String(),
-		}
+		fmt.Println("errorroing 3")
+		fmt.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
 	}
-	http.SetCookie(w, c)
+	user,err = uh.userSrv.RegisterUser(user)
+	
 
-	//if the user exists already,get user
-	var u *entity.User
-	if un, ok := dbSessions[c.Value]; ok {
-		u, _ = uh.userSrv.GetUser(un)
-	}
-	return u
-}
-
-
-//Index ... home page before login
-func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request) {
-	u := uh.getUser(w, req)
-	uh.tmpl.ExecuteTemplate(w, "home.html", u)
-}
-
-//Login handle request on route /login
-func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
-	if uh.alreadyLoggedIn(r) {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+	if err != nil {
+	
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	if r.Method == http.MethodPost {
-
-		userName := r.FormValue("uname")
-		password := r.FormValue("psw")
-
-		_, err := uh.userSrv.AuthenticateUser(userName, password)
-		if err != nil {
-			//panic(err)
-			http.Error(w,"hey check what u wrote please",404)
-		}
-
-		sID, _ := uuid.NewV4()
-		c := &http.Cookie{
-			Name:  "session",
-			Value: sID.String(),
-		}
-		http.SetCookie(w, c)
-		dbSessions[c.Value] = userName
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-
-	}
-	uh.tmpl.ExecuteTemplate(w, "login.html", nil)
-}
-
-
-//Register ... handles request on /register
-func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
-	if uh.alreadyLoggedIn(r) {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-	var u *entity.User
-	if r.Method == http.MethodPost {
-		fn := r.FormValue("FirstName")
-		ln := r.FormValue("LastName")
-		un := r.FormValue("UserName")
-		email := r.FormValue("Email")
-		pass := r.FormValue("Password")
-		phone := r.FormValue("Phone")
-		img := r.FormValue("Image")
-
-		_, err := uh.userSrv.GetUser(un)
-		if err != nil {
-			http.Error(w, "username already taken", http.StatusForbidden)
-			return
-		}
-
-		//create a session
-		sID, _ := uuid.NewV4()
-		c := &http.Cookie{
-			Name:  "session",
-			Value: sID.String(),
-		}
-		http.SetCookie(w, c)
-		dbSessions[c.Value] = un
-		//store user in the database
-		bs, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.MinCost)
-		if err != nil {
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-		//?? what should i put int he place of user id???????????
-		u = &entity.User{FirstName:fn,LastName:ln,UserName:un,Email:email,Password:bs,Phone:phone,Image:img}
+	output,err:= json.MarshalIndent(user,"","\t\t")
+	if err != nil{
 		
-
-		uh.userSrv.RegisterUser(u)
-		//redirect
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	uh.tmpl.ExecuteTemplate(w, "signup.html", u)
 
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	
+	// p := fmt.Sprintf("/el/user/register/%d", user.ID)
+	// w.Header().Set("Location",p)
+	// w.WriteHeader(http.StatusCreated)
+	return
 }
+//AuthenticateUser ... handle POST /el/user/login/
+func(uh *UserHandler) AuthenticateUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+//AuthenticateUser(userName string, password string) (*entity.User, error)
 
-//Logout ...
-func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request) {
-	if !uh.alreadyLoggedIn(req) {
-		http.Redirect(w, req, "/", http.StatusSeeOther)
+	l := req.ContentLength
+	body := make([]byte,l)
+	req.Body.Read(body)
+	
+	authenticate := &entity.Authenticate{}
+
+	//fmt.Println("check here")
+
+	err := json.Unmarshal(body,authenticate)
+	
+	if err != nil {
+		//fmt.Println("i'm here")
+		//fmt.Println(err)
+
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	c, _ := req.Cookie("session")
-	//delete the session
-	delete(dbSessions, c.Value)
-	//remove the cooke
-	c = &http.Cookie{
-		Name:   "session",
-		Value:  "",
-		MaxAge: -1,
+	//fmt.Println("check check")
+
+	usr,err:=uh.userSrv.AuthenticateUser(authenticate.UserName,authenticate.Password)
+	
+	if err != nil{
+		//fmt.Print("check me again..")
+		fmt.Println(err)
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
 	}
-	http.SetCookie(w, c)
-	http.Redirect(w,req,"/", http.StatusSeeOther)
+
+	output,err:= json.MarshalIndent(usr,"","\t\t")
+	
+
+	if err != nil{
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
+	}
+
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
 }
+
+//EditUser ... handle PUT /el/user/edit:id
+func(uh *UserHandler) EditUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+//EditUser(user *entity.User)(*entity.User,[]error)
+
+id,err := strconv.Atoi(ps.ByName("id"))
+
+if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
+}
+user,err := uh.userSrv.GetUser(uint(id))
+
+if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
+}
+
+l :=req.ContentLength
+body := make([]byte,l)
+req.Body.Read(body)
+
+json.Unmarshal(body, &user)
+
+user,errs := uh.userSrv.EditUser(user)
+if len(errs) > 0 {
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
+}
+output, err := json.MarshalIndent(user, "", "\t\t")
+
+if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	return
+}
+w.Header().Set("Content-Type", "application/json")
+w.Write(output)
+return
+
+}
+//DeleteUser ... handle POST /el/user/remove:id
+func(uh *UserHandler) DeleteUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	id, err := strconv.Atoi(ps.ByName("id"))
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	_,err = uh.userSrv.DeleteUser(uint(id))
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
+	return
+}
+
+
+
+
+
+

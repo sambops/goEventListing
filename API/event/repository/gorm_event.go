@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/jinzhu/gorm"
 	"github.com/goEventListing/API/entity"
 
@@ -10,7 +12,6 @@ import (
 // EventRepoImpl implements the event.EventRepository interface
 type EventRepoImpl struct {
 	conn *gorm.DB
-	
 }
 
 // NewEventRepoImp will create an object of EventRepoImpl
@@ -39,8 +40,9 @@ func (eri *EventRepoImpl) Event(id uint)(*entity.Event,[]error){
 //UpcomingEvents ... returns events that are not yet closed
 func (eri *EventRepoImpl) UpcomingEvents() ([]entity.Event, []error){
 	event := []entity.Event{}
-// Get all matched records
-	errs :=eri.conn.Where("ispassed = ?","false").Find(&event).GetErrors()
+
+	// Get all matched records
+	errs :=eri.conn.Where("is_passed = ?","f").Find(&event).GetErrors()
 	if len(errs) > 0{
 		return nil,errs
 	}
@@ -52,6 +54,7 @@ func (eri *EventRepoImpl) AddEvent(event *entity.Event)(*entity.Event, []error){
 evet := event
 errs := eri.conn.Create(evet).GetErrors()
 if len(errs)>0{
+	fmt.Println("check")
 	return nil,errs
 }
 return evet,errs
@@ -116,19 +119,30 @@ func(eri *EventRepoImpl) GetUserSubscribedEvents(id uint)([]entity.Event,error){
 	// }
 	
 //err:= select * from events where eventID in(select eventID from event_tag where tage_id in(select tag_id from user_tag where user Id = ?, id) )
-event,err :=eri.conn.Raw("SELECT * FROM events WHERE eventID in(SELECT eventID FROM event_tag WHERE tag_id IN (SELECT tag_id FROM user_tag WHERE userID = ?))",id).Rows()
+event,err :=eri.conn.Raw("SELECT * FROM events WHERE id in(SELECT event_id FROM event_tag WHERE tag_id IN (SELECT tag_id FROM user_tag WHERE user_id = ?))",id).Rows()
 if err != nil{
+	fmt.Println("here i'm ")
+	fmt.Println(err)
 	return nil,err
 }
+
 for event.Next(){
 	eri.conn.ScanRows(event,&actualEvent)
 }
-
-
-
 return actualEvent,err
 }
-//
+
+//AddEventTags ... this store the event_id and tag_id to event_tag tabl
+func(eri *EventRepoImpl) AddEventTags(etag *entity.EventTag)(*entity.EventTag,[]error){
+	tagg := etag
+errs := eri.conn.Create(tagg).GetErrors()
+if len(errs)>0{
+	return nil,errs
+}
+return tagg,errs
+	 
+}
+
 
 
 
