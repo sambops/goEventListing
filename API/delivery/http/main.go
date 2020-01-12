@@ -70,7 +70,7 @@ func main() {
 
 	//review 
 	reviewRepo := rr.NewReviewGormRepo(dbconn)
-	reviewservice := rs.NewReviewServiceImpl(reviewRepo)
+	reviewservice := rs.NewReviewServiceImpl(reviewRepo)	
 	reviewHandler := handler.NewReviewHandler(reviewservice)
 
 	router.GET("/el/reviews", reviewHandler.Reviews)

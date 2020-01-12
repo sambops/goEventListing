@@ -7,12 +7,9 @@ import "time"
 type Review struct {
 	ID      uint 
 	Rating  int `json:"rating"`
-	EventID uint 
-	UserID  uint  
-	Event []Event `gorm:"many2many:event_review"`
-	User []User `gorm:"many2many:user_review"`
+	UserRefer uint // forign key referencing User
+	EventRefer uint // forign key referencing Event
 	Message string `json:"message" gorm:"type:text;not null"`
-
 	ReviewedAt time.Time
 	// isempty    bool
 }
