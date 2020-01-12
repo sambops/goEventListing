@@ -1,72 +1,18 @@
-<!DOCTYPE html>
-<html lang="en" style="margin-left: 4%; margin-top: 3%;">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/bootstrap.css">   
-    <link rel="stylesheet" href="assets/fontawesome-free-5.12.0-web/css/all.css">
-    <link rel="stylesheet" href="../assets/css/index.css">
-    <title>Document</title>
-</head>
-<body>
-    <header>
-        <h1 style="margin-left: 1.6%;">
-            Popular in <span style="color: blue;">Addis Ababa </span>
-        </h1>
-        <hr style="width: 30%; margin-right:56%; border: 0.8px solid grey;">
-        <nav class="navbar navbar-light navbar-expand-md">
-        <button class="navbar-toggler" data-toggle="collapse" data-target="#menu">
-            <span class="navbar-toggler-icon">
+{{ define "foryou.layout" }}
+{{ template "index.layout" . }}
+{{ template "navbar.layout" . }}
+{{ template "foryou.content" }}
+{{ template "footer" . }}
+{{ end }}
 
-            </span>
-        </button>
-            <div class="collapse navbar-collapse" id="menu">
-                    <ul class="navbar-nav">
-                            <li class="nav-item ">
-                                    <a href="#" class="nav-link">All</a>
-                            <li class="nav-item active">
-                                <a href="foryou.html" class="nav-link">For You</a>
-            
-                            </li>
-                            <li class="nav-item">
-                                    <a href="thisweekend.html" class="nav-link">This weekend</a>
-                
-                                </li>
-                            <li class="nav-item">
-                                    <a href="newsyear.html" class="nav-link">News Year's Eve</a>
-                
-                                </li>
-                            <li class="nav-item">
-                                    <a href="free.html" class="nav-link">Free</a>
-                
-                                </li>
-                                <li class="nav-item">
-                                    <a href="music.html" class="nav-link">Music</a>
-                
-                                </li>
-                                <li class="nav-item">
-                                        <a href="food.html" class="nav-link">Food and Drink</a>
-                    
-                                    </li>
-                                    <li class="nav-item">
-                                            <a href="charity.html" class="nav-link">Charity and Causes</a>
-                        
-                                        </li>
-                        </ul>
-                    </nav>
-                    
-            </div>
-           
-    </header>
-    <h2 style="margin-left: 1.6%; margin-top: 2%; margin-bottom: 3%;">Event in Addis Ababa</h2>
+{{ define "foryou.content"}}
+<h2 style="margin-left: 1.6%; margin-top: 2%; margin-bottom: 3%;">Event in Addis Ababa</h2>
     <div class="container" style="margin-left: 2%;">
         
         <div class="row" >
             <div class="col-md-3">
                     <div class="single-blog">
-                            <img src="assets/images/1.jpg" alt="first image">
+                            <img src="./assets/image/nuno.png" alt="first image">
                             <p class="blog-meta"><span>sat, jan 4, 3:00pm</span></p>
                             <h3>
                                     <br>
@@ -84,10 +30,10 @@
                     <div class="single-blog">
                             <img src="assets/images/1.jpg" alt="first image">
                             <p class="blog-meta"><span>sat, jan 4, 3:00pm</span></p>
-                            <h3>
+                            <h5>
                                     <br>
                                 <a href="#" >Learn how to do this thing mnamn eyalk tmolaleh </a>
-                            </h3>
+                            </h5>
             
                         </div>
             </div>
@@ -102,10 +48,10 @@
                     <div class="single-blog">
                             <img src="assets/images/1.jpg" alt="first image">
                             <p class="blog-meta"><span>sat, jan 4, 3:00pm</span></p>
-                            <h3>
+                            <h5>
                                     <br>
                                 <a href="#" >Learn how to do this thing mnamn eyalk tmolaleh </a>
-                            </h3>
+                            </h5>
             
                         </div>
             </div>
@@ -119,10 +65,10 @@
                     <div class="single-blog">
                             <img src="assets/images/1.jpg" alt="first image">
                             <p class="blog-meta"><span>sat, jan 4, 3:00pm</span></p>
-                            <h3>
+                            <h5>
                                     <br>
                                 <a href="#" >Learn how to do this thing mnamn eyalk tmolaleh </a>
-                            </h3>
+                            </h5>
             
                         </div>
             </div>
@@ -152,10 +98,10 @@
                     <div class="single-blog">
                             <img src="assets/images/1.jpg" alt="first image">
                             <p class="blog-meta"><span>sat, jan 4, 3:00pm</span></p>
-                            <h3>
+                            <h5>
                                     <br>
                                 <a href="#" >Learn how to do this thing mnamn eyalk tmolaleh </a>
-                            </h3>
+                            </h5>
             
                         </div>
             </div>
@@ -168,10 +114,10 @@
                     <div class="single-blog">
                             <img src="assets/images/1.jpg" alt="first image">
                             <p class="blog-meta"><span>sat, jan 4, 3:00pm</span></p>
-                            <h3>
+                            <h5>
                                     <br>
                                 <a href="#" >Learn how to do this thing mnamn eyalk tmolaleh </a>
-                            </h3>
+                            </h5>
             
                         </div>
             </div>
@@ -186,10 +132,10 @@
                     <div class="single-blog">
                             <img src="assets/images/1.jpg" alt="first image">
                             <p class="blog-meta"><span>sat, jan 4, 3:00pm</span></p>
-                            <h3>
+                            <h5>
                                     <br>
                                 <a href="#" >Learn how to do this thing mnamn eyalk tmolaleh </a>
-                            </h3>
+                            </h5>
             
                         </div>
             </div>
@@ -203,24 +149,15 @@
                     <div class="single-blog">
                             <img src="assets/images/1.jpg" alt="first image">
                             <p class="blog-meta"><span>sat, jan 4, 3:00pm</span></p>
-                            <h3>
+                            <h5>
                                     <br>
                                 <a href="#" >Learn how to do this thing mnamn eyalk tmolaleh </a>
-                            </h3>
+                            </h5>
             
                         </div>
             </div>
             
 
     </div>
-    
-
-
-
-
-
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-</body>
-</html>
+    </div>
+{{end}}
