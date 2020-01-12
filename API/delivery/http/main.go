@@ -1,8 +1,6 @@
 package main
 
 import (
-	"goEventListing/API/database"
-	//"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/user/services"
 	"github.com/goEventListing/API/user/repository"
 	"github.com/julienschmidt/httprouter"
@@ -54,7 +52,7 @@ func main() {
 	router.POST("/el/user/remove",userHandler.DeleteUser)
 	//router.GET("/el/user/logout",userHandler.Logout)
 	
-	dbconn.AutoMigrate(&database.Event{},&database.Tag{},&database.User{},&database.}
+	//dbconn.AutoMigrate(&database.Event{},&database.Tag{},&database.User{},&entity.Review{})
 
 	//event
 	eventRepo := eventRepo.NewEventRepoImp(dbconn)
@@ -75,14 +73,10 @@ func main() {
 	reviewHandler := handler.NewReviewHandler(reviewservice)
 
 	router.GET("/el/reviews", reviewHandler.Reviews)
-	router.GET("/el/review/single/review/:ids", reviewHandler.Review)
-
-	router.GET("/el/user/review/:id", reviewHandler.GetMyReviews)
-
-	router.GET("/el/event/reviews/:id", reviewHandler.EventReviews)
-
+	router.GET("/el/review/:id", reviewHandler.Review)
+	// router.GET("/el/review/:id", reviewHandler.GetMyReviews)
+	// router.GET("/el/review/:id", reviewHandler.EventReviews)
 	router.POST("/el/review/make", reviewHandler.MakeReview)
-
 	router.PUT("/el/review/edit/", reviewHandler.EditReview)
 	router.DELETE("/el/review/delete/:id", reviewHandler.DeleteReview)
 
