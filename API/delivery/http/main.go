@@ -1,6 +1,7 @@
 package main
 
 import (
+	"goEventListing/API/database"
 	//"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/user/services"
 	"github.com/goEventListing/API/user/repository"
@@ -53,7 +54,7 @@ func main() {
 	router.POST("/el/user/remove",userHandler.DeleteUser)
 	//router.GET("/el/user/logout",userHandler.Logout)
 	
-	//dbconn.AutoMigrate(&database.Event{},&database.EventTag{},&database.Tag{},&database.User{},&database.UserTag{})
+	dbconn.AutoMigrate(&database.Event{},&database.Tag{},&database.User{},&database.}
 
 	//event
 	eventRepo := eventRepo.NewEventRepoImp(dbconn)

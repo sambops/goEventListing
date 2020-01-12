@@ -18,12 +18,12 @@ type Event struct {
 	Place string `json:"place" gorm:"type:varchar(255)"`
 	Price *float32 `json:"price" gorm:"type:numeric;not null;DEFAULT:0"`
 	Image string `json:"image" gorm:"type:varchar(255)"`
+	Review []Review `gorm:"foreignkey:EventRefer"`
 	UserRefer uint //this is a forign key referencing USER
 	TagRefer uint //this is a forign key referencing EVENTTAGE
 	IsPassed   *bool `json:"ispassed" gorm:"type:bool;not null;DEFAULT:false"`
 	Tag []Tag `gorm:"many2many:event_tag"`
-	PlacedAt time.Time `json:"placedat"`
-	
+	PlacedAt time.Time `json:"placedat"`	
 }
 
 
@@ -45,16 +45,19 @@ type UserTag struct{
 }
 
 //User ... represents users of our system
+
+//User ... represents users of our system
 type User struct {
-	ID uint 
-	FirstName string `gorm:"type:varchar(64);not null"`
-	LastName  string `gorm:"type:varchar(64);not null"`
-	UserName  string `gorm:"type:varchar(64);not null;unique"`
-	Email     string `gorm:"type:varchar(255);not null;unique"`
-	Password  []byte `gorm:"type:bytea;not null"`
-	Phone     string `gorm:"type:varchar(64);not null"`
-	Image     string `gorm:"type:varchar(255);not null"`
+	ID uint
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	UserName  string `json:"username"`
+	Email     string `json:"email"`
+	Password  []byte `json:"password"`
+	Phone     string `json:"phone"`
+	Image     string `json:"image"`
 	Event []Event `gorm:"foreignkey:UserRefer"`
+	Review []Review `gorm:"foreignkey:UserRefer"`
 	Tag []Tag `gorm:"many2many:user_tag"`
 	PlacedAt time.Time
 }
@@ -64,3 +67,15 @@ type EventTag struct{
 	TagID uint
 	EventID uint
 }
+
+// Review is when a user rates to an event
+type Review struct {
+	ID      uint 
+	Rating  int `json:"rating"`
+	UserRefer uint // forign key referencing User
+	EventRefer uint // forign key referencing Event
+	Message string `json:"message" gorm:"type:text;not null"`
+	ReviewedAt time.Time
+	// isempty    bool
+}
+
