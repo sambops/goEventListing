@@ -1,0 +1,6 @@
+{
+    "showOutput": "never",
+    "debug.onTaskErrors": "debugAnyway",
+    "typescript.tsc.autoDetect": "off",
+    "debug.internalConsoleOptions": "neverOpen"
+}
