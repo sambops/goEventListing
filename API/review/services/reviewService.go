@@ -103,7 +103,7 @@ func (rs *ReviweServiceImpl) EventReviews(id uint) ([]entity.Review, []error) {
 	if len(errs) > 0 {
 		return nil, errs
 	}
-	fmt.Println("eventRev-----------------", rvs)
+	fmt.Println("re--service --eventRev-----------------", rvs)
 	return rvs, nil
 }
 

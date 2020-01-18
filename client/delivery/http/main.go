@@ -26,5 +26,6 @@ func main() {
 	router.GET("/el/user/logout", usrHandler.Logout)
 
 	fmt.Println("...8082...")
-	http.ListenAndServe(":8082", nil)
+	err := http.ListenAndServe(":8082", router)
+	panic(err)
 }

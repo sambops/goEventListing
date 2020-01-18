@@ -9,7 +9,7 @@ type Event struct {
 	// gorm.Model
 
 	ID       uint      `json:"id"`
-	Name     string    `json:"name" gorm:"type:varchar(255);not null"f`
+	Name     string    `json:"name" gorm:"type:varchar(255);not null"`
 	Details  string    `json:"details" gorm:"type:text;not null"`
 	Image    string    `json:"image" gorm:"type:varchar(255)"`
 	Price    *float32  `json:"price" gorm:"type:numeric;not null;DEFAULT:0"`
@@ -20,8 +20,8 @@ type Event struct {
 	City    string `json:"city" gorm:"type:varchar(255)"`
 	Place   string `json:"place" gorm:"type:varchar(255)"`
 
-	Coordinates string `json:"city" gorm:"type:varchar(255)"`
-	Date        string `json:"place" gorm:"type:varchar(255)"`
+	Coordinates string `json:"coordinates" gorm:"type:varchar(255)"`
+	Date        string `json:"date" gorm:"type:varchar(255)"`
 
 	UserRefer uint     //this is a forign key referencing USER
 	TagRefer  uint     //this is a forign key referencing EVENTTAGE
@@ -49,10 +49,10 @@ type User struct {
 
 // Review is when a user rates to an event
 type Review struct {
-	ID      uint
-	Rating  int
-	EventID uint
-	UserID  uint
+	ID      uint   `json:"id"`
+	Rating  int    `json:"rating"`
+	EventID uint   `json:"event_id"`
+	UserID  uint   `json:"user_id"`
 	Message string `json:"details" gorm:"type:text;not null"`
 
 	ReviewedAt time.Time
@@ -66,7 +66,7 @@ type Tag struct {
 	Description string `json:"description" gorm:"type:text; not null"`
 	Icon        string `json:"icon" gorm:"type:varchar(255);not null"`
 }
-
+// EventTag ...
 type EventTag struct {
 	TagID   uint
 	EventID uint

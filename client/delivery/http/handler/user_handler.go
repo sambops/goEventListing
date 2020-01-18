@@ -1,26 +1,25 @@
 package handler
 
 import (
-	"github.com/julienschmidt/httprouter"
+	"fmt"
+
 	"github.com/goEventListing/client/entity"
 	"github.com/goEventListing/client/service"
+	"github.com/julienschmidt/httprouter"
 
 	"html/template"
 
-
 	"golang.org/x/crypto/bcrypt"
-	
+
 	"net/http"
 
 	uuid "github.com/satori/go.uuid"
-
 )
 
 //UserHandler handles user related requests
 type UserHandler struct {
-	tmpl   *template.Template
+	tmpl *template.Template
 }
-
 
 var dbSessions = map[string]uint{} //session ID,user ID
 
@@ -37,7 +36,7 @@ func alreadyLoggedIn(req *http.Request) bool {
 	}
 	id := dbSessions[c.Value]
 	_, errr := service.GetUser(id)
-	
+
 	if errr != nil {
 		return false
 	}
@@ -63,18 +62,17 @@ func getUser(w http.ResponseWriter, req *http.Request) *entity.User {
 	}
 	return u
 
-	
 }
 
-
 //Index ... home page before login
-func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	u := getUser(w, req)
+	fmt.Printf("Hellow")
 	uh.tmpl.ExecuteTemplate(w, "home.html", u)
 }
 
 //Login handle request on route /login
-func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if alreadyLoggedIn(r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -88,7 +86,7 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request,ps httproute
 		usr, err := service.AuthenticateUser(userName, password)
 		if err != nil {
 			//panic(err)
-			http.Error(w,"hey check what u wrote please",404)
+			http.Error(w, "hey check what u wrote please", 404)
 		}
 
 		sID, _ := uuid.NewV4()
@@ -106,9 +104,8 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request,ps httproute
 	uh.tmpl.ExecuteTemplate(w, "login.html", nil)
 }
 
-
 //Register ... handles request on /register
-func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if alreadyLoggedIn(r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -129,7 +126,6 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 			return
 		}
 
-		
 		//store user in the database
 		bs, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.MinCost)
 		if err != nil {
@@ -137,8 +133,8 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 			return
 		}
 		//?? what should i put int he place of user id???????????
-		u = &entity.User{FirstName:fn,LastName:ln,UserName:un,Email:email,Password:bs,Phone:phone,Image:img}
-		
+		u = &entity.User{FirstName: fn, LastName: ln, UserName: un, Email: email, Password: bs, Phone: phone, Image: img}
+
 		//create a session
 		sID, _ := uuid.NewV4()
 		c := &http.Cookie{
@@ -158,7 +154,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 }
 
 //Logout ...
-func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	if !alreadyLoggedIn(req) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
@@ -173,5 +169,5 @@ func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request,ps httpro
 		MaxAge: -1,
 	}
 	http.SetCookie(w, c)
-	http.Redirect(w,req,"/", http.StatusSeeOther)
+	http.Redirect(w, req, "/", http.StatusSeeOther)
 }

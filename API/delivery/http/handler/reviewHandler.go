@@ -104,6 +104,7 @@ func (rh *ReviewHandler) EventReviews(w http.ResponseWriter, req *http.Request, 
 	}
 
 	rvws, errs := rh.revserv.EventReviews(uint(id))
+	fmt.Println("handler---rvws fetched---", rvws)
 	if errs != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)

@@ -57,6 +57,7 @@ func (eh *EventHandler) Event(w http.ResponseWriter, req *http.Request, ps httpr
 		return
 	}
 	evnt, errs := eh.eventServ.Event(uint(id))
+	fmt.Println("handler--evnt fetched---evnt--", evnt) //handler--evnt fetched---evnt
 	if len(errs) > 0 {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)

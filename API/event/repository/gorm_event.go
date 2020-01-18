@@ -34,6 +34,7 @@ func (eri *EventRepoImpl) Event(id uint) (*entity.Event, []error) {
 	if len(errs) > 0 {
 		return nil, errs
 	}
+	fmt.Println("gorm---evnt returnd---", event)
 	return &event, errs
 }
 

@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/event"
 )
@@ -30,6 +32,7 @@ func (esi *EventServicesImpl) Event(id uint) (*entity.Event, []error) {
 	if len(errs) > 0 {
 		return nil, errs
 	}
+	fmt.Println("--service--evnt returnd----", evnt)
 	return evnt, errs
 
 }
