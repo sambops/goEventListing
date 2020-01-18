@@ -104,7 +104,10 @@ func (rh *ReviewHandler) EventReviews(w http.ResponseWriter, req *http.Request, 
 	}
 
 	rvws, errs := rh.revserv.EventReviews(uint(id))
+<<<<<<< HEAD
 	fmt.Println("handler---rvws fetched---", rvws)
+=======
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 	if errs != nil {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -154,7 +157,11 @@ func (rh *ReviewHandler) GetMyReviews(w http.ResponseWriter, req *http.Request, 
 
 }
 
+<<<<<<< HEAD
 // PutReview handles PUT /event/review/:id request
+=======
+//EditReview handles PUT /event/review/:id request
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 func (rh *ReviewHandler) EditReview(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	id, err := strconv.Atoi(ps.ByName("id"))

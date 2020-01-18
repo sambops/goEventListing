@@ -1,6 +1,7 @@
 package handler
 
 import (
+<<<<<<< HEAD
 	"fmt"
 
 	"github.com/goEventListing/client/entity"
@@ -14,13 +15,36 @@ import (
 	"net/http"
 
 	uuid "github.com/satori/go.uuid"
+=======
+	"github.com/julienschmidt/httprouter"
+	"github.com/goEventListing/client/entity"
+	"github.com/goEventListing/client/service"
+
+	"html/template"
+
+
+	"golang.org/x/crypto/bcrypt"
+	
+	"net/http"
+
+	uuid "github.com/satori/go.uuid"
+
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 )
 
 //UserHandler handles user related requests
 type UserHandler struct {
+<<<<<<< HEAD
 	tmpl *template.Template
 }
 
+=======
+	tmpl   *template.Template
+
+}
+
+
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 var dbSessions = map[string]uint{} //session ID,user ID
 
 //NewUserHandler initializes and returns new UserHandler
@@ -28,22 +52,36 @@ func NewUserHandler(T *template.Template) *UserHandler {
 	return &UserHandler{tmpl: T}
 }
 
+<<<<<<< HEAD
 //checks whether the user is already logged in or not
 func alreadyLoggedIn(req *http.Request) bool {
+=======
+//AlreadyLoggedIn .... checks whether the user is already logged in or not
+func AlreadyLoggedIn(req *http.Request) bool {
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 	c, err := req.Cookie("session")
 	if err != nil {
 		return false
 	}
 	id := dbSessions[c.Value]
 	_, errr := service.GetUser(id)
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 	if errr != nil {
 		return false
 	}
 	return true
 
 }
+<<<<<<< HEAD
 func getUser(w http.ResponseWriter, req *http.Request) *entity.User {
+=======
+//GetUser .... gets currently logged user
+func GetUser(w http.ResponseWriter, req *http.Request) *entity.User {
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 	//get cookie
 	c, err := req.Cookie("session")
 	if err != nil {
@@ -51,6 +89,10 @@ func getUser(w http.ResponseWriter, req *http.Request) *entity.User {
 		c = &http.Cookie{
 			Name:  "session",
 			Value: sID.String(),
+<<<<<<< HEAD
+=======
+			MaxAge: 60 * 3,
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 		}
 	}
 	http.SetCookie(w, c)
@@ -61,6 +103,7 @@ func getUser(w http.ResponseWriter, req *http.Request) *entity.User {
 		u, _ = service.GetUser(id)
 	}
 	return u
+<<<<<<< HEAD
 
 }
 
@@ -68,12 +111,26 @@ func getUser(w http.ResponseWriter, req *http.Request) *entity.User {
 func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	u := getUser(w, req)
 	fmt.Printf("Hellow")
+=======
+	
+}
+
+
+//Index ... home page before login
+func (uh *UserHandler) Index(w http.ResponseWriter, req *http.Request,ps httprouter.Params) {
+	u := GetUser(w, req)
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 	uh.tmpl.ExecuteTemplate(w, "home.html", u)
 }
 
 //Login handle request on route /login
+<<<<<<< HEAD
 func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if alreadyLoggedIn(r) {
+=======
+func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+	if AlreadyLoggedIn(r) {
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -86,7 +143,11 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request, ps httprout
 		usr, err := service.AuthenticateUser(userName, password)
 		if err != nil {
 			//panic(err)
+<<<<<<< HEAD
 			http.Error(w, "hey check what u wrote please", 404)
+=======
+			http.Error(w,"hey check what u wrote please",404)
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 		}
 
 		sID, _ := uuid.NewV4()
@@ -104,9 +165,16 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request, ps httprout
 	uh.tmpl.ExecuteTemplate(w, "login.html", nil)
 }
 
+<<<<<<< HEAD
 //Register ... handles request on /register
 func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if alreadyLoggedIn(r) {
+=======
+
+//Register ... handles request on /register
+func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+	if AlreadyLoggedIn(r) {
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -126,6 +194,10 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request, ps httpr
 			return
 		}
 
+<<<<<<< HEAD
+=======
+		
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 		//store user in the database
 		bs, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.MinCost)
 		if err != nil {
@@ -133,8 +205,13 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request, ps httpr
 			return
 		}
 		//?? what should i put int he place of user id???????????
+<<<<<<< HEAD
 		u = &entity.User{FirstName: fn, LastName: ln, UserName: un, Email: email, Password: bs, Phone: phone, Image: img}
 
+=======
+		u = &entity.User{FirstName:fn,LastName:ln,UserName:un,Email:email,Password:bs,Phone:phone,Image:img}
+		
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 		//create a session
 		sID, _ := uuid.NewV4()
 		c := &http.Cookie{
@@ -154,8 +231,13 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request, ps httpr
 }
 
 //Logout ...
+<<<<<<< HEAD
 func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	if !alreadyLoggedIn(req) {
+=======
+func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request,ps httprouter.Params) {
+	if !AlreadyLoggedIn(req) {
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
@@ -169,5 +251,9 @@ func (uh *UserHandler) Logout(w http.ResponseWriter, req *http.Request, ps httpr
 		MaxAge: -1,
 	}
 	http.SetCookie(w, c)
+<<<<<<< HEAD
 	http.Redirect(w, req, "/", http.StatusSeeOther)
+=======
+	http.Redirect(w,req,"/", http.StatusSeeOther)
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 }

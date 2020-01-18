@@ -49,10 +49,13 @@ func (tri *TagRepoImpl) AddTag(tag *entity.Tag)(*entity.Tag,[]error){
 		return nil,errs
 	}
 	return tagg,errs
+<<<<<<< HEAD
 
 
 
 
+=======
+>>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 }
 
 //UpdateTag ... updates a given tag table
