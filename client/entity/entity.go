@@ -66,6 +66,7 @@ type Tag struct {
 	Description string `json:"description" gorm:"type:text; not null"`
 	Icon        string `json:"icon" gorm:"type:varchar(255);not null"`
 }
+
 // EventTag ...
 type EventTag struct {
 	TagID   uint

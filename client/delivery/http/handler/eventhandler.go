@@ -13,16 +13,17 @@ import (
 	"net/http"
 )
 
-//UserHandler handles user related requests
+//EventHandler handles user related requests
 type EventHandler struct {
 	tmpl *template.Template
 }
 
-//NewUserHandler initializes and returns new UserHandler
+//NewEventHandler initializes and returns new UserHandler
 func NewEventHandler(T *template.Template) *EventHandler {
 	return &EventHandler{tmpl: T}
 }
 
+// Event ...
 func (eh *EventHandler) Event(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	type Data struct {
@@ -31,32 +32,34 @@ func (eh *EventHandler) Event(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	if r.Method == http.MethodGet {
-		fmt.Println("---handler--metd is get--") //metd is get
-		idRaw := r.URL.Query().Get("id")
-		id, err := strconv.Atoi(idRaw)
 
+		id, err := strconv.Atoi(ps.ByName("id"))
+
+		fmt.Println("@@---handler/eventhandler/line:38 \n--metd is get--id ==", id) //metd is get
 		evnt := &entity.Event{}
-		revws := []entity.Review{}
+		// revws := []entity.Review{}
 
 		evnt, err = service.Event(uint(id))
 
-		fmt.Println("---handler----got evnt---", evnt) //handler----got evnt
-		revws, err = service.EventReviews(uint(id))
-		fmt.Println("---handler----got revws---", revws)
-		fmt.Println(evnt, evnt)
-		evnt.Reviews = revws
-		fmt.Println("---handler-- evnts field set--event.revws---", evnt)
+		fmt.Println("@@--------handler/eventhandler/line:44 \n-- event==", evnt, "\n ###--handler-ended") //handler----got evnt
+		// revws, err = service.EventReviews(uint(id))
+		// fmt.Println("---handler----got revws---", revws)
+		// fmt.Println(evnt, evnt)
+		// evnt.Reviews = revws
+		// fmt.Println("---handler-- evnts field set--event.revws---", evnt)
 		if err != nil {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
+			fmt.Println("@@-rederict evnt fr")
 			return
 		}
 
 		// u = &entity.Event{FirstName: fn, LastName: ln, UserName: un, Email: email, Password: bs, Phone: phone, Image: img}
-
+		fmt.Println("template")
 		eh.tmpl.ExecuteTemplate(w, "event.single", evnt)
+	} else {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 	//redirect
-	http.Redirect(w, r, "/", http.StatusSeeOther)
-	return
 
 }

@@ -103,11 +103,7 @@ func (rs *ReviweServiceImpl) EventReviews(id uint) ([]entity.Review, []error) {
 	if len(errs) > 0 {
 		return nil, errs
 	}
-<<<<<<< HEAD
-	fmt.Println("re--service --eventRev-----------------", rvs)
-=======
-	fmt.Println("eventRev-----------------", rvs)
->>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
+	fmt.Println("\n @@@-reviews/services/reviewservices/EventReviews---  line:106---", rvs)
 	return rvs, nil
 }
 

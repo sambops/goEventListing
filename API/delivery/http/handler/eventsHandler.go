@@ -9,17 +9,19 @@ import (
 
 	"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/event"
+	"github.com/goEventListing/API/review"
 	"github.com/julienschmidt/httprouter"
 )
 
 //EventHandler handles event related requests
 type EventHandler struct {
 	eventServ event.EventServices
+	revserv   review.ReviewService
 }
 
 //NewEventHandler initializes and returns newEventHandler
-func NewEventHandler(ES event.EventServices) *EventHandler {
-	return &EventHandler{eventServ: ES}
+func NewEventHandler(ES event.EventServices, RS review.ReviewService) *EventHandler {
+	return &EventHandler{eventServ: ES, revserv: RS}
 }
 
 //Index ... home page after login
@@ -56,6 +58,8 @@ func (eh *EventHandler) Event(w http.ResponseWriter, req *http.Request, ps httpr
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
+
+	// fetch a single event
 	evnt, errs := eh.eventServ.Event(uint(id))
 	fmt.Println("handler--evnt fetched---evnt--", evnt) //handler--evnt fetched---evnt
 	if len(errs) > 0 {
@@ -63,6 +67,18 @@ func (eh *EventHandler) Event(w http.ResponseWriter, req *http.Request, ps httpr
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
+	//  fetch reviews related to that event
+	rvws, errs := eh.revserv.EventReviews(uint(id))
+	fmt.Println("\n--@@@ handler/rvws/ EventReviews---with out reviews---\n-", rvws, "\n---###end") ///fmt event with our review
+	if errs != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	evnt.Reviews = rvws
+
+	fmt.Println("\n--@@@ handler/rvws/ EventReviews---event with reviews---\n-", rvws, "\n---###end") ///fmt event with our review
+
 	output, err := json.MarshalIndent(evnt, "", "\t\t")
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -117,21 +133,6 @@ func (eh *EventHandler) CreateEvent(w http.ResponseWriter, req *http.Request, _ 
 	p := fmt.Sprintf("/event/create/%d", event.ID)
 	w.Header().Set("Location", p)
 	w.WriteHeader(http.StatusCreated)
-<<<<<<< HEAD
-=======
-
-	output,err:= json.MarshalIndent(event,"","\t\t")
-	if err != nil{
-		
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type","application/json")
-	w.Write(output)
-
->>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
 	return
 }
 
@@ -165,54 +166,57 @@ func (eh *EventHandler) GetUserSpecificEvent(w http.ResponseWriter, req *http.Re
 	return
 
 }
-	
 
 //UpdateEvent ...  handles GET /event/create request
-func (eh *EventHandler) UpdateEvent(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-	id,err := strconv.Atoi(ps.ByName("id"))
-	
-if err != nil {
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-event,errs := eh.eventServ.Event(uint(id))
-if len(errs) > 0{
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-l:= req.ContentLength
-body := make([]byte,l)
-req.Body.Read(body)
+func (eh *EventHandler) UpdateEvent(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	id, err := strconv.Atoi(ps.ByName("id"))
 
-json.Unmarshal(body, &event)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	event, errs := eh.eventServ.Event(uint(id))
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	l := req.ContentLength
+	body := make([]byte, l)
+	req.Body.Read(body)
 
-event,errs = eh.eventServ.UpdateEvent(event)
-if len(errs) > 0 {
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-output, err := json.MarshalIndent(event, "", "\t\t")
+	json.Unmarshal(body, &event)
 
-if err != nil {
+	event, errs = eh.eventServ.UpdateEvent(event)
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	output, err := json.MarshalIndent(event, "", "\t\t")
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	w.Write(output)
 	return
-}
-w.Header().Set("Content-Type", "application/json")
-w.Write(output)
-return
 }
 
 //RemoveEvent ... handle POST /el/event/remove:id
-func (eh *EventHandler) RemoveEvent(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+func (eh *EventHandler) RemoveEvent(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	id, err := strconv.Atoi(ps.ByName("id"))
-	
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
 
-	_,errs := eh.eventServ.DeleteEvent(uint(id))
-	
+	_, errs := eh.eventServ.DeleteEvent(uint(id))
+
 	if len(errs) > 0 {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -223,4 +227,3 @@ func (eh *EventHandler) RemoveEvent(w http.ResponseWriter,req *http.Request,ps h
 	w.WriteHeader(http.StatusNoContent)
 	return
 }
-

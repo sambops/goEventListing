@@ -95,10 +95,7 @@ func (rgr *ReviewGormRepo) EventReviews(id uint) ([]entity.Review, []error) {
 		return nil, errs
 	}
 	// fmt.Println(review)
-<<<<<<< HEAD
-	fmt.Println("gorm--evnt revrev-----------", review)
-=======
->>>>>>> 4f0152ae7f3c892c7aff7d17d68061483d53f238
+	fmt.Println("\n @@@-reviews/repository/gorm_event/EventReviews---  line:90---", review, "\n###end")
 	return review, errs
 
 }
