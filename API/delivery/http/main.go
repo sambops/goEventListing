@@ -1,6 +1,7 @@
 package main
 
 import (
+	//"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/user/services"
 	"github.com/goEventListing/API/user/repository"
 	"github.com/julienschmidt/httprouter"
@@ -25,17 +26,13 @@ func main() {
 	}
 	defer dbconn.Close()
 
-
 	router :=httprouter.New()
-
-	
 
 	// errs := dbconn.CreateTable(entity.Tag{}).GetErrors()
 
 	// if len(errs) > 0 {
 	// 	panic(err)
 	// }
-
 
 	//user
 	userRepo := repository.NewUserRepositoryImpl(dbconn)
@@ -51,8 +48,12 @@ func main() {
 	router.PUT("/el/user/edit",userHandler.EditUser)
 	router.POST("/el/user/remove",userHandler.DeleteUser)
 	//router.GET("/el/user/logout",userHandler.Logout)
+
+	userRoleRepo := repository.NewRoleGormRepo(dbconn)
+	userRoleService := services.NewRoleService(userRoleRepo)
+	userRoleHandler := handler.
 	
-	//dbconn.AutoMigrate(&database.Event{},&database.Tag{},&database.User{},&entity.Review{})
+	//dbconn.AutoMigrate(&entity.Event{},&entity.Tag{},&entity.User{},&entity.Review{})
 
 	//event
 	eventRepo := eventRepo.NewEventRepoImp(dbconn)
@@ -73,11 +74,11 @@ func main() {
 	reviewHandler := handler.NewReviewHandler(reviewservice)
 
 	router.GET("/el/reviews", reviewHandler.Reviews)
-	router.GET("/el/review/:id", reviewHandler.Review)
-	// router.GET("/el/review/:id", reviewHandler.GetMyReviews)
-	// router.GET("/el/review/:id", reviewHandler.EventReviews)
+	//router.GET("/el/review/:id", reviewHandler.Review)
+	//router.GET("/el/review/:id", reviewHandler.GetMyReviews)
+	router.GET("/el/review/event/:id", reviewHandler.EventReviews)
 	router.POST("/el/review/make", reviewHandler.MakeReview)
-	router.PUT("/el/review/edit/", reviewHandler.EditReview)
+	router.PUT("/el/review/edit", reviewHandler.EditReview)
 	router.DELETE("/el/review/delete/:id", reviewHandler.DeleteReview)
 
 	http.ListenAndServe(":8181", router)

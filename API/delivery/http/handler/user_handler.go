@@ -62,13 +62,11 @@ func(uh *UserHandler) GetUser (w http.ResponseWriter,req *http.Request,ps httpro
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-
 	fmt.Println(err)
 
 	w.Header().Set("Content-Type","application/json")
 	w.Write(output)
 	return
-	
 
 }
 //GetUserByUserName ... 
@@ -183,51 +181,11 @@ func(uh *UserHandler) AuthenticateUser(w http.ResponseWriter,req *http.Request,p
 	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	return
 	}
-=======
-//EditUser ... handle POST /el/user/edit:id
-func(uh *UserHandler) EditUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-//EditUser(user *entity.User)(*entity.User,[]error)
-
-id,err := strconv.Atoi(ps.ByName("id"))
-
-if err != nil {
 	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-user,err := uh.userSrv.GetUser(uint(id))
-
-if err != nil {
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-
-l :=req.ContentLength
-body := make([]byte,l)
-req.Body.Read(body)
-
-json.Unmarshal(body, &user)
-
-user,errs := uh.userSrv.EditUser(user)
-if len(errs) > 0 {
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-output, err := json.MarshalIndent(user, "", "\t\t")
-
-if err != nil {
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-w.Header().Set("Content-Type", "application/json")
-w.Write(output)
+	w.Write(output)
 return
-
-
-//EditUser ... handle PUT /el/user/edit:id
+}
+//EditUser ... handle POST /el/user/edit:id
 func(uh *UserHandler) EditUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 //EditUser(user *entity.User)(*entity.User,[]error)
 

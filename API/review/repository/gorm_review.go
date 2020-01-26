@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"fmt"
+
 
 	"github.com/goEventListing/API/entity"
 
@@ -63,28 +63,28 @@ func (rgr *ReviewGormRepo) DeleteReview(id uint) (*entity.Review, []error) {
 	return rvw, errs
 }
 
-// MakeReview stores new review information to database
-func (rgr *ReviewGormRepo) MakeReview(rev *entity.Review) (*entity.Review, []error) {
+//MakeReviewAndRating stores new review information to database
+func (rgr *ReviewGormRepo) MakeReviewAndRating(rev *entity.Review) (*entity.Review, []error) {
 	rvw := rev
 	errs := rgr.conn.Create(rvw).GetErrors()
 	if len(errs) > 0 {
-		fmt.Println("MakeReview-err len>1", errs)
+		//fmt.Println("MakeReview-err len>1", errs)
 		return nil, errs
 	}
 	return rvw, errs
 }
 
-// GetMyReviews returns the reviews of a single user
-func (rgr *ReviewGormRepo) GetMyReviews(id uint) ([]entity.Review, []error) {
-	reviews := []entity.Review{}
-	errs := rgr.conn.Where("user_id = ?", id).Find(&reviews).GetErrors()
-	if len(errs) > 0 {
-		fmt.Println(" GetMyReviews -error len greater than 1", errs)
-		return nil, errs
-	}
-	// fmt.Println(review)
-	return reviews, errs
-}
+// // GetMyReviews returns the reviews of a single user
+// func (rgr *ReviewGormRepo) GetMyReviews(id uint) ([]entity.Review, []error) {
+// 	reviews := []entity.Review{}
+// 	errs := rgr.conn.Where("user_id = ?", id).Find(&reviews).GetErrors()
+// 	if len(errs) > 0 {
+// 		//fmt.Println("", errs)
+// 		return nil, errs
+// 	}
+// 	// fmt.Println(review)
+// 	return reviews, errs
+// }
 
 // EventReviews returns the reviews of a single Event
 func (rgr *ReviewGormRepo) EventReviews(id uint) ([]entity.Review, []error) {
@@ -97,9 +97,4 @@ func (rgr *ReviewGormRepo) EventReviews(id uint) ([]entity.Review, []error) {
 	// fmt.Println(review)
 	return review, errs
 
-}
-
-// SetRating ...
-func (rgr *ReviewGormRepo) SetRating(Eid uint) error {
-	return nil
 }

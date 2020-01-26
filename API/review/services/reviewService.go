@@ -1,8 +1,7 @@
 package services
 
 import (
-	"fmt"
-
+	
 	"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/review"
 )
@@ -65,10 +64,10 @@ func (rs *ReviweServiceImpl) DeleteReview(id uint) (*entity.Review, []error) {
 	return rvws, nil
 }
 
-// MakeReview stores new review information
-func (rs *ReviweServiceImpl) MakeReview(r *entity.Review) (*entity.Review, []error) {
+//MakeReviewAndRating stores new review information
+func (rs *ReviweServiceImpl) MakeReviewAndRating(r *entity.Review) (*entity.Review, []error) {
 
-	rvws, errs := rs.ReviewRepo.MakeReview(r)
+	rvws, errs := rs.ReviewRepo.MakeReviewAndRating(r)
 
 	if len(errs) > 0 {
 		return nil, errs
@@ -82,18 +81,18 @@ func (rs *ReviweServiceImpl) MakeReview(r *entity.Review) (*entity.Review, []err
 	return rvws, nil
 }
 
-// GetMyReviews returns the reviews of a single user
-func (rs *ReviweServiceImpl) GetMyReviews(id uint) ([]entity.Review, []error) {
-	fmt.Println("calling repo-----------")
-	revi, errs := rs.ReviewRepo.GetMyReviews(id)
-	fmt.Println("called repo-----------------", revi)
+// // GetMyReviews returns the reviews of a single user
+// func (rs *ReviweServiceImpl) GetMyReviews(id uint) ([]entity.Review, []error) {
+// 	fmt.Println("calling repo-----------")
+// 	revi, errs := rs.ReviewRepo.GetMyReviews(id)
+// 	fmt.Println("called repo-----------------", revi)
 
-	if len(errs) > 0 {
-		return nil, errs
-	}
-	fmt.Println("userRev-----------------", revi, errs)
-	return revi, nil
-}
+// 	if len(errs) > 0 {
+// 		return nil, errs
+// 	}
+// 	fmt.Println("userRev-----------------", revi, errs)
+// 	return revi, nil
+// }
 
 //EventReviews ...
 func (rs *ReviweServiceImpl) EventReviews(id uint) ([]entity.Review, []error) {
@@ -103,18 +102,7 @@ func (rs *ReviweServiceImpl) EventReviews(id uint) ([]entity.Review, []error) {
 	if len(errs) > 0 {
 		return nil, errs
 	}
-	fmt.Println("eventRev-----------------", rvs)
+	//fmt.Println("eventRev-----------------", rvs)
 	return rvs, nil
 }
 
-// SetRating ...
-func (rs *ReviweServiceImpl) SetRating(eventID uint) error {
-
-	err := rs.ReviewRepo.SetRating(eventID)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
