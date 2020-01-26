@@ -1,21 +1,24 @@
 package entity
 
 import (
-	"github.com/jinzhu/gorm"
+	"time"
+	
 )
 
 //User ... represents users of our system
 type User struct {
-	gorm.Model
-	FirstName string
-	LastName  string
-	UserName  string
-	Email     string
-	Password  []byte
-	Phone     string
-	Image     string
-	Event []Event `gorm:"foreignkey:UserRefer"`
+	ID uint
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	UserName  string `json:"username"`
+	Email     string `json:"email"`
+	Password  []byte `json:"password"`
+	Phone     string `json:"phone"`
+	Image     string `json:"image"`
+	Event []Event `gorm:"foreignkey:UserID"` //tells users have a "has many = one to many r/n with event"
+	Review []Review `gorm:"foreignkey:UserID"` //tells users have a "has many = one to many r/n with event"
 	Tag []Tag `gorm:"many2many:user_tag"`
+	PlacedAt time.Time
 }
 // CREATE TABLE users(
 // 	user_id serial PRIMARY KEY,

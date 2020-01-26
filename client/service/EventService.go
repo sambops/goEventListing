@@ -141,7 +141,7 @@ func DeleteEvent(id uint) (*entity.Event,error){
 	client := &http.Client{}
 
 	URL := fmt.Sprintf("%s%s/%d",baseEventURL,"remove",id)
-	req,_ := http.NewRequest("GET",URL,nil)
+	req,_ := http.NewRequest("POST",URL,nil)
 
 	//DO return an http responce
 	res,err := client.Do(req)

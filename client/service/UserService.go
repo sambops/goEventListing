@@ -143,9 +143,9 @@ func EditUser(user *entity.User)(*entity.User,error){
 	return userr,nil
 }
 //AuthenticateUser .... request on baseUserURL/login
-func AuthenticateUser(userName string,password string)(*entity.User,error){
+func AuthenticateUser(userNamee string,password string)(*entity.User,error){
 
-	authenticate := &entity.Authenticate{Name:userName,Pass:password}
+	authenticate := &entity.Authenticate{UserName:userNamee,Password:password}
 	
 	ouput,err:= json.MarshalIndent(authenticate,"","\t\t")
 	

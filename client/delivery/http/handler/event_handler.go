@@ -10,14 +10,15 @@ import (
 	"html/template"
 )
 
-//EventHandler ... handlers event related requests
+//EventHandler ... handles event related requests
 type EventHandler struct{
 	tmpl *template.Template
+	csrfSignKey []byte
 }
 
 //NewEventHandler ... initializes and returns new EventHandler
-func NewEventHandler(T *template.Template) *EventHandler{
-	return &EventHandler{tmpl:T}
+func NewEventHandler(T *template.Template,csKey []byte) *EventHandler{
+	return &EventHandler{tmpl:T,csrfSignKey:csKey}
 }
 
 
@@ -25,8 +26,8 @@ func NewEventHandler(T *template.Template) *EventHandler{
 //Events handle reques on route/events
 func(eh *EventHandler) Events(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	//fmt.Println("kiki")
-	usr := GetUser(w,req)
-	usr, errr := service.GetUser(usr.ID)
+	//usr := GetUser(w,req)
+	//usr, errr := service.GetUser(usr.ID)
 	if errr != nil {
 			// http.Error(w,http.StatusText(http.StatusInternalServerError),http.StatusInternalServerError)
 	
