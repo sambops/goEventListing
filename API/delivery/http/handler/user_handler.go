@@ -9,9 +9,6 @@ import (
 	"github.com/goEventListing/API/entity"
 	"github.com/goEventListing/API/user"
 	
-
-
-
 )
 
 //UserHandler handles user related requests

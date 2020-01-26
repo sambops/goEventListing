@@ -25,7 +25,6 @@ func NewUserRoleHandler(URS user.RoleService) *UserRoleHandler {
 func(urh *UserRoleHandler) Roles (w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	role,errs := urh.userRoleSrv.Roles()
 
-	
 	if len(errs)>0 {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)

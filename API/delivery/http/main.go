@@ -50,8 +50,25 @@ func main() {
 	//router.GET("/el/user/logout",userHandler.Logout)
 
 	userRoleRepo := repository.NewRoleGormRepo(dbconn)
-	userRoleService := services.NewRoleService(userRoleRepo)
-	userRoleHandler := handler.
+	userRoleService := services.NewRoleServiceImpl(userRoleRepo)
+	userRoleHandler := handler.NewUserRoleHandler(userRoleService)
+
+	router.GET("el/role/roles",userRoleHandler.Roles)
+	router.GET("el/role/role",userRoleHandler.Role)
+	router.GET("el/role/rolebyname",userRoleHandler.RoleByName)
+	router.PUT("el/role/update",userRoleHandler.UpdateRole)
+	router.POST("el/role/remove",userRoleHandler.DeleteRole)
+	router.POST("el/role/store",userRoleHandler.StoreRole)
+
+
+	userSessionRepo := repository.NewSessionGormRepo(dbconn)
+	userSessionService := services.NewSessionService(userSessionRepo)
+	userSessionHandler := handler.NewUserSessionHandler(userSessionService)
+
+
+	router.GET("el/session/session",userSessionHandler.Session)
+	router.POST("el/session/store",userSessionHandler.StoreSession)
+	router.POST("el/session/remove",userSessionHandler.DeleteSession)
 	
 	//dbconn.AutoMigrate(&entity.Event{},&entity.Tag{},&entity.User{},&entity.Review{})
 
