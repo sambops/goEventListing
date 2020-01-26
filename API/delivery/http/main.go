@@ -54,10 +54,10 @@ func main() {
 	userRoleHandler := handler.NewUserRoleHandler(userRoleService)
 
 	router.GET("el/role/roles",userRoleHandler.Roles)
-	router.GET("el/role/role",userRoleHandler.Role)
-	router.GET("el/role/rolebyname",userRoleHandler.RoleByName)
+	router.GET("el/role/role/:id",userRoleHandler.Role)
+	router.GET("el/role/rolebyname/:name",userRoleHandler.RoleByName)
 	router.PUT("el/role/update",userRoleHandler.UpdateRole)
-	router.POST("el/role/remove",userRoleHandler.DeleteRole)
+	router.POST("el/role/remove/:id",userRoleHandler.DeleteRole)
 	router.POST("el/role/store",userRoleHandler.StoreRole)
 
 
@@ -66,9 +66,9 @@ func main() {
 	userSessionHandler := handler.NewUserSessionHandler(userSessionService)
 
 
-	router.GET("el/session/session",userSessionHandler.Session)
+	router.GET("el/session/session/:sid",userSessionHandler.Session)
 	router.POST("el/session/store",userSessionHandler.StoreSession)
-	router.POST("el/session/remove",userSessionHandler.DeleteSession)
+	router.POST("el/session/remove/:id",userSessionHandler.DeleteSession)
 	
 	//dbconn.AutoMigrate(&entity.Event{},&entity.Tag{},&entity.User{},&entity.Review{})
 
