@@ -148,7 +148,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 			return
 		}
 
-		role,errs := service.RoleByName("USER")
+		role,err := service.RoleByName("USER")
 		//role, errs := uh.userRole.RoleByName("USER")
 
 		if err != nil {
@@ -158,15 +158,17 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 		}
 
 		user := &entity.User{
-			FullName: r.FormValue("fullname"),
+			UserName: r.FormValue("userName"),
+			FirstName:r.FormValue("firstName"),
+			LastName:r.FormValue("lastName"),
 			Email:    r.FormValue("email"),
 			Phone:    r.FormValue("phone"),
-			Password: string(hashedPassword),
+			Password: hashedPassword,
 			RoleID:   role.ID,
 		}
-		_,errs = service.RegisterUser(user)
+		_,err = service.RegisterUser(user)
 		//_, errs = uh.userService.StoreUser(user)
-		if len(errs) > 0 {
+		if err!= nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -243,7 +245,7 @@ func (uh *UserHandler) AdminUsersNew(w http.ResponseWriter, r *http.Request,ps h
 		accountForm := struct {
 			Values  url.Values
 			VErrors form.ValidationErrors
-			Roles   []entity.Role
+			Roles   *[]entity.Role
 			CSRF    string
 		}{
 			Values:  nil,
@@ -276,15 +278,17 @@ func (uh *UserHandler) AdminUsersNew(w http.ResponseWriter, r *http.Request,ps h
 			uh.tmpl.ExecuteTemplate(w, "admin.user.new.layout", accountForm)
 			return
 		}
-
-		pExists := uh.userService.PhoneExists(r.FormValue("phone"))
-		if pExists {
+		pExists := service.PhoneExists(r.FormValue("phone"))
+		//pExists := uh.userService.PhoneExists(r.FormValue("phone"))
+		if *pExists {
 			accountForm.VErrors.Add("phone", "Phone Already Exists")
 			uh.tmpl.ExecuteTemplate(w, "admin.user.new.layout", accountForm)
 			return
 		}
-		eExists := uh.userService.EmailExists(r.FormValue("email"))
-		if eExists {
+		//eExists := uh.userService.EmailExists(r.FormValue("email"))
+		eExists := service.EmailExists(r.FormValue("email"))
+
+		if *eExists {
 			accountForm.VErrors.Add("email", "Email Already Exists")
 			uh.tmpl.ExecuteTemplate(w, "admin.user.new.layout", accountForm)
 			return
@@ -304,14 +308,18 @@ func (uh *UserHandler) AdminUsersNew(w http.ResponseWriter, r *http.Request,ps h
 			return
 		}
 		user := &entity.User{
-			FullName: r.FormValue("fullname"),
+			FirstName :r.FormValue("firstName"),
+			LastName: r.FormValue("lastName"),
+			UserName: r.FormValue("userName"),
 			Email:    r.FormValue("email"),
 			Phone:    r.FormValue("phone"),
-			Password: string(hashedPassword),
+			Password: hashedPassword,
 			RoleID:   uint(roleID),
 		}
-		_, errs := uh.userService.StoreUser(user)
-		if len(errs) > 0 {
+		_, err = service.RegisterUser(user)
+
+		//_, errs := uh.userService.StoreUser(user)
+		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -345,19 +353,19 @@ func (uh *UserHandler) AdminUsersUpdate(w http.ResponseWriter, r *http.Request,p
 			return
 		}
 		//user, errs := uh.userService.User(uint(id))
-		user,errs := service.GetUser(uint(id))
+		user,err := service.GetUser(uint(id))
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
 		//roles, errs := uh.userRole.Roles()
-		roles,errs := service.Roles()
+		roles,err := service.Roles()
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 		//role, errs := uh.userRole.Role(user.RoleID)
-		role,errs := service.Role(user.RoleID)
+		role,err := service.Role(user.RoleID)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
@@ -412,7 +420,7 @@ func (uh *UserHandler) AdminUsersUpdate(w http.ResponseWriter, r *http.Request,p
 			return
 		}
 		//user, errs := uh.userService.User(uint(uid))
-		user,errs := service.GetUser(uint(uid))
+		user,err := service.GetUser(uint(uid))
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
@@ -443,15 +451,17 @@ func (uh *UserHandler) AdminUsersUpdate(w http.ResponseWriter, r *http.Request,p
 		}
 		usr := &entity.User{
 			ID:       user.ID,
-			FullName: r.FormValue("fullname"),
+			UserName: r.FormValue("userName"),
+			FirstName: r.FormValue("firstName"),
+			LastName:r.FormValue("lastName"),
 			Email:    r.FormValue("email"),
 			Phone:    r.FormValue("phone"),
 			Password: user.Password,
 			RoleID:   uint(roleID),
 		}
 		//_, errs = uh.userService.UpdateUser(usr)
-		_,errs = service.EditUser(usr)
-		if len(errs) > 0 {
+		_,err = service.EditUser(usr)
+		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}

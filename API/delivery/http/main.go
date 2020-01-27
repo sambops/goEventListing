@@ -50,8 +50,8 @@ func main() {
 	router.POST("/el/user/remove/:id",userHandler.DeleteUser)
 	router.POST("/el/user/role/:user",userHandler.UserRoles)
 
-	router.GET("/el/user/check/phone/:phone",userHandler.PhoneExists)
-	router.GET("/el/user/check/email/:email",userHandler.EmailExists)
+	router.GET("/el/user/check/:phone",userHandler.PhoneExists)
+	router.GET("/el/user/check/:email",userHandler.EmailExists)
 	router.GET("/el/user/:email",userHandler.UserByEmail)
 
 	//router.GET("/el/user/logout",userHandler.Logout)

@@ -26,8 +26,6 @@ func NewUserHandler(US user.UserService) *UserHandler {
 
 //GetUser ... handles GET /el/user/:id request
 func(uh *UserHandler) GetUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-	//(id unit) (*entity.User, error)	
-	fmt.Println("here....")
 	id,err := strconv.Atoi(ps.ByName("id"))
 	fmt.Println(err)
 
@@ -46,7 +44,6 @@ func(uh *UserHandler) GetUser(w http.ResponseWriter,req *http.Request,ps httprou
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
-
 	}
 
 	fmt.Println(user)
@@ -201,7 +198,7 @@ func(uh *UserHandler) EditUser(w http.ResponseWriter,req *http.Request,ps httpro
 
 }
 //DeleteUser ... handle POST /el/user/remove:id
-func(uh *UserHandler) DeleteUser(w http.ResponseWriter,req *http.Request	){
+func(uh *UserHandler) DeleteUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params	){
 	id, err := strconv.Atoi(ps.ByName("id"))
 
 
@@ -262,7 +259,7 @@ func(uh *UserHandler) UserRoles(w http.ResponseWriter,req *http.Request,ps httpr
 	return
 }
 
-//PhoneExists ... handles GET /el/user/check/phone/:phone
+//PhoneExists ... handles GET /el/user/check/:phone
 func(uh *UserHandler) PhoneExists(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	phone:= ps.ByName("phone")
 	exists := uh.userSrv.PhoneExists(phone)
@@ -281,7 +278,7 @@ func(uh *UserHandler) PhoneExists(w http.ResponseWriter,req *http.Request,ps htt
 	
 }
 
-//EmailExists ... handles GET /el/user/check/email/:email
+//EmailExists ... handles GET /el/user/check/:email
 func(uh *UserHandler) EmailExists(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	email:= ps.ByName("email")
 	exists := uh.userSrv.EmailExists(email)
