@@ -25,7 +25,7 @@ func NewUserHandler(US user.UserService) *UserHandler {
 
 
 //GetUser ... handles GET /el/user/:id request
-func(uh *UserHandler) GetUser (w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+func(uh *UserHandler) GetUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	//(id unit) (*entity.User, error)	
 	fmt.Println("here....")
 	id,err := strconv.Atoi(ps.ByName("id"))
@@ -66,10 +66,30 @@ func(uh *UserHandler) GetUser (w http.ResponseWriter,req *http.Request,ps httpro
 	return
 
 }
-//GetUserByUserName ... 
-func(uh *UserHandler) GetUserByUserName (w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-	//(id unit) (*entity.User, error)
 
+//GetUsers ... handles GET /el/users/
+func(uh *UserHandler) GetUsers(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	
+	usrs,errs := uh.userSrv.GetUsers()
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	output,err:= json.MarshalIndent(usrs,"","\t\t")
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
+
+}
+
+//GetUserByUserName ... 
+func(uh *UserHandler) GetUserByUserName(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
 	name:= ps.ByName("userName")
 
 
@@ -136,97 +156,52 @@ func(uh *UserHandler) RegisterUser(w http.ResponseWriter,req *http.Request,ps ht
 	// w.WriteHeader(http.StatusCreated)
 	return
 }
-//AuthenticateUser ... handle POST /el/user/login/
-func(uh *UserHandler) AuthenticateUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-//AuthenticateUser(userName string, password string) (*entity.User, error)
 
-	l := req.ContentLength
-	body := make([]byte,l)
-	req.Body.Read(body)
-	
-	authenticate := &entity.Authenticate{}
+//EditUser ... handle POST /el/user/edit:id
+func(uh *UserHandler) EditUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	//EditUser(user *entity.User)(*entity.User,[]error)
 
-	//fmt.Println("check here")
+	id,err := strconv.Atoi(ps.ByName("id"))
 
-	err := json.Unmarshal(body,authenticate)
-	
 	if err != nil {
-		//fmt.Println("i'm here")
-		//fmt.Println(err)
-
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	//fmt.Println("check check")
+	user,err := uh.userSrv.GetUser(uint(id))
 
-	usr,err:=uh.userSrv.AuthenticateUser(authenticate.UserName,authenticate.Password)
-	
-	if err != nil{
-		//fmt.Print("check me again..")
-		fmt.Println(err)
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
 	}
 
-	output,err:= json.MarshalIndent(usr,"","\t\t")
-	
+	l :=req.ContentLength
+	body := make([]byte,l)
+	req.Body.Read(body)
 
-	if err != nil{
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
+	json.Unmarshal(body, &user)
+
+	user,errs := uh.userSrv.EditUser(user)
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	output, err := json.MarshalIndent(user, "", "\t\t")
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(output)
-return
-}
-//EditUser ... handle POST /el/user/edit:id
-func(uh *UserHandler) EditUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-//EditUser(user *entity.User)(*entity.User,[]error)
-
-id,err := strconv.Atoi(ps.ByName("id"))
-
-if err != nil {
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	return
-}
-user,err := uh.userSrv.GetUser(uint(id))
-
-if err != nil {
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-
-l :=req.ContentLength
-body := make([]byte,l)
-req.Body.Read(body)
-
-json.Unmarshal(body, &user)
-
-user,errs := uh.userSrv.EditUser(user)
-if len(errs) > 0 {
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-output, err := json.MarshalIndent(user, "", "\t\t")
-
-if err != nil {
-	w.Header().Set("Content-Type", "application/json")
-	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	return
-}
-w.Header().Set("Content-Type", "application/json")
-w.Write(output)
-return
 
 }
 //DeleteUser ... handle POST /el/user/remove:id
-func(uh *UserHandler) DeleteUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+func(uh *UserHandler) DeleteUser(w http.ResponseWriter,req *http.Request	){
 	id, err := strconv.Atoi(ps.ByName("id"))
 
 
@@ -246,7 +221,105 @@ func(uh *UserHandler) DeleteUser(w http.ResponseWriter,req *http.Request,ps http
 	w.WriteHeader(http.StatusNoContent)
 	return
 }
+//UserRoles ... handle POST  /el/user/role/:user
+func(uh *UserHandler) UserRoles(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	l := req.ContentLength
+	body := make([]byte,l)
+	req.Body.Read(body)
 
+	user := &entity.User{}
+	err := json.Unmarshal(body,user)
+
+	fmt.Println(user)
+	
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	rols,errs := uh.userSrv.UserRoles(user)
+	
+
+	if len(errs) > 0 {
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	output,err:= json.MarshalIndent(rols,"","\t\t")
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	
+	// p := fmt.Sprintf("/el/user/register/%d", user.ID)
+	// w.Header().Set("Location",p)
+	// w.WriteHeader(http.StatusCreated)
+	return
+}
+
+//PhoneExists ... handles GET /el/user/check/phone/:phone
+func(uh *UserHandler) PhoneExists(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	phone:= ps.ByName("phone")
+	exists := uh.userSrv.PhoneExists(phone)
+
+	output,err:= json.MarshalIndent(exists,"","\t\t")
+
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
+
+	
+}
+
+//EmailExists ... handles GET /el/user/check/email/:email
+func(uh *UserHandler) EmailExists(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	email:= ps.ByName("email")
+	exists := uh.userSrv.EmailExists(email)
+
+	output,err:= json.MarshalIndent(exists,"","\t\t")
+	
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
+
+}
+
+//UserByEmail ... handles GET /el/user/:email
+func(uh *UserHandler) UserByEmail(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
+	email:= ps.ByName("email")
+
+	user,errs := uh.userSrv.UserByEmail(email)
+	if len(errs) > 0{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	output,err:= json.MarshalIndent(user,"","\t\t")
+	if err != nil{
+		w.Header().Set("Content-Type", "application/json")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type","application/json")
+	w.Write(output)
+	return
+}
 
 
 

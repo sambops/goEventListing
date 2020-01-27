@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"fmt"
+	//"fmt"
 	"github.com/jinzhu/gorm"
-	"golang.org/x/crypto/bcrypt"
+	//"golang.org/x/crypto/bcrypt"
 	"errors"
 
 	"github.com/goEventListing/API/entity"
@@ -40,70 +40,8 @@ if len(errs) > 0 {
 }
 return userr,nil
 
-	// //username taken?
-	// _,err := uri.conn.Query("SELECT * FROM users where username = $1", user.UserName)
-	// if err != nil {
-	// 	//fmt.Println("here is the problem")
-	// 	//panic(err)
-	// 	return errors.New("user name already taken try other")
-	// }
-	// _, err = uri.conn.Exec("INSERT INTO users (username,first_name,last_name,email,password,phone,image) VALUES ($1,$2,$3,$4,$5,$6,$7)", user.UserName, user.FirstName,user.LastName, user.Email,user.Password, user.Phone, user.Image)
-
-	// if err != nil {
-	// 	fmt.Println("check me")
-	// 	return errors.New("insertion has failed")
-	// }
-	// return nil
-
 }
 
-//AuthenticateUser ... this is a  method to authenticate a user before logining in
-func (uri *UserRepositoryImpl) AuthenticateUser(userName string, password string) (*entity.User, error) {
-	user:= entity.User{}
-
-//is there a username?
-rows,err := uri.conn.Raw("SELECT * FROM  users WHERE user_name = ?",userName).Rows()
-defer rows.Close()
-
-if (rows != nil){
-	
-	if err != nil{
-		return &user,errors.New("usernae and/or password do not match")
-	}
-	for rows.Next(){
-		uri.conn.ScanRows(rows,&user)
-	}
-		//does the entered password match with the stred password?
-		err = bcrypt.CompareHashAndPassword(user.Password,[]byte(password))
-		if err!= nil{
-			fmt.Println("password err")
-			return &user,errors.New("username and/or password do not match")
-		}
-		return &user,nil
-}
-return &user,errors.New("username and/or password do not match")
-
-
-	// //is there a username?
-	// row := uri.conn.QueryRow("SELECT * FROM users where username = $1", userName)
-	
-	// user := entity.User{}
-	// if row != nil {
-	// 	err := row.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.UserName, &user.Email,&user.Password, &user.Phone, &user.Image)
-	// 	if err != nil {
-	// 		return user, errors.New("username  and/or password do not match")
-	// 	}
-
-	// 	//does the entered password match with the stred password?
-	// err = bcrypt.CompareHashAndPassword(user.Password,[]byte(password))
-	// if err!= nil{
-	// 	return user,errors.New("username and/or password do not match")
-	// }
-		
-	// 	return user, nil
-	// }
-	// return user, errors.New("username and/or password do not match")	
-}
 
 //GetUserByUserName ... 
 func (uri *UserRepositoryImpl) GetUserByUserName(userName string) (*entity.User, error) {
@@ -164,6 +102,17 @@ func (uri *UserRepositoryImpl) GetUser(id uint) (*entity.User, error) {
 
 }
 
+//GetUsers return all users from the database
+func (uri *UserRepositoryImpl) GetUsers() ([]entity.User, []error) {
+	users := []entity.User{}
+	errs := uri.conn.Find(&users).GetErrors()
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	return users, errs
+}
+
+
 //EditUser ... edit our user entiity
 func (uri *UserRepositoryImpl) EditUser(user *entity.User)(*entity.User ,[]error) {
 usr:= user
@@ -204,6 +153,46 @@ return &user,errors.New("user not found")
 	// 	return errors.New("Delete has faild")
 	// }
 	// return nil
-	
-	
 }
+
+// UserRoles returns list of application roles that a given user has
+func (uri *UserRepositoryImpl) UserRoles(user *entity.User) ([]entity.Role, []error) {
+	userRoles := []entity.Role{}
+
+	errs := uri.conn.Model(user).Related(&userRoles).GetErrors()
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	return userRoles, errs
+}
+
+// PhoneExists check if a given phone number is found
+func (uri *UserRepositoryImpl) PhoneExists(phone string) bool {
+	user := entity.User{}
+	errs := uri.conn.Find(&user, "phone=?", phone).GetErrors()
+	if len(errs) > 0 {
+		return false
+	}
+	return true
+}
+
+// EmailExists check if a given email is found
+func (uri *UserRepositoryImpl) EmailExists(email string) bool {
+	user := entity.User{}
+	errs := uri.conn.Find(&user, "email=?", email).GetErrors()
+	if len(errs) > 0 {
+		return false
+	}
+	return true
+}
+
+// UserByEmail retrieves a user by its email address from the database
+func (uri *UserRepositoryImpl) UserByEmail(email string) (*entity.User, []error) {
+	user := entity.User{}
+	errs := uri.conn.Find(&user, "email=?", email).GetErrors()
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	return &user, errs
+}
+

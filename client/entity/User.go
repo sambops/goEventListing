@@ -15,6 +15,8 @@ type User struct {
 	Password  []byte `json:"password"`
 	Phone     string `json:"phone"`
 	Image     string `json:"image"`
+	RoleID 		uint
+	
 	Event []Event `gorm:"foreignkey:UserID"` //tells users have a "has many = one to many r/n with event"
 	Review []Review `gorm:"foreignkey:UserID"` //tells users have a "has many = one to many r/n with event"
 	Tag []Tag `gorm:"many2many:user_tag"`

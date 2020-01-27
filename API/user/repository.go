@@ -9,29 +9,21 @@ import (
 //UserRepository repository(interface) spacifies User user related database operations
 type UserRepository interface {
 	RegisterUser(user *entity.User)(*entity.User,error)
-	AuthenticateUser(userName string, password string) (*entity.User, error)
+	//AuthenticateUser(userName string, password string) (*entity.User, error)
 	GetUser(id uint) (*entity.User, error)
+	GetUsers() ([]entity.User, []error)
+
 	GetUserByUserName(userName string) (*entity.User, error)
 	//Logout() error
 	EditUser(user *entity.User)(*entity.User,[]error)
 	DeleteUser(id uint)(*entity.User,error)
+	UserRoles(*entity.User) ([]entity.Role, []error)
+
+	UserByEmail(email string) (*entity.User, []error)
+	PhoneExists(phone string) bool
+	EmailExists(email string) bool
+
 }
-
-
-// UserRepository specifies application user related database operations
-// type UserRepository interface {
-// 	Users() ([]entity.User, []error)
-// 	User(id uint) (*entity.User, []error)
-// 	UserByEmail(email string) (*entity.User, []error)
-// 	UpdateUser(user *entity.User) (*entity.User, []error)
-// 	DeleteUser(id uint) (*entity.User, []error)
-// 	StoreUser(user *entity.User) (*entity.User, []error)
-// 	PhoneExists(phone string) bool
-// 	EmailExists(email string) bool
-// 	UserRoles(*entity.User) ([]entity.Role, []error)
-// }
-
-
 
 // RoleRepository speifies application user role related database operations
 type RoleRepository interface {

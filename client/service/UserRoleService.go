@@ -12,7 +12,7 @@ import (
 var baseRoleURL = "http://localhost:8181/el/role/"
 
 //Roles ... request on baseRoleURL/roles
-func Roles() (*entity.Role, error){
+func Roles() (*[]entity.Role, error){
 	client := &http.Client{}
 
 	URL := fmt.Sprintf("%s%s",baseRoleURL,"roles")
@@ -23,7 +23,7 @@ func Roles() (*entity.Role, error){
 	if err != nil {
 		return nil, err
 	}
-	roleData :=&entity.Role{}
+	roleData :=&[]entity.Role{}
 
 	
 	body, err := ioutil.ReadAll(res.Body)

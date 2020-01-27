@@ -42,11 +42,18 @@ func main() {
 	
 	
 	router.GET("/el/user/:id", userHandler.GetUser)
+	router.GET("/el/user",userHandler.GetUsers)
 
-	router.POST("/el/user/login", userHandler.AuthenticateUser)
+	// router.POST("/el/user/login", userHandler.AuthenticateUser)
 	router.POST("/el/user/register",userHandler.RegisterUser)
 	router.PUT("/el/user/edit",userHandler.EditUser)
-	router.POST("/el/user/remove",userHandler.DeleteUser)
+	router.POST("/el/user/remove/:id",userHandler.DeleteUser)
+	router.POST("/el/user/role/:user",userHandler.UserRoles)
+
+	router.GET("/el/user/check/phone/:phone",userHandler.PhoneExists)
+	router.GET("/el/user/check/email/:email",userHandler.EmailExists)
+	router.GET("/el/user/:email",userHandler.UserByEmail)
+
 	//router.GET("/el/user/logout",userHandler.Logout)
 
 	userRoleRepo := repository.NewRoleGormRepo(dbconn)
@@ -59,6 +66,7 @@ func main() {
 	router.PUT("el/role/update",userRoleHandler.UpdateRole)
 	router.POST("el/role/remove/:id",userRoleHandler.DeleteRole)
 	router.POST("el/role/store",userRoleHandler.StoreRole)
+	
 
 
 	userSessionRepo := repository.NewSessionGormRepo(dbconn)
