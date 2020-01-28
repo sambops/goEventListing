@@ -9,10 +9,10 @@ type Review struct {
 	Rating  int `json:"rating"`
 	
 	User User 
-	UserID	uint `json:"userID"` // forign key referencing User
+	UserID	uint `json:"userid"` // forign key referencing User
 
 	Event Event 
-	EventID uint `json:"eventID"`// forign key referencing Event
+	EventID uint `json:"eventid"`// forign key referencing Event
 	
 
 	Message string `json:"message" gorm:"type:text;not null"`

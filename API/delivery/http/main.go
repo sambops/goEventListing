@@ -41,7 +41,7 @@ func main() {
 
 	
 	
-	router.GET("/el/user/:id", userHandler.GetUser)
+	//router.GET("/el/user/:id", userHandler.GetUser)
 	router.GET("/el/user",userHandler.GetUsers)
 
 	// router.POST("/el/user/login", userHandler.AuthenticateUser)
@@ -50,9 +50,9 @@ func main() {
 	router.POST("/el/user/remove/:id",userHandler.DeleteUser)
 	router.POST("/el/user/role/:user",userHandler.UserRoles)
 
-	router.GET("/el/user/check/:phone",userHandler.PhoneExists)
-	router.GET("/el/user/check/:email",userHandler.EmailExists)
-	router.GET("/el/user/:email",userHandler.UserByEmail)
+	router.GET("/el/user/check/phone/:phone",userHandler.PhoneExists)
+	router.GET("/el/user/check/email/:email",userHandler.EmailExists)
+	//router.GET("/el/user/:email",userHandler.UserByEmail)
 
 	//router.GET("/el/user/logout",userHandler.Logout)
 
@@ -60,12 +60,12 @@ func main() {
 	userRoleService := services.NewRoleServiceImpl(userRoleRepo)
 	userRoleHandler := handler.NewUserRoleHandler(userRoleService)
 
-	router.GET("el/role/roles",userRoleHandler.Roles)
-	router.GET("el/role/role/:id",userRoleHandler.Role)
-	router.GET("el/role/rolebyname/:name",userRoleHandler.RoleByName)
-	router.PUT("el/role/update",userRoleHandler.UpdateRole)
-	router.POST("el/role/remove/:id",userRoleHandler.DeleteRole)
-	router.POST("el/role/store",userRoleHandler.StoreRole)
+	router.GET("/el/role/roles",userRoleHandler.Roles)
+	router.GET("/el/role/role/:id",userRoleHandler.Role)
+	router.GET("/el/role/rolebyname/:name",userRoleHandler.RoleByName)
+	router.PUT("/el/role/update",userRoleHandler.UpdateRole)
+	router.POST("/el/role/remove/:id",userRoleHandler.DeleteRole)
+	router.POST("/el/role/store",userRoleHandler.StoreRole)
 	
 
 
@@ -74,11 +74,11 @@ func main() {
 	userSessionHandler := handler.NewUserSessionHandler(userSessionService)
 
 
-	router.GET("el/session/session/:sid",userSessionHandler.Session)
-	router.POST("el/session/store",userSessionHandler.StoreSession)
-	router.POST("el/session/remove/:id",userSessionHandler.DeleteSession)
+	router.GET("/el/session/session/:sid",userSessionHandler.Session)
+	router.POST("/el/session/store",userSessionHandler.StoreSession)
+	router.POST("/el/session/remove/:id",userSessionHandler.DeleteSession)
 	
-	//dbconn.AutoMigrate(&entity.Event{},&entity.Tag{},&entity.User{},&entity.Review{})
+	//dbconn.AutoMigrate(&entity.Event{},&entity.Tag{},&entity.User{},&entity.Review{},&entity.Role{},&entity.Session{})
 
 	//event
 	eventRepo := eventRepo.NewEventRepoImp(dbconn)
@@ -90,8 +90,8 @@ func main() {
 	router.GET("/el/event/upcoming",eventHandler.UpcomingEvents)
 	router.POST("/el/event/create",eventHandler.CreateEvent)
 	router.PUT("/el/event/update",eventHandler.UpdateEvent)
-	router.GET("/el/event/foru/:id",eventHandler.GetUserSpecificEvent)
-	router.POST("/el/event/remove",eventHandler.RemoveEvent)
+	router.GET("/el/event/foru",eventHandler.GetUserSpecificEvent)
+	router.POST("/el/event/remove/:id",eventHandler.RemoveEvent)
 
 	//review 
 	reviewRepo := rr.NewReviewGormRepo(dbconn)
@@ -104,7 +104,7 @@ func main() {
 	router.GET("/el/review/event/:id", reviewHandler.EventReviews)
 	router.POST("/el/review/make", reviewHandler.MakeReview)
 	router.PUT("/el/review/edit", reviewHandler.EditReview)
-	router.DELETE("/el/review/delete/:id", reviewHandler.DeleteReview)
+	router.POST("/el/review/delete/:id", reviewHandler.DeleteReview)
 
 	http.ListenAndServe(":8181", router)
 

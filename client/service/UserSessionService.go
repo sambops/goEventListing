@@ -1,12 +1,13 @@
 package service
 
 import (
+	"github.com/goEventListing/client/entity"
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"fmt"
-	"github.com/goEventListing/API/entity"
+	
 )
 
 var baseSessionURL = "http://localhost:8181/el/session/"

@@ -108,9 +108,8 @@ func(uh *UserHandler) GetUserByUserName(w http.ResponseWriter,req *http.Request,
 	return
 	
 }
-//RegisterUser ... handle POST /el/user/register/:user   ....
+//RegisterUser ... handle POST /el/user/register   ....
 func(uh *UserHandler) RegisterUser(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-	//RegisterUser(user *entity.User)(*entity.User,error)
 	l := req.ContentLength
 	body := make([]byte,l)
 	req.Body.Read(body)
@@ -121,7 +120,7 @@ func(uh *UserHandler) RegisterUser(w http.ResponseWriter,req *http.Request,ps ht
 	fmt.Println(user)
 	
 	if err != nil {
-		fmt.Println("errorroing 3")
+		fmt.Println("error 3")
 		fmt.Println(err)
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -131,7 +130,7 @@ func(uh *UserHandler) RegisterUser(w http.ResponseWriter,req *http.Request,ps ht
 	
 
 	if err != nil {
-	
+		fmt.Println("may be this")
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return

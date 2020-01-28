@@ -13,7 +13,7 @@ type Event struct {
 	Country string `json:"country" gorm:"type:varchar(255)"`
 	City string  `json:"city" gorm:"type:varchar(255)"`
 	Place string `json:"place" gorm:"type:varchar(255)"`
-	Price *float32 `json:"price" gorm:"type:numeric;not null;DEFAULT:0"`
+	Price *float64 `json:"price" gorm:"type:numeric;not null;DEFAULT:0"`
 	Image string `json:"image" gorm:"type:varchar(255)"`
 	Review []Review  `gorm:"foreignkey:EventID"`//this tells event have a "has many = one to many r/n/s/p with review"
 	

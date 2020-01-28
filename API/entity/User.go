@@ -12,10 +12,10 @@ type User struct {
 	LastName  string `json:"lastname"`
 	UserName  string `json:"username" gorm:"type:varchar(255);not null"`
 	Email     string `json:"email" gorm:"type:varchar(255);not null; unique"`
-	Password  []byte `json:"password" gorm:"type:varchar(255)"`
+	Password  string `json:"password" gorm:"type:varchar(255)"`
 	Phone     string `json:"phone" gorm:"type:varchar(100);not null; unique"`
 	Image     string `json:"image"`
-	RoleID 		uint
+	RoleID 		uint `json:"roleid"`
 	Event []Event `gorm:"foreignkey:UserID"` //tells users have a "has many = one to many r/n with event"
 	Review []Review `gorm:"foreignkey:UserID"` //tells users have a "has many = one to many r/n with event"
 	Tag []Tag `gorm:"many2many:user_tag"`

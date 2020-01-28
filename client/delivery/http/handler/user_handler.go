@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/goEventListing/client/permission"
-	"github.com/julienschmidt/httprouter"
 	"github.com/goEventListing/client/form"
 	"github.com/goEventListing/client/rtoken"
 	"github.com/goEventListing/client/session"
@@ -86,7 +86,8 @@ func (uh *UserHandler) Authorized(next http.Handler) http.Handler {
 
 
 // Register hanldes the GET/POST /signup requests
-func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("register")
 	token, err := rtoken.CSRFToken(uh.csrfSignKey)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -101,7 +102,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 			VErrors: nil,
 			CSRF:    token,
 		}
-		uh.tmpl.ExecuteTemplate(w, "signup.layout", signUpForm)
+		uh.tmpl.ExecuteTemplate(w, "signup.html", signUpForm)
 		return
 	}
 
@@ -123,14 +124,14 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 		singnUpForm.CSRF = token
 		// If there are any errors, redisplay the signup form.
 		if !singnUpForm.Valid() {
-			uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
+			uh.tmpl.ExecuteTemplate(w, "signup.html", singnUpForm)
 			return
 		}
 		pExists := service.PhoneExists(r.FormValue("phone"))
 		//pExists := uh.userService.PhoneExists(r.FormValue("phone"))
 		if *pExists {
 			singnUpForm.VErrors.Add("phone", "Phone Already Exists")
-			uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
+			uh.tmpl.ExecuteTemplate(w, "signup.html", singnUpForm)
 			return
 		}
 		eExists := service.EmailExists(r.FormValue("email"))
@@ -144,7 +145,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.FormValue("password")), 12)
 		if err != nil {
 			singnUpForm.VErrors.Add("password", "Password Could not be stored")
-			uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
+			uh.tmpl.ExecuteTemplate(w, "signup.html", singnUpForm)
 			return
 		}
 
@@ -153,7 +154,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 
 		if err != nil {
 			singnUpForm.VErrors.Add("role", "could not assign role to the user")
-			uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
+			uh.tmpl.ExecuteTemplate(w, "signup.html", singnUpForm)
 			return
 		}
 
@@ -172,11 +173,11 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request,ps httpro
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		http.Redirect(w, r, "/el/user/login", http.StatusSeeOther)
 	}
 }
 // Logout hanldes the POST /logout requests
-func (uh *UserHandler) Logout(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	userSess, _ := r.Context().Value(ctxUserSessionKey).(*entity.Session)
 	session.Remove(userSess.UUID, w)
 	service.DeleteSession(userSess.UUID)
@@ -184,6 +185,69 @@ func (uh *UserHandler) Logout(w http.ResponseWriter, r *http.Request,ps httprout
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
+// Login hanldes the GET/POST /login requests
+func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
+	token, err := rtoken.CSRFToken(uh.csrfSignKey)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+	if r.Method == http.MethodGet {
+		loginForm := struct {
+			Values  url.Values
+			VErrors form.ValidationErrors
+			CSRF    string
+		}{
+			Values:  nil,
+			VErrors: nil,
+			CSRF:    token,
+		}
+		uh.tmpl.ExecuteTemplate(w, "signin.html", loginForm)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		// Parse the form data
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+		loginForm := form.Input{Values: r.PostForm, VErrors: form.ValidationErrors{}}
+		
+		usr,err := service.UserByEmail(r.FormValue("email"))
+		//usr, errs := uh.userService.UserByEmail(r.FormValue("email"))
+		if err != nil {
+			loginForm.VErrors.Add("generic", "Your email address or password is wrong")
+			uh.tmpl.ExecuteTemplate(w, "login.html", loginForm)
+			return
+		}
+		err = bcrypt.CompareHashAndPassword([]byte(usr.Password), []byte(r.FormValue("password")))
+		if err == bcrypt.ErrMismatchedHashAndPassword {
+			loginForm.VErrors.Add("generic", "Your email address or password is wrong")
+			uh.tmpl.ExecuteTemplate(w, "login.html", loginForm)
+			return
+		}
+
+		uh.loggedInUser = usr
+		claims := rtoken.Claims(usr.Email, uh.userSess.Expires)
+		session.Create(claims, uh.userSess.UUID, uh.userSess.SigningKey, w)
+		//newSess, errs := uh.sessionService.StoreSession(uh.userSess)
+		newSess,err := service.StoreSession(uh.userSess)
+		if err != nil {
+			loginForm.VErrors.Add("generic", "Failed to store session")
+			uh.tmpl.ExecuteTemplate(w, "login.html", loginForm)
+			return
+		}
+		uh.userSess = newSess
+		roles,_ := service.UserRoles(usr)
+		//roles, _ := uh.userService.UserRoles(usr)
+		if uh.checkAdmin(*roles) {
+			http.Redirect(w, r, "/admin", http.StatusSeeOther)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
 
 
 func (uh *UserHandler) loggedIn(r *http.Request) bool {
@@ -204,7 +268,7 @@ func (uh *UserHandler) loggedIn(r *http.Request) bool {
 
 
 // AdminUsers handles Get /admin/users request
-func (uh *UserHandler) AdminUsers(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) AdminUsers(w http.ResponseWriter, r *http.Request) {
 	token, err := rtoken.CSRFToken(uh.csrfSignKey)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -230,7 +294,7 @@ func (uh *UserHandler) AdminUsers(w http.ResponseWriter, r *http.Request,ps http
 
 
 // AdminUsersNew handles GET/POST /admin/users/new request
-func (uh *UserHandler) AdminUsersNew(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) AdminUsersNew(w http.ResponseWriter, r *http.Request) {
 	token, err := rtoken.CSRFToken(uh.csrfSignKey)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -339,14 +403,14 @@ func (uh *UserHandler) checkAdmin(rs []entity.Role) bool {
 
 
 // AdminUsersUpdate handles GET/POST /admin/users/update?id={id} request
-func (uh *UserHandler) AdminUsersUpdate(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) AdminUsersUpdate(w http.ResponseWriter, r *http.Request) {
 	token, err := rtoken.CSRFToken(uh.csrfSignKey)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	if r.Method == http.MethodGet {
-		//idRaw := r.URL.Query().Get("id")
-		idRaw := ps.ByName("id")
+		idRaw := r.URL.Query().Get("id")
+		
 		id, err := strconv.Atoi(idRaw) 
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -470,10 +534,10 @@ func (uh *UserHandler) AdminUsersUpdate(w http.ResponseWriter, r *http.Request,p
 }
 
 // AdminUsersDelete handles Delete /admin/users/delete?id={id} request
-func (uh *UserHandler) AdminUsersDelete(w http.ResponseWriter, r *http.Request,ps httprouter.Params) {
+func (uh *UserHandler) AdminUsersDelete(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		//idRaw := r.URL.Query().Get("id")
-		idRaw := ps.ByName("id")
+
+		idRaw := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(idRaw)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -488,4 +552,10 @@ func (uh *UserHandler) AdminUsersDelete(w http.ResponseWriter, r *http.Request,p
 	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
 }
 
+// CheckIndex ...
+func (uh *UserHandler) CheckIndex(w http.ResponseWriter, r *http.Request) {
+	uh.tmpl.ExecuteTemplate(w, "all.html", nil)
+	return
+	
+}
 
