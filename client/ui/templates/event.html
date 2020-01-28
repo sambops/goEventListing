@@ -1,8 +1,8 @@
 {{ define "event.layout" }}
 
-{{ template "fixednav.layout"}}
+{{ template "fixednav.layout" . }}
 {{ template "event.single.content" . }}
-
+{{ template "footer.layout" }}
 {{ end }}
 {{ define "event.single.content" }}
 <!--   container-->
@@ -91,7 +91,7 @@
 
         <!--bottom-->
         
-        <div class="container">
+        <div class="container" style="height:400px;">
             <div class="bottom mt-5">
                 <!--nav links-->
                 <ul  class="nav nav-tabs mb-3 justify-content-center"

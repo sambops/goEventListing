@@ -1,3 +1,4 @@
+{{ define "addEvent.layout" }}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,50 +17,46 @@
 	 <div class="container col-md-6">
 	
 		
-<form  id="main-form" method="post" action="index.php">
+<form  id="main-form" method="POST" action="/el/event/create">
 		<div class="form-group">
 			<label for="Eventname">Event Name</label>
-			<input type="text" class="form-control" id="Eventname" placeholder="Event Name">
+			<input type="text" name="name" class="form-control" id="Eventname" placeholder="Event Name">
 		  </div>
 		  <div class="form-group">
 			<label for="Details">Event Details</label>
-			<input type="text" class="form-control" id="Details" placeholder="Details">
+			<input type="text" name="details" class="form-control" id="Details" placeholder="Details">
 		  </div>
 
 		  <div class="row ">	
 			<div class="form-group col-md-6">
 			  <label for="Country">Country</label>
-			  <input type="text" class="form-control" id="Country" placeholder="Country">
+			  <input type="text" name="country" class="form-control" id="Country" placeholder="Country">
 			</div>
 			<div class="form-group col-md-6">
 			  <label for="City">City</label>
-			  <input type="text" class="form-control" id="City" placeholder="City">
+			  <input type="text" name="city" class="form-control" id="City" placeholder="City">
 			</div>
 		  </div>
 
 		  <div class="row">
 			<div class="form-group col-md-6">
 			  <label for="Place">Place</label>
-			  <input type="text" class="form-control" id="Place" placeholder="Place">
+			  <input type="text" name="place" class="form-control" id="Place" placeholder="Place">
 			</div>
 			<div class="form-group col-md-6">
 			  <label for="Price">Price</label>
-			  <input type="text" class="form-control" id="Price" placeholder="Price">
+			  <input type="number" min="0" name="price" class="form-control" id="Price" placeholder="Price">
 			</div>
 		  </div>
 
-		  <div class="form-group col-md-4">
+<!--		  <div class="form-group col-md-4">
 			<label for="Tag">Tag</label>
 			<select id="Tag" class="form-control">
 			  <option selected>Tag</option>
 			  <option>Music</option>
 			  <option>Art</option>
 			</select>
-		  </div>
-
-
-
-
+		  </div> 
 		<div class="form-group col-md-4">
 			<label for="img" class="col-sm-2 col-form-label">Upload Image</label>
 			{{with .VErrors.Get "img"}}
@@ -112,8 +109,8 @@
 
 		  <div class="form-group">
 			<input type="text" class="form-control" placeholder="search for venue">
-		  </div>
-							<input class="btn btn-default btn-block main-button"  type="submit"   name="Shorten" value="Shorten">
+		  </div>-->
+		<input class="btn btn-primary btn-block"  type="submit"   name="submit" value="Add Event">
 
 	  </form>
 		
@@ -128,3 +125,5 @@
 </body>
 
 </html>
+
+{{ end }}

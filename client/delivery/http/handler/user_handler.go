@@ -649,7 +649,11 @@ func(uh *UserHandler) Upcoming(w http.ResponseWriter,req *http.Request){
 
 //CreateEvent ... request on route/create
 func(uh *UserHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
-	
+
+	if uh.loggedInUser == nil {
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
    
    token, err := rtoken.CSRFToken(uh.csrfSignKey)
    if err != nil {
@@ -666,7 +670,7 @@ func(uh *UserHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
 		   VErrors: nil,
 		   CSRF:    token,
 	   }
-	   uh.tmpl.ExecuteTemplate(w, "addEvent.html", newCatForm)
+	   uh.tmpl.ExecuteTemplate(w, "addEvent.layout", newCatForm)
    }
    if req.Method == http.MethodPost {
 	   // Parse the form data
@@ -701,7 +705,7 @@ func(uh *UserHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
 		   panic(err)
 	   }
 	   evt := &entity.Event{
-		   Name:        req.FormValue("name"),
+		   Name:     req.FormValue("name"),
 		   Details : req.FormValue("details"),
 		   Country : req.FormValue("country"),
 		   City : req.FormValue("city"),
@@ -865,7 +869,7 @@ func (uh *UserHandler) MakeReviewAndRating(w http.ResponseWriter,req *http.Reque
 				fmt.Println("lemin lemin")
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}
-			http.Redirect(w, req, "/", http.StatusSeeOther)
+			http.Redirect(w, req, req.Referer(), http.StatusSeeOther)
 			}
 }
 
