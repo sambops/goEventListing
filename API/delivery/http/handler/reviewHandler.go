@@ -88,8 +88,10 @@ func (rh *ReviewHandler) MakeReview(w http.ResponseWriter, req *http.Request, _ 
 		return
 	}
 	p := fmt.Sprintf("/event/review/%d", review.ID)
+	body, err = json.MarshalIndent(review, "", "\t\t")
 	w.Header().Set("Location", p)
 	w.WriteHeader(http.StatusCreated)
+	w.Write(body)
 	return
 }
 

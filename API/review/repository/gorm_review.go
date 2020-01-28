@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 
 
 	"github.com/goEventListing/API/entity"
@@ -92,6 +93,7 @@ func (rgr *ReviewGormRepo) EventReviews(id uint) ([]entity.Review, []error) {
 	review := []entity.Review{}
 	errs := rgr.conn.Where("event_id = ?", id).Find(&review).GetErrors()
 	if len(errs) > 0 {
+		fmt.Println("check")
 		return nil, errs
 	}
 	// fmt.Println(review)

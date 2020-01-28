@@ -107,6 +107,7 @@ func (eh *EventHandler) CreateEvent(w http.ResponseWriter,req *http.Request,_ ht
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
+	fmt.Println(event)
 	event,errs := eh.eventServ.AddEvent(event)
 	if len(errs) > 0 {
 		w.Header().Set("Content-Type", "application/json")

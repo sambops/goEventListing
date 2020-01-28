@@ -32,7 +32,11 @@
 						<a href="/el/event/create" class="nav-link">Postevent</a>
 					</li>
 					<li class="nav-item">
-						<a href="#home" class="nav-link">Profile</a>
+					{{ if .LoggedIn }}
+						<a href="/el/user/logout" class="nav-link">Logout</a>
+					{{ else }}
+						<a href="/el/user/login" class="nav-link">Login</a>
+					{{ end }}
 					</li>
 
 					<li class="nav-item">

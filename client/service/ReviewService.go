@@ -20,14 +20,17 @@ var baseReviewURL = "http://localhost:8181/el/review/"
 
 //MakeReviewAndRating ...request on "/el/review/make"
 func MakeReviewAndRating(review *entity.Review)(*entity.Review,error){
+	fmt.Println(review)
 	output,err := json.MarshalIndent(review,"","\t\t")
 	client :=&http.Client{}
 	URL := fmt.Sprintf("%s%s",baseReviewURL,"make")
 
-	req,_ := http.NewRequest("POST",URL,bytes.NewBuffer(output) )
+	req,_ := http.NewRequest("POST",URL,bytes.NewBuffer(output))
 	res,err := client.Do(req)
 
 	if err != nil {
+		fmt.Println(1)
+		fmt.Println(err)
 		return nil, err
 	}
 	revview := &entity.Review{}
@@ -38,6 +41,7 @@ func MakeReviewAndRating(review *entity.Review)(*entity.Review,error){
 	}
 	err = json.Unmarshal(body,revview)
 	if err != nil{
+		fmt.Println(err)
 		return nil,err
 	}
 	return revview,nil
@@ -45,7 +49,7 @@ func MakeReviewAndRating(review *entity.Review)(*entity.Review,error){
 //EventReviews ... request on "/el/review/event/:id"
 func EventReviews(id uint) (*[]entity.Review, error){
 	client := &http.Client{}
-	URL := fmt.Sprintf("%s%s%d",baseReviewURL,"event",id)
+	URL := fmt.Sprintf("%s%s%d",baseReviewURL,"event/",id)
 	req,_ := http.NewRequest("GET",URL,nil)
 
 	//DO return an http response

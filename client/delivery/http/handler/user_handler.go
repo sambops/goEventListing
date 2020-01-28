@@ -187,9 +187,10 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 }
 // Logout hanldes the POST /logout requests
 func (uh *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	userSess, _ := r.Context().Value(ctxUserSessionKey).(*entity.Session)
-	session.Remove(userSess.UUID, w)
-	service.DeleteSession(userSess.UUID)
+	// userSess, _ := r.Context().Value(ctxUserSessionKey).(*entity.Session)
+	session.Remove(uh.userSess.UUID, w)
+	service.DeleteSession(uh.userSess.UUID)
+	uh.loggedInUser = nil
 	//uh.sessionService.DeleteSession(userSess.UUID)
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
@@ -239,6 +240,7 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		uh.loggedInUser = usr
+		fmt.Println(uh.loggedInUser)
 		claims := rtoken.Claims(usr.Email, uh.userSess.Expires)
 		session.Create(claims, uh.userSess.UUID, uh.userSess.SigningKey, w)
 		newSess,err := service.StoreSession(uh.userSess)
@@ -255,8 +257,8 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/admin", http.StatusSeeOther)
 			return
 		}
-		uh.tmpl.ExecuteTemplate(w,"all.layout",loginForm)
-		//http.Redirect(w, r, "/", http.StatusSeeOther)
+		// uh.tmpl.ExecuteTemplate(w,"all.layout",loginForm)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
@@ -565,9 +567,20 @@ func (uh *UserHandler) AdminUsersDelete(w http.ResponseWriter, r *http.Request) 
 
 // CheckIndex ...
 func (uh *UserHandler) CheckIndex(w http.ResponseWriter, r *http.Request) {
-	uh.tmpl.ExecuteTemplate(w, "all.layout", nil)
+	data, err := service.AllEvents()
+	d := struct {
+		Data *[]entity.Event
+		LoggedIn bool
+	}{
+		Data: data,
+		LoggedIn: uh.loggedInUser != nil,
+	}
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	uh.tmpl.ExecuteTemplate(w, "all.layout", d)
 	return
-	
 }
 
 //Events handle reques on route/events
@@ -588,11 +601,13 @@ func(uh *UserHandler) Events(w http.ResponseWriter,req *http.Request){
 		VErrors    form.ValidationErrors
 		Events 		*[]entity.Event
 		CSRF       string
+		LoggedIn bool
 	}{
 		Values:     nil,
 		VErrors:    nil,
 		Events: 	evt,
 		CSRF:       token,
+		LoggedIn: uh.loggedInUser != nil,
 	}
 
 	//fmt.Println("events:",evt)
@@ -679,9 +694,12 @@ func(uh *UserHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
 	   // 	return
 	   // }
 	   //defer mf.Close()
-
-	   price,_ := strconv.ParseFloat(req.FormValue("price"),64)
-
+	  prc := req.FormValue("price")
+	  fmt.Println("price: " + prc)
+	   price,err := strconv.ParseFloat(prc, 64)
+	   if err != nil {
+		   panic(err)
+	   }
 	   evt := &entity.Event{
 		   Name:        req.FormValue("name"),
 		   Details : req.FormValue("details"),
@@ -693,6 +711,7 @@ func(uh *UserHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
 		   Image:  "img.jpg",
 		   //fh.Filename,
 	   }
+	   fmt.Println(evt)
 	   //writeFile(&mf, fh.Filename)
 	   //_, errs := ach.categorySrv.StoreCategory(ctg)
 	   _,err = service.AddEvent(evt)
@@ -759,7 +778,8 @@ func (uh *UserHandler) RemoveEvent(w http.ResponseWriter,r *http.Request){
 func (uh *UserHandler) EventReviews(w http.ResponseWriter,req *http.Request){                                                                                        
 	
 	eventid,_ := strconv.Atoi(req.URL.Query().Get("id"))
-	review,err := service.EventReviews (uint (eventid))
+	fmt.Println(eventid)
+	review,err := service.EventReviews (uint(eventid))
 
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -804,8 +824,7 @@ func (uh *UserHandler) MakeReviewAndRating(w http.ResponseWriter,req *http.Reque
 			CSRF:    token,
 		}
 		uh.tmpl.ExecuteTemplate(w, "newEvent.html", newCatForm)
-
-		if req.Method == http.MethodPost {
+	}else if req.Method == http.MethodPost {
 			// Parse the form data
 			err := req.ParseForm()
 			if err != nil {
@@ -815,34 +834,39 @@ func (uh *UserHandler) MakeReviewAndRating(w http.ResponseWriter,req *http.Reque
 			// Validate the form contents
 			newRvwForm := form.Input{Values: req.PostForm, VErrors: form.ValidationErrors{}}
 			//newRvwForm.Required("name", "details","country","city","place","price")
-			newRvwForm.MinLength("message", 5)
+			newRvwForm.MinLength("message", 2)
 			newRvwForm.CSRF = token
 			// If there are any errors, redisplay the signup form.
 			if !newRvwForm.Valid() {
+				fmt.Println("error")
 				uh.tmpl.ExecuteTemplate(w, "admin.categ.new.layout", newRvwForm)
 				return
 			}
-			rating,_  := strconv.Atoi(req.FormValue("rating"))
+			rating,err  := strconv.Atoi(req.FormValue("rating"))
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(rating)
 			eventid,_ := strconv.Atoi(req.URL.Query().Get("id"))
-			
+			message := req.FormValue("message")
 		
 	
 			rvw := &entity.Review{
 				Rating: rating,
 				UserID : id,
 				EventID :uint (eventid),
-				Message : req.FormValue("message"),
+				Message : message,
 			}
 
 			//writeFile(&mf, fh.Filename)
 			//_, errs := ach.categorySrv.StoreCategory(ctg)
 			_,err = service.MakeReviewAndRating(rvw)
 			if err != nil {
+				fmt.Println("lemin lemin")
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}
 			http.Redirect(w, req, "/", http.StatusSeeOther)
 			}
-		}
 }
 
 // // UpdateReview ... handles request on /el/review/edit
@@ -944,3 +968,44 @@ func (uh *UserHandler) DeleteReview(w http.ResponseWriter,r *http.Request){
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+func (uh *UserHandler) Event(w http.ResponseWriter, r *http.Request){
+	fmt.Println("here")
+	if r.Method == http.MethodGet {
+		idRaw := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(idRaw)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		}
+
+		event, err := service.GetEvent(uint(id))
+		if err != nil {
+			fmt.Println("error 1")
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+		reviews, err := service.EventReviews(uint(id))
+		if err != nil {
+			fmt.Println("error 2")
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+
+		data := struct {
+			Event entity.Event
+			Reviews []entity.Review
+			LoggedIn bool
+		}{
+			Event: *event,
+			Reviews: *reviews,
+			LoggedIn: uh.loggedInUser != nil,
+		}
+
+		
+		fmt.Println(uh.loggedInUser != nil)
+		fmt.Println(event)
+		fmt.Println(reviews)
+
+		uh.tmpl.ExecuteTemplate(w, "event.layout", data)
+		return
+	}
+}

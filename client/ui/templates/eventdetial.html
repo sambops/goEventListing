@@ -1,9 +1,7 @@
 {{define "eventdetail.layout"}}
 {{template "fixednav.layout".}}
-{{template "eventdetail.content" }}
-
+{{template "eventdetail.content" .}}
 {{end}}
-
 {{define "eventdetail.content"}}
 <!DOCTYPE html>
 <html lang="en" style="margin-left: 4%; margin-top: 3%;">
@@ -24,7 +22,6 @@
             <div class="row" >
                 <div class="col-md-8">
                     <img src="/assets/imge/anthony-intraversato-360221-unsplash.jpg" class="card-img-top" alt="...">
-                            
                 </div>
                 <div class="col-md-4" style="margin-top: 10%;">
                     <h5 style="margin-top: 10%;">Card title</h5>
@@ -32,7 +29,6 @@
                     <div class="card-body" style="margin-top: 20%;">
                     <a href="#" class="btn btn-primary">Reservation</a>
                 </div>
-                
             </div>
         </div>
         </div>
@@ -41,14 +37,7 @@
                 Detail
             </p>
         </div>
-            
-
- 
     </header>
-        
-
-
-
 </body>
 </html>
 {{end}}

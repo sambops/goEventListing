@@ -41,7 +41,7 @@ func AllEvents() (*[]entity.Event,error){
 //GetEvent ... request on baseURL/:id
 func GetEvent(id uint) (*entity.Event,error){
 	client := &http.Client{}
-	URL := fmt.Sprintf("%s%d",baseEventURL,id)
+	URL := fmt.Sprintf("%s%s%d",baseEventURL,"event/",id)
 	req,_ := http.NewRequest("GET",URL,nil)
 
 	//DO return an http response

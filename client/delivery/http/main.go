@@ -35,12 +35,13 @@ func main() {
 	http.HandleFunc("/",usrHandler.CheckIndex)
 
 	http.HandleFunc("/el/event/all",usrHandler.Events)
+	http.HandleFunc("/e1/event", usrHandler.Event)
 	http.HandleFunc("/el/event/upcoming",usrHandler.Upcoming)
 	http.HandleFunc("/el/event/create",usrHandler.CreateEvent)
 	http.HandleFunc("/el/event/foru",usrHandler.UserSpecific)
 	http.HandleFunc("/el/event/remove",usrHandler.RemoveEvent)
 
-	http.HandleFunc("/el/review/all",usrHandler.EventReviews)
+	http.HandleFunc("/el/review/event",usrHandler.EventReviews)
 	http.HandleFunc("/el/review/make",usrHandler.MakeReviewAndRating)
 	//http.HandleFunc("/el/review/update",usrHandler.UpdateReview)
 	http.HandleFunc("/el/review/delete",usrHandler.DeleteReview)
