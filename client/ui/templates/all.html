@@ -8,32 +8,18 @@
 {{ define "all.content"}}
 <div class="container text-center">
     <h2 >Event in Addis Ababa</h2>
+    {{ range .Categories }}
     <div class="row" >
         <div class="card col-md-4" style="width: 18rem;">
             <img src="/assets/img/anthony-intraversato-360221-unsplash.jpg" class="card-img-top" alt="...">
             <div class="card-body">
-              <h5 class="card-title">Card title</h5>
+              <h5 class="card-title">{{. }}</h5>
               <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
               <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
           </div>
-        <div class="card col-md-4" style="width: 18rem;">
-            <img src="/assets/image/anthony-intraversato-360221-unsplash.jpg" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-        <div class="card col-md-4" style="width: 18rem;">
-            <img src="/assets/image/anthony-intraversato-360221-unsplash.jpg" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-
+        
     </div>
+    {{end}}
 </div>
 {{end}}

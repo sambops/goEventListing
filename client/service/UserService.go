@@ -66,18 +66,20 @@ func GetUsers() (*[]entity.User,error){
 func GetUserByUserName(userName string) (*entity.User,error){
 	client := &http.Client{}
 
-	URL := fmt.Sprintf("%s%s",baseUserURL,userName)
+	URL := fmt.Sprintf("%s%s/%s",baseUserURL,"username",userName)
 	req,_ := http.NewRequest("GET",URL,nil)
 	//DO return an http responce
 	res,err := client.Do(req)
 
 	if err != nil {
+		fmt.Println("unexpected")
 		return nil, err
 	}
 	userdata := &entity.User{}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
+		fmt.Println("another one")
 		return nil, err
 	}
 	err = json.Unmarshal(body,userdata)
@@ -196,7 +198,7 @@ func AuthenticateUser(userNamee string,password string)(*entity.User,error){
 }
 
 //UserRoles ... baseUserURL/role/:user
-func UserRoles(user *entity.User)(*[]entity.Role,error){
+func UserRoles(user *entity.User)([]entity.Role,error){
 	ouput,err:= json.MarshalIndent(user,"","\t\t")
 	
 	client := &http.Client{}
@@ -213,7 +215,7 @@ func UserRoles(user *entity.User)(*[]entity.Role,error){
 		return nil, err
 	}
 
-	role := &[]entity.Role{}
+	role := []entity.Role{}
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err

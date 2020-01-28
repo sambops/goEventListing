@@ -17,7 +17,7 @@ var baseEventURL = "http://localhost:8181/el/event/"
 //AllEvents ... handles GET  baseURL/allevents
 func AllEvents() (*[]entity.Event,error){
 	client := &http.Client{}
-	URL := fmt.Sprintf("%s%s",baseEventURL,"allevent")
+	URL := fmt.Sprintf("%s%s",baseEventURL,"allevents")
 	req,_ := http.NewRequest("GET",URL,nil)
 
 	//DO return an http responce

@@ -28,7 +28,7 @@ func main() {
 
 	router :=httprouter.New()
 
-	// errs := dbconn.CreateTable(entity.Tag{}).GetErrors()
+	// errs := dbconn.CreateTable(entity.Role{}).GetErrors()
 
 	// if len(errs) > 0 {
 	// 	panic(err)
@@ -44,7 +44,7 @@ func main() {
 	//router.GET("/el/user/:id", userHandler.GetUser)
 	router.GET("/el/user",userHandler.GetUsers)
 
-	// router.POST("/el/user/login", userHandler.AuthenticateUser)
+	//router.POST("/el/user/login", userHandler.)
 	router.POST("/el/user/register",userHandler.RegisterUser)
 	router.PUT("/el/user/edit",userHandler.EditUser)
 	router.POST("/el/user/remove/:id",userHandler.DeleteUser)
@@ -52,7 +52,7 @@ func main() {
 
 	router.GET("/el/user/check/phone/:phone",userHandler.PhoneExists)
 	router.GET("/el/user/check/email/:email",userHandler.EmailExists)
-	//router.GET("/el/user/:email",userHandler.UserByEmail)
+	router.GET("/el/user/username/:username",userHandler.GetUserByUserName)
 
 	//router.GET("/el/user/logout",userHandler.Logout)
 

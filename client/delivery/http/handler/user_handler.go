@@ -66,7 +66,7 @@ func (uh *UserHandler) Authorized(next http.Handler) http.Handler {
 			return
 		}
 
-		for _, role := range *roles {
+		for _, role := range roles {
 			permitted := permission.HasPermission(r.URL.Path, role.Name, r.Method)
 			if !permitted {
 				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
@@ -102,7 +102,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 			VErrors: nil,
 			CSRF:    token,
 		}
-		uh.tmpl.ExecuteTemplate(w, "signup.html", signUpForm)
+		uh.tmpl.ExecuteTemplate(w, "signup.layout", signUpForm)
 		return
 	}
 
@@ -116,36 +116,42 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 		// Validate the form contents
 		singnUpForm := form.Input{Values: r.PostForm, VErrors: form.ValidationErrors{}}
-		singnUpForm.Required("fullname", "email", "password", "confirmpassword")
+		singnUpForm.Required("fullName", "email", "password")
 		singnUpForm.MatchesPattern("email", form.EmailRX)
 		singnUpForm.MatchesPattern("phone", form.PhoneRX)
 		singnUpForm.MinLength("password", 8)
-		singnUpForm.PasswordMatches("password", "confirmpassword")
+		//singnUpForm.PasswordMatches("password", "confirmpassword")
 		singnUpForm.CSRF = token
-		// If there are any errors, redisplay the signup form.
-		if !singnUpForm.Valid() {
-			uh.tmpl.ExecuteTemplate(w, "signup.html", singnUpForm)
-			return
-		}
-		pExists := service.PhoneExists(r.FormValue("phone"))
-		//pExists := uh.userService.PhoneExists(r.FormValue("phone"))
-		if *pExists {
-			singnUpForm.VErrors.Add("phone", "Phone Already Exists")
-			uh.tmpl.ExecuteTemplate(w, "signup.html", singnUpForm)
-			return
-		}
-		eExists := service.EmailExists(r.FormValue("email"))
-		//eExists := uh.userService.EmailExists(r.FormValue("email"))
-		if *eExists {
-			singnUpForm.VErrors.Add("email", "Email Already Exists")
-			uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
-			return
-		}
 
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.FormValue("password")), 12)
+		//If there are any errors, redisplay the signup form.
+		// if !singnUpForm.Valid() {
+		// 	fmt.Println("err1")
+		// 	fmt.Println(err)
+		// 	uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
+		// 	return
+		// }
+
+		// pExists := service.PhoneExists(r.FormValue("phone"))
+		// if *pExists {
+		// 	fmt.Println("err2")
+
+		// 	singnUpForm.VErrors.Add("phone", "Phone Already Exists")
+		// 	uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
+		// 	return
+		// }
+		// eExists := service.EmailExists(r.FormValue("email"))
+		// if *eExists {
+		// 	fmt.Println("err3")
+		// 	singnUpForm.VErrors.Add("email", "Email Already Exists")
+		// 	uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
+		// 	return
+		// }
+
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.FormValue("psw")), 12)
 		if err != nil {
-			singnUpForm.VErrors.Add("password", "Password Could not be stored")
-			uh.tmpl.ExecuteTemplate(w, "signup.html", singnUpForm)
+			fmt.Println("err4")
+			singnUpForm.VErrors.Add("psw", "Password Could not be stored")
+			uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
 			return
 		}
 
@@ -153,8 +159,10 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		//role, errs := uh.userRole.RoleByName("USER")
 
 		if err != nil {
+			fmt.Println("err5")
+			fmt.Println(err)
 			singnUpForm.VErrors.Add("role", "could not assign role to the user")
-			uh.tmpl.ExecuteTemplate(w, "signup.html", singnUpForm)
+			uh.tmpl.ExecuteTemplate(w, "signup.layout", singnUpForm)
 			return
 		}
 
@@ -170,6 +178,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		_,err = service.RegisterUser(user)
 		//_, errs = uh.userService.StoreUser(user)
 		if err!= nil {
+			fmt.Println("err6")
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -201,7 +210,7 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 			VErrors: nil,
 			CSRF:    token,
 		}
-		uh.tmpl.ExecuteTemplate(w, "signin.html", loginForm)
+		uh.tmpl.ExecuteTemplate(w, "signin.layout", loginForm)
 		return
 	}
 
@@ -209,43 +218,45 @@ func (uh *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		// Parse the form data
 		err := r.ParseForm()
 		if err != nil {
+			fmt.Println("err1")
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
 		loginForm := form.Input{Values: r.PostForm, VErrors: form.ValidationErrors{}}
 		
-		usr,err := service.UserByEmail(r.FormValue("email"))
-		//usr, errs := uh.userService.UserByEmail(r.FormValue("email"))
+		usr,err := service.GetUserByUserName(r.FormValue("userName"))
 		if err != nil {
-			loginForm.VErrors.Add("generic", "Your email address or password is wrong")
-			uh.tmpl.ExecuteTemplate(w, "login.html", loginForm)
+			fmt.Println("err 2")
+			loginForm.VErrors.Add("generic", "UserName or password is wrong")
+			uh.tmpl.ExecuteTemplate(w, "signin.layout", loginForm)
 			return
 		}
-		err = bcrypt.CompareHashAndPassword([]byte(usr.Password), []byte(r.FormValue("password")))
+		err = bcrypt.CompareHashAndPassword([]byte(usr.Password), []byte(r.FormValue("psw")))
 		if err == bcrypt.ErrMismatchedHashAndPassword {
 			loginForm.VErrors.Add("generic", "Your email address or password is wrong")
-			uh.tmpl.ExecuteTemplate(w, "login.html", loginForm)
+			uh.tmpl.ExecuteTemplate(w, "signin.layout", loginForm)
 			return
 		}
 
 		uh.loggedInUser = usr
 		claims := rtoken.Claims(usr.Email, uh.userSess.Expires)
 		session.Create(claims, uh.userSess.UUID, uh.userSess.SigningKey, w)
-		//newSess, errs := uh.sessionService.StoreSession(uh.userSess)
 		newSess,err := service.StoreSession(uh.userSess)
 		if err != nil {
+			fmt.Println("err 3")
 			loginForm.VErrors.Add("generic", "Failed to store session")
-			uh.tmpl.ExecuteTemplate(w, "login.html", loginForm)
+			uh.tmpl.ExecuteTemplate(w, "signin.layout", loginForm)
 			return
 		}
 		uh.userSess = newSess
 		roles,_ := service.UserRoles(usr)
-		//roles, _ := uh.userService.UserRoles(usr)
-		if uh.checkAdmin(*roles) {
+
+		if uh.checkAdmin(roles) {
 			http.Redirect(w, r, "/admin", http.StatusSeeOther)
 			return
 		}
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		uh.tmpl.ExecuteTemplate(w,"all.layout",loginForm)
+		//http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
@@ -554,8 +565,382 @@ func (uh *UserHandler) AdminUsersDelete(w http.ResponseWriter, r *http.Request) 
 
 // CheckIndex ...
 func (uh *UserHandler) CheckIndex(w http.ResponseWriter, r *http.Request) {
-	uh.tmpl.ExecuteTemplate(w, "all.html", nil)
+	uh.tmpl.ExecuteTemplate(w, "all.layout", nil)
 	return
 	
+}
+
+//Events handle reques on route/events
+func(uh *UserHandler) Events(w http.ResponseWriter,req *http.Request){
+	
+	evt,err := service.AllEvents()
+
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	}
+
+	token, err := rtoken.CSRFToken(uh.csrfSignKey)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+	tmplData := struct {
+		Values     url.Values
+		VErrors    form.ValidationErrors
+		Events 		*[]entity.Event
+		CSRF       string
+	}{
+		Values:     nil,
+		VErrors:    nil,
+		Events: 	evt,
+		CSRF:       token,
+	}
+
+	//fmt.Println("events:",evt)
+
+	
+	uh.tmpl.ExecuteTemplate(w, "all.layout", tmplData)
+
+}
+
+
+//Upcoming handle request on route/upcoming
+func(uh *UserHandler) Upcoming(w http.ResponseWriter,req *http.Request){
+	
+	upcoming,err := service.UpcomingEvent()
+
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	}
+	token, err := rtoken.CSRFToken(uh.csrfSignKey)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+
+	tmplData := struct {
+		Values     url.Values
+		VErrors    form.ValidationErrors
+		Upcoming *[]entity.Event
+		CSRF       string
+	}{
+		Values:     nil,
+		VErrors:    nil,
+		Upcoming: 	upcoming,
+		CSRF:       token,
+		
+	}
+	fmt.Println("upcoming:", upcoming)
+	uh.tmpl.ExecuteTemplate(w, "thisweekend.layout", tmplData)
+}
+
+//CreateEvent ... request on route/create
+func(uh *UserHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
+	
+   
+   token, err := rtoken.CSRFToken(uh.csrfSignKey)
+   if err != nil {
+	   fmt.Println("stack here")
+	   http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+   }
+   if req.Method == http.MethodGet {
+	   newCatForm := struct {
+		   Values  url.Values
+		   VErrors form.ValidationErrors
+		   CSRF    string
+	   }{
+		   Values:  nil,
+		   VErrors: nil,
+		   CSRF:    token,
+	   }
+	   uh.tmpl.ExecuteTemplate(w, "addEvent.html", newCatForm)
+   }
+   if req.Method == http.MethodPost {
+	   // Parse the form data
+	   err := req.ParseForm()
+	   if err != nil {
+		   http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		   return
+	   }
+	   // Validate the form contents
+	//    newEvtForm := form.Input{Values: req.PostForm, VErrors: form.ValidationErrors{}}
+	//    newEvtForm.Required("name", "details","country","city","place","price")
+	//    newEvtForm.MinLength("details", 15)
+	//    newEvtForm.CSRF = token
+	//    // If there are any errors, redisplay the signup form.
+	//    if !newEvtForm.Valid() {
+	// 	   fmt.Println("i'm here")
+	// 	   uh.tmpl.ExecuteTemplate(w, "addEvent.html", newEvtForm)
+	// 	   return
+	//    }
+	   
+	   // mf, fh, err := req.FormFile("image")
+	   // if err != nil {
+	   // 	newEvtForm.VErrors.Add("image", "File error")
+	   // 	eh.tmpl.ExecuteTemplate(w, "admin.categ.new.layout", newEvtForm)
+	   // 	return
+	   // }
+	   //defer mf.Close()
+
+	   price,_ := strconv.ParseFloat(req.FormValue("price"),64)
+
+	   evt := &entity.Event{
+		   Name:        req.FormValue("name"),
+		   Details : req.FormValue("details"),
+		   Country : req.FormValue("country"),
+		   City : req.FormValue("city"),
+		   Place : req.FormValue("place"),
+		   Price : &price,
+		   UserID : uh.loggedInUser.ID,
+		   Image:  "img.jpg",
+		   //fh.Filename,
+	   }
+	   //writeFile(&mf, fh.Filename)
+	   //_, errs := ach.categorySrv.StoreCategory(ctg)
+	   _,err = service.AddEvent(evt)
+	   if err != nil {
+		   fmt.Println("last err")
+		   http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	   }
+	   fmt.Println("finally reach here")
+	   http.Redirect(w, req, "/", http.StatusSeeOther)
+   }
+}
+
+//UserSpecific handle request on route/upcoming
+func (uh *UserHandler) UserSpecific(w http.ResponseWriter,req *http.Request){
+	
+	// eh.tmpl.ExecuteTemplate(w,"foru.html",tmplData)
+	evnts,err := service.GetUserSubscribedEvents(uh.loggedInUser.ID)
+
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	}
+	token, err := rtoken.CSRFToken(uh.csrfSignKey)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+
+	tmplData := struct {
+		Values     url.Values
+		VErrors    form.ValidationErrors
+		UserSpecific *[]entity.Event
+		CSRF       string
+	}{
+		Values:     nil,
+		VErrors:    nil,
+		UserSpecific: evnts,
+		CSRF:       token,
+	}
+	fmt.Println("user specific:",evnts)
+	uh.tmpl.ExecuteTemplate(w, "foru.html", tmplData)
+}
+
+
+//RemoveEvent ... handle request on route/remove
+func (uh *UserHandler) RemoveEvent(w http.ResponseWriter,r *http.Request){
+	if r.Method == http.MethodGet {
+		idRaw := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(idRaw)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		}
+		_,err = service.DeleteEvent(uint (id))
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		}
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+
+
+//REVIEW
+
+//EventReviews ....
+func (uh *UserHandler) EventReviews(w http.ResponseWriter,req *http.Request){                                                                                        
+	
+	eventid,_ := strconv.Atoi(req.URL.Query().Get("id"))
+	review,err := service.EventReviews (uint (eventid))
+
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	}
+
+	token, err := rtoken.CSRFToken(uh.csrfSignKey)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+	tmplData := struct {
+		Values     url.Values
+		VErrors    form.ValidationErrors
+		reviews *[]entity.Review
+		CSRF       string
+	}{
+		Values:     nil,
+		VErrors:    nil,
+		reviews : review,
+		CSRF:       token,
+	}
+	fmt.Println("reviews:",review)
+	uh.tmpl.ExecuteTemplate(w, "create.html", tmplData)
+
+}
+
+//MakeReviewAndRating ... handlers request on /el/review/make
+func (uh *UserHandler) MakeReviewAndRating(w http.ResponseWriter,req *http.Request){
+	id := uh.loggedInUser.ID
+
+	token, err := rtoken.CSRFToken(uh.csrfSignKey)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+	if req.Method == http.MethodGet {
+		newCatForm := struct {
+			Values  url.Values
+			VErrors form.ValidationErrors
+			CSRF    string
+		}{
+			Values:  nil,
+			VErrors: nil,
+			CSRF:    token,
+		}
+		uh.tmpl.ExecuteTemplate(w, "newEvent.html", newCatForm)
+
+		if req.Method == http.MethodPost {
+			// Parse the form data
+			err := req.ParseForm()
+			if err != nil {
+				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+				return
+			}
+			// Validate the form contents
+			newRvwForm := form.Input{Values: req.PostForm, VErrors: form.ValidationErrors{}}
+			//newRvwForm.Required("name", "details","country","city","place","price")
+			newRvwForm.MinLength("message", 5)
+			newRvwForm.CSRF = token
+			// If there are any errors, redisplay the signup form.
+			if !newRvwForm.Valid() {
+				uh.tmpl.ExecuteTemplate(w, "admin.categ.new.layout", newRvwForm)
+				return
+			}
+			rating,_  := strconv.Atoi(req.FormValue("rating"))
+			eventid,_ := strconv.Atoi(req.URL.Query().Get("id"))
+			
+		
+	
+			rvw := &entity.Review{
+				Rating: rating,
+				UserID : id,
+				EventID :uint (eventid),
+				Message : req.FormValue("message"),
+			}
+
+			//writeFile(&mf, fh.Filename)
+			//_, errs := ach.categorySrv.StoreCategory(ctg)
+			_,err = service.MakeReviewAndRating(rvw)
+			if err != nil {
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			}
+			http.Redirect(w, req, "/", http.StatusSeeOther)
+			}
+		}
+}
+
+// // UpdateReview ... handles request on /el/review/edit
+// func (uh *UserHandler) UpdateReview(w http.ResponseWriter,r *http.Request){
+// 		token, err := rtoken.CSRFToken(uh.csrfSignKey)
+// 		if err != nil {
+// 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+// 		}
+// 		if r.Method == http.MethodGet {
+// 			idRaw := r.URL.Query().Get("id")
+// 			id, err := strconv.Atoi(idRaw)
+// 			if err != nil {
+// 				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+// 			}
+// 			rvw,err := service.EventReviews(uint (id))
+			
+// 			//cat, errs := rh.categorySrv.Category(uint(id))
+// 			if err != nil {
+// 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+// 			}
+			
+// 			values := url.Values{}
+// 			values.Add("catid", idRaw)
+// 			values.Add("catname",rvw.)
+// 			values.Add("catdesc", cat.Description)
+// 			values.Add("catimg", cat.Image)
+// 			upCatForm := struct {
+// 				Values   url.Values
+// 				VErrors  form.ValidationErrors
+// 				Category *entity.Category
+// 				CSRF     string
+// 			}{
+// 				Values:   values,
+// 				VErrors:  form.ValidationErrors{},
+// 				Category: cat,
+// 				CSRF:     token,
+// 			}
+// 			ach.tmpl.ExecuteTemplate(w, "reviewUpdate.html", upCatForm)
+// 			return
+// 		}
+// 		if r.Method == http.MethodPost {
+// 			// Parse the form data
+// 			err := r.ParseForm()
+// 			if err != nil {
+// 				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+// 				return
+// 			}
+// 			// Validate the form contents
+// 			updateRvwForm := form.Input{Values: r.PostForm, VErrors: form.ValidationErrors{}}
+// 			updateRvwForm.MinLength("message", 5)
+// 			updateRvwForm.CSRF = token
+
+// 			rvwID, err := strconv.Atoi(r.FormValue("id"))
+// 			if err != nil {
+// 				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+// 			}
+// 			rvww := &entity.Review{
+// 				ID:          uint (rvwID),
+// 				UserID : id,
+// 				EventID:id,
+// 				Message:r.FormValue("message"),
+// 			}
+// 			// mf, fh, err := r.FormFile("catimg")
+// 			// if err == nil {
+// 			// 	ctg.Image = fh.Filename
+// 			// 	err = writeFile(&mf, ctg.Image)
+// 			// }
+// 			// if mf != nil {
+// 			// 	defer mf.Close()
+// 			// }
+// 			//_, errs := ach.categorySrv.UpdateCategory(ctg)
+// 			_,err = service.UpdateReview(rvww)
+// 			if err != nil {
+// 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+// 				return
+// 			}
+// 			http.Redirect(w, r, "/admin/categories", http.StatusSeeOther)
+// 			return
+// 		}
+
+
+// }
+
+
+//DeleteReview ... handles request on /el/review/delete
+func (uh *UserHandler) DeleteReview(w http.ResponseWriter,r *http.Request){
+	if r.Method == http.MethodGet {
+		idRaw := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(idRaw)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		}
+		_,err = service.DeleteReview(uint (id))
+		//_, errs := ach.categorySrv.DeleteCategory(uint(id))
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		}
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 

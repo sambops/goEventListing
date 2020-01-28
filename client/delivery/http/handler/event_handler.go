@@ -32,13 +32,7 @@ func NewEventHandler(T *template.Template,csKey []byte) *EventHandler{
 
 //Events handle reques on route/events
 func(eh *EventHandler) Events(w http.ResponseWriter,req *http.Request){
-	//fmt.Println("kiki")
-	// usr, errr := service.GetUser(usr.ID)
 	
-
-	// if errr != nil {
-	// 		// http.Error(w,http.StatusText(http.StatusInternalServerError),http.StatusInternalServerError)
-	// 	}
 	evt,err := service.AllEvents()
 
 	if err != nil {
@@ -52,12 +46,12 @@ func(eh *EventHandler) Events(w http.ResponseWriter,req *http.Request){
 	tmplData := struct {
 		Values     url.Values
 		VErrors    form.ValidationErrors
-		Events []entity.Event
+		Events 		*[]entity.Event
 		CSRF       string
 	}{
 		Values:     nil,
 		VErrors:    nil,
-		Events: *evt,
+		Events: 	evt,
 		CSRF:       token,
 	}
 
@@ -69,14 +63,8 @@ func(eh *EventHandler) Events(w http.ResponseWriter,req *http.Request){
 	// 	event:  evt,
 	// 	user: usr,
 	// }
-	eh.tmpl.ExecuteTemplate(w, "all.html", tmplData)
+	eh.tmpl.ExecuteTemplate(w, "all.layout", tmplData)
 
-
-	// if err != nil{
-	// 	println("check")
-	// 	http.Error(w,http.StatusText(http.StatusInternalServerError),http.StatusInternalServerError)
-	// }
-	// eh.tmpl.ExecuteTemplate(w,"allevent.html",tmplData)
 }
 
 //Upcoming handle request on route/upcoming
@@ -113,38 +101,20 @@ func(eh *EventHandler) Upcoming(w http.ResponseWriter,req *http.Request){
 	tmplData := struct {
 		Values     url.Values
 		VErrors    form.ValidationErrors
-		Upcoming []entity.Event
+		Upcoming *[]entity.Event
 		CSRF       string
 	}{
 		Values:     nil,
 		VErrors:    nil,
-		Upcoming: *upcoming,
+		Upcoming: 	upcoming,
 		CSRF:       token,
 	}
 	eh.tmpl.ExecuteTemplate(w, "upcoming.html", tmplData)
 }
 //CreateEvent ... request on route/create
 func(eh *EventHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
-	id := eh.ushnd.loggedInUser.ID
-	// var evt *entity.Event
-	// if req.Method == http.MethodPost{
-		// name := req.FormValue("name")
-		// detail := req.FormValue("details")
-		// country := req.FormValue("country")
-		// city := req.FormValue("city")
-		// place := req.FormValue("place")
-		// price := req.FormValue("price")
-		// img := req.FormValue("img")	
-		
-		// price,_ = strconv.ParseFloat(price,32)
-		// evt = &entity.Event{Name:name,Details:detail,Country:country,City:city,Place:place,Price:price,Image:imag}
-
-		// evt,err := service.AddEvent(evt)
-		//redirect 
-	// 	http.Redirect(w,req,"/",http.StatusSeeOther)
-	// 	return
-	// }
-	// eh.tmpl.ExecuteTemplate(w,"createEvent.html",evt)
+ 	id := eh.ushnd.loggedInUser.ID
+	
 	token, err := rtoken.CSRFToken(eh.csrfSignKey)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -159,7 +129,7 @@ func(eh *EventHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
 			VErrors: nil,
 			CSRF:    token,
 		}
-		eh.tmpl.ExecuteTemplate(w, "admin.categ.new.layout", newCatForm)
+		eh.tmpl.ExecuteTemplate(w, "/", newCatForm)
 	}
 	if req.Method == http.MethodPost {
 		// Parse the form data
@@ -214,35 +184,7 @@ func(eh *EventHandler) CreateEvent(w http.ResponseWriter,req *http.Request){
 func (eh *EventHandler) UserSpecific(w http.ResponseWriter,req *http.Request){
 	id := eh.ushnd.loggedInUser.ID
 
-	// idraw := req.FormValue("id")
-	// id, err := strconv.Atoi(idraw)
-
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusNoContent)
-	// }
-
 	
-	// usr := GetUser(w,req)
-	// usr, errr := service.GetUser(usr.ID)
-
-	// if errr != nil {
-	// 		http.Error(w,http.StatusText(http.StatusInternalServerError),http.StatusInternalServerError)
-	// 	}
-		
-	// evt,err := service.GetUserSubscribedEvents(uint (id))	
-	// if err != nil{
-	// 	http.Error(w,http.StatusText(http.StatusInternalServerError),http.StatusInternalServerError)
-	// }
-
-	// tmplData := struct {
-	// 	event  *[]entity.Event
-	// 	user   *entity.User
-		
-	// }{
-	// 	event:  evt,
-	// 	user: usr,
-	// }
-
 	// eh.tmpl.ExecuteTemplate(w,"foru.html",tmplData)
 	evnts,err := service.GetUserSubscribedEvents(id)
 
@@ -257,16 +199,34 @@ func (eh *EventHandler) UserSpecific(w http.ResponseWriter,req *http.Request){
 	tmplData := struct {
 		Values     url.Values
 		VErrors    form.ValidationErrors
-		UserSpecific []entity.Event
+		UserSpecific *[]entity.Event
 		CSRF       string
 	}{
 		Values:     nil,
 		VErrors:    nil,
-		UserSpecific: *evnts,
+		UserSpecific: evnts,
 		CSRF:       token,
 	}
 	eh.tmpl.ExecuteTemplate(w, "foru.html", tmplData)
 }
+
+//RemoveEvent ... handle request on route/remove
+func (eh *EventHandler) RemoveEvent(w http.ResponseWriter,r *http.Request){
+	if r.Method == http.MethodGet {
+		idRaw := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(idRaw)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		}
+		_,err = service.DeleteEvent(uint (id))
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		}
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+
 
 
 func writeFile(mf *multipart.File, fname string) error {

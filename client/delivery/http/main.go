@@ -16,19 +16,16 @@ func main() {
 	tmpl := template.Must(template.ParseGlob("../../ui/templates/*.html"))
 	csrfSignKey := []byte(rtoken.GenerateRandomID(32))
 
-	fs := http.FileServer(http.Dir("ui/assets"))
+	fs := http.FileServer(http.Dir("../../ui/assets"))
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
 
 	sess := configSess()
 
+	
+	
 
-	// http.HandleFunc("/", userHandler.Index)
-	// http.HandleFunc("user/login", userHandler.Login)
-	// http.HandleFunc("user/register",userHandler.Register)
-	// http.HandleFunc("user/logout",userHandler.Logout)
-
-	//user
+	//user related
 	usrHandler := handler.NewUserHandler(tmpl,sess,csrfSignKey)
 	
 	//router.GET("/",usrHandler.Index)
@@ -36,14 +33,48 @@ func main() {
 	http.HandleFunc("/el/user/login",usrHandler.Login)
 	http.HandleFunc("/el/user/logout",usrHandler.Logout)
 	http.HandleFunc("/",usrHandler.CheckIndex)
+
+	http.HandleFunc("/el/event/all",usrHandler.Events)
+	http.HandleFunc("/el/event/upcoming",usrHandler.Upcoming)
+	http.HandleFunc("/el/event/create",usrHandler.CreateEvent)
+	http.HandleFunc("/el/event/foru",usrHandler.UserSpecific)
+	http.HandleFunc("/el/event/remove",usrHandler.RemoveEvent)
+
+	http.HandleFunc("/el/review/all",usrHandler.EventReviews)
+	http.HandleFunc("/el/review/make",usrHandler.MakeReviewAndRating)
+	//http.HandleFunc("/el/review/update",usrHandler.UpdateReview)
+	http.HandleFunc("/el/review/delete",usrHandler.DeleteReview)
+
+	//Admin
+	http.Handle("/admin/users", usrHandler.Authenticated(usrHandler.Authorized(http.HandlerFunc(usrHandler.AdminUsers))))
+	http.Handle("/admin/users/new",usrHandler.Authenticated(usrHandler.Authorized(http.HandlerFunc(usrHandler.AdminUsersNew))))
+	http.Handle("/admin/update",usrHandler.Authenticated(usrHandler.Authorized(http.HandlerFunc(usrHandler.AdminUsersUpdate))))
+	http.Handle("/admin/delete",usrHandler.Authenticated(usrHandler.Authorized(http.HandlerFunc(usrHandler.AdminUsersDelete))))
+
+
+
 	
 
 	//event
-	// evtHandler := handler.NewEventHandler(tmpl)
-	// router.GET("/el/event/all",evtHandler.Events)
-	// router.GET("/el/event/upcoming",evtHandler.Upcoming)
-	// router.GET("/el/event/create",evtHandler.CreateEvent)
-	// router.GET("/el/event/foru",evtHandler.UserSpecific)
+	//  evtHandler := handler.NewEventHandler(tmpl,csrfSignKey)
+
+	// http.HandleFunc("/el/event/all",evtHandler.Events)
+	// http.HandleFunc("/el/event/upcoming",evtHandler.Upcoming)
+	// http.HandleFunc("/el/event/create",evtHandler.CreateEvent)
+	// http.HandleFunc("/el/event/foru",evtHandler.UserSpecific)
+	// http.HandleFunc("/el/event/remove",evtHandler.RemoveEvent)
+
+
+
+	//review
+	//rvwHandler := handler.NewReviewHandler(tmpl,csrfSignKey)
+	// http.HandleFunc("/el/review/all",rvwHandler.EventReviews)
+	// http.HandleFunc("/el/review/make",rvwHandler.MakeReviewAndRating)
+	// http.HandleFunc("/el/review/update",rvwHandler.UpdateReview)
+	// http.HandleFunc("/el/review/delete",rvwHandler.DeleteReview)
+
+
+
 
 
 	http.ListenAndServe(":8080",nil)

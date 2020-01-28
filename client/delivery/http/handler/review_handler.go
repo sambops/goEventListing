@@ -78,8 +78,8 @@ func (rh *ReviewHandler) MakeReviewAndRating(w http.ResponseWriter,req *http.Req
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}
 			http.Redirect(w, req, "/", http.StatusSeeOther)
-}
-}
+			}
+		}
 }
 
 //EventReviews ... handles request on /el/review/event/:id
@@ -126,84 +126,100 @@ func (rh *ReviewHandler) EventReviews(w http.ResponseWriter,req *http.Request){
 
 }
 // UpdateReview ... handles request on /el/review/edit
-// func (rh *ReviewHandler) UpdateReview(w http.ResponseWriter,r *http.Request){
-// 	token, err := rtoken.CSRFToken(rh.csrfSignKey)
-// 	if err != nil {
-// 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-// 	}
-// 	if r.Method == http.MethodGet {
-// 		idRaw := r.URL.Query().Get("id")
-// 		id, err := strconv.Atoi(idRaw)
-// 		if err != nil {
-// 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-// 		}
-// 		rvw,err := service.EventReviews(uint (id))
-		
-// 		//cat, errs := rh.categorySrv.Category(uint(id))
-// 		if err != nil {
-// 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-// 		}
-		
-// 		values := url.Values{}
-// 		values.Add("catid", idRaw)
-// 		values.Add("catname",rvw. )
-// 		values.Add("catdesc", cat.Description)
-// 		values.Add("catimg", cat.Image)
-// 		upCatForm := struct {
-// 			Values   url.Values
-// 			VErrors  form.ValidationErrors
-// 			Category *entity.Category
-// 			CSRF     string
-// 		}{
-// 			Values:   values,
-// 			VErrors:  form.ValidationErrors{},
-// 			Category: cat,
-// 			CSRF:     token,
-// 		}
-// 		ach.tmpl.ExecuteTemplate(w, "reviewUpdate.html", upCatForm)
-// 		return
-// 	}
-// 	if r.Method == http.MethodPost {
-// 		// Parse the form data
-// 		err := r.ParseForm()
-// 		if err != nil {
-// 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-// 			return
-// 		}
-// 		// Validate the form contents
-// 		updateRvwForm := form.Input{Values: r.PostForm, VErrors: form.ValidationErrors{}}
-// 		updateRvwForm.MinLength("message", 5)
-// 		updateRvwForm.CSRF = token
+func (rh *ReviewHandler) UpdateReview(w http.ResponseWriter,r *http.Request){
+	// 	token, err := rtoken.CSRFToken(rh.csrfSignKey)
+	// 	if err != nil {
+	// 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	// 	}
+	// 	if r.Method == http.MethodGet {
+	// 		idRaw := r.URL.Query().Get("id")
+	// 		id, err := strconv.Atoi(idRaw)
+	// 		if err != nil {
+	// 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	// 		}
+	// 		rvw,err := service.EventReviews(uint (id))
+			
+	// 		//cat, errs := rh.categorySrv.Category(uint(id))
+	// 		if err != nil {
+	// 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	// 		}
+			
+	// 		values := url.Values{}
+	// 		values.Add("catid", idRaw)
+	// 		values.Add("catname",rvw. )
+	// 		values.Add("catdesc", cat.Description)
+	// 		values.Add("catimg", cat.Image)
+	// 		upCatForm := struct {
+	// 			Values   url.Values
+	// 			VErrors  form.ValidationErrors
+	// 			Category *entity.Category
+	// 			CSRF     string
+	// 		}{
+	// 			Values:   values,
+	// 			VErrors:  form.ValidationErrors{},
+	// 			Category: cat,
+	// 			CSRF:     token,
+	// 		}
+	// 		ach.tmpl.ExecuteTemplate(w, "reviewUpdate.html", upCatForm)
+	// 		return
+	// 	}
+	// 	if r.Method == http.MethodPost {
+	// 		// Parse the form data
+	// 		err := r.ParseForm()
+	// 		if err != nil {
+	// 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	// 			return
+	// 		}
+	// 		// Validate the form contents
+	// 		updateRvwForm := form.Input{Values: r.PostForm, VErrors: form.ValidationErrors{}}
+	// 		updateRvwForm.MinLength("message", 5)
+	// 		updateRvwForm.CSRF = token
 
-// 		rvwID, err := strconv.Atoi(r.FormValue("id"))
-// 		if err != nil {
-// 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-// 		}
-// 		rvww := &entity.Review{
-// 			ID:          uint (rvwID),
-// 			UserID : id,
-// 			EventID:id,
-// 			Message:r.FormValue("message"),
-// 		}
-// 		// mf, fh, err := r.FormFile("catimg")
-// 		// if err == nil {
-// 		// 	ctg.Image = fh.Filename
-// 		// 	err = writeFile(&mf, ctg.Image)
-// 		// }
-// 		// if mf != nil {
-// 		// 	defer mf.Close()
-// 		// }
-// 		//_, errs := ach.categorySrv.UpdateCategory(ctg)
-// 		_,err = service.UpdateReview(rvww)
-// 		if err != nil {
-// 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-// 			return
-// 		}
-// 		http.Redirect(w, r, "/admin/categories", http.StatusSeeOther)
-// 		return
-// 	}
-
-
-// }
+	// 		rvwID, err := strconv.Atoi(r.FormValue("id"))
+	// 		if err != nil {
+	// 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	// 		}
+	// 		rvww := &entity.Review{
+	// 			ID:          uint (rvwID),
+	// 			UserID : id,
+	// 			EventID:id,
+	// 			Message:r.FormValue("message"),
+	// 		}
+	// 		// mf, fh, err := r.FormFile("catimg")
+	// 		// if err == nil {
+	// 		// 	ctg.Image = fh.Filename
+	// 		// 	err = writeFile(&mf, ctg.Image)
+	// 		// }
+	// 		// if mf != nil {
+	// 		// 	defer mf.Close()
+	// 		// }
+	// 		//_, errs := ach.categorySrv.UpdateCategory(ctg)
+	// 		_,err = service.UpdateReview(rvww)
+	// 		if err != nil {
+	// 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	// 			return
+	// 		}
+	// 		http.Redirect(w, r, "/admin/categories", http.StatusSeeOther)
+	// 		return
+	// 	}
 
 
+}
+
+
+//DeleteReview ... handles request on /el/review/delete
+func (rh *ReviewHandler) DeleteReview(w http.ResponseWriter,r *http.Request){
+	if r.Method == http.MethodGet {
+		idRaw := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(idRaw)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		}
+		_,err = service.DeleteReview(uint (id))
+		//_, errs := ach.categorySrv.DeleteCategory(uint(id))
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		}
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}

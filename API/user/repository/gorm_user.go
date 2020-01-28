@@ -49,7 +49,7 @@ func (uri *UserRepositoryImpl) GetUserByUserName(userName string) (*entity.User,
 
 
 	//check username if exist reutrn users
-	rows,err := uri.conn.Raw("SELECT * FROM users WHERE username = ?",userName).Rows()
+	rows,err := uri.conn.Raw("SELECT * FROM users WHERE user_name = ?",userName).Rows()
 	if rows != nil{
 		for rows.Next(){
 			uri.conn.ScanRows(rows,&user)

@@ -64,11 +64,11 @@ func Role(id uint) (*entity.Role, error){
 func RoleByName(name string) (*entity.Role, error){
 	client := &http.Client{}
 
-	URL := fmt.Sprintf("%s%s",baseRoleURL,name)
+	URL := fmt.Sprintf("%s%s/%s",baseRoleURL,"rolebyname",name)
 	req,_ := http.NewRequest("GET",URL,nil)
 	//DO return an http responce
 	res,err := client.Do(req)
-
+	fmt.Println("errrrrr")
 	if err != nil {
 		return nil, err
 	}

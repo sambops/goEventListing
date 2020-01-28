@@ -17,7 +17,7 @@ type Event struct {
 	Image string `json:"image" gorm:"type:varchar(255)"`
 	Review []Review  `gorm:"foreignkey:EventID"`//this tells event have a "has many = one to many r/n/s/p with review"
 	
-	UserID uint //this is a forign key referencing USER
+	UserID uint  `json:"userid"`//this is a forign key referencing USER
 	User User 
 	//TagRefer uint //this is a forign key referencing EVENTTAGE
 	IsPassed   *bool `json:"ispassed" gorm:"type:bool;not null;DEFAULT:false"`

@@ -87,11 +87,12 @@ func(uh *UserHandler) GetUsers(w http.ResponseWriter,req *http.Request,ps httpro
 
 //GetUserByUserName ... 
 func(uh *UserHandler) GetUserByUserName(w http.ResponseWriter,req *http.Request,ps httprouter.Params){
-	name:= ps.ByName("userName")
+	name:= ps.ByName("username")
 
 
 	user,err := uh.userSrv.GetUserByUserName(name)
 	if err != nil{
+		fmt.Println("unexpected")
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
