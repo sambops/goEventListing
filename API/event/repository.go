@@ -15,6 +15,7 @@ type EventRepository interface {
 	DeleteEvent(id uint) (*entity.Event,[]error)
 	//user specific events
 	GetUserSubscribedEvents(id uint)([]entity.Event,error)
+	
 	//this will fill the event tag table
 	//AddEventTags(tag *entity.Tag)(*entity.Tag,[]error)
 }

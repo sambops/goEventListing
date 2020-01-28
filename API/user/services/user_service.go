@@ -24,16 +24,6 @@ func (usi *UserServiceImpl) RegisterUser(user *entity.User) (*entity.User,error)
 	return usr,nil
 }
 
-//AuthenticateUser ... checks username and password validity
-func (usi *UserServiceImpl) AuthenticateUser(userName string, password string) (*entity.User, error) {
-	user, err := usi.userRepo.AuthenticateUser(userName, password)
-	if err != nil {
-		return user, err
-	}
-	return user, nil
-}
-//	GetUserByUserName(userName string) (*entity.User, error)
-
 //GetUserByUserName ... 
 func (usi *UserServiceImpl) GetUserByUserName(userName string) (*entity.User, error) {
 	//check username?
@@ -56,7 +46,14 @@ func (usi *UserServiceImpl) GetUser(id uint) (*entity.User, error) {
 	return user, nil
 
 }
-
+//GetUsers returns all stored application users
+func (usi *UserServiceImpl) GetUsers() ([]entity.User, []error) {
+	usrs, errs := usi.userRepo.GetUsers()
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	return usrs, errs
+}
 //EditUser ... edit existing user data(profile)
 func (usi *UserServiceImpl) EditUser(user *entity.User)(*entity.User,[]error) {
 	urs,err := usi.userRepo.EditUser(user)
@@ -74,3 +71,34 @@ func (usi *UserServiceImpl) DeleteUser(id uint)(*entity.User,error) {
 	}
 	return urs,nil
 }
+
+// UserRoles returns list of roles a user has
+func (usi *UserServiceImpl) UserRoles(user *entity.User) ([]entity.Role, []error) {
+	userRoles, errs := usi.userRepo.UserRoles(user)
+
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	return userRoles, errs
+}
+// PhoneExists check if there is a user with a given phone number
+func (usi *UserServiceImpl) PhoneExists(phone string) bool {
+	exists := usi.userRepo.PhoneExists(phone)
+	return exists
+}
+
+// EmailExists checks if there exist a user with a given email address
+func (usi *UserServiceImpl) EmailExists(email string) bool {
+	exists := usi.userRepo.EmailExists(email)
+	return exists
+}
+
+// UserByEmail retrieves an application user by its email address
+func (usi *UserServiceImpl) UserByEmail(email string) (*entity.User, []error) {
+	usr, errs := usi.userRepo.UserByEmail(email)
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	return usr, errs
+}
+

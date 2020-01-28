@@ -1,0 +1,43 @@
+{{define "eventdetail.layout"}}
+{{template "fixednav.layout".}}
+{{template "eventdetail.content" .}}
+{{end}}
+{{define "eventdetail.content"}}
+<!DOCTYPE html>
+<html lang="en" style="margin-left: 4%; margin-top: 3%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/assets/bootstrap-4.1.3-dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/assets/font-awesome/css/all.min.css">
+	<link rel="stylesheet" href="/assets/style.css">
+	<link rel="stylesheet" href="/assets/css/fixed.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container text-center">
+
+        <div class="card" style="margin-top: 10%;">
+            <div class="row" >
+                <div class="col-md-8">
+                    <img src="/assets/imge/anthony-intraversato-360221-unsplash.jpg" class="card-img-top" alt="...">
+                </div>
+                <div class="col-md-4" style="margin-top: 10%;">
+                    <h5 style="margin-top: 10%;">Card title</h5>
+                    <p style="margin-top: 10%;">date.</p>
+                    <div class="card-body" style="margin-top: 20%;">
+                    <a href="#" class="btn btn-primary">Reservation</a>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="text-center">
+            <p>
+                Detail
+            </p>
+        </div>
+    </header>
+</body>
+</html>
+{{end}}

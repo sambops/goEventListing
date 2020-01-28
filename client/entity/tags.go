@@ -2,12 +2,12 @@ package entity
 
 //Tag there are multiple tags for the user to choose from
 type Tag struct {
-	ID int
-	Name string `gorm:"type:varchar(255);not null;unique"` 
+	ID int `json:"id"`
+	Name string `json:"name" gorm:"type:varchar(255);not null;unique"` 
 	//description string `gorm:"type:text;not null"` 
 	//icon        string `gorm:"type:varchar(255);not null"` 
-	User []User `gorm:"many2many:user_tag"`
-	Event []Event `gorm:"many2many:event_tag"`
+	//User []User `gorm:"many2many:user_tag"`
+	//Event []Event `gorm:"many2many:event_tag"`
 
 }
 

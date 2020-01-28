@@ -81,21 +81,23 @@ func (rh *ReviewHandler) MakeReview(w http.ResponseWriter, req *http.Request, _ 
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	review, errs := rh.revserv.MakeReview(review)
+	review, errs := rh.revserv.MakeReviewAndRating(review)
 	if len(errs) > 0 {
 		w.Header().Set("Content-Type", "application/json")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 	p := fmt.Sprintf("/event/review/%d", review.ID)
+	body, err = json.MarshalIndent(review, "", "\t\t")
 	w.Header().Set("Location", p)
 	w.WriteHeader(http.StatusCreated)
+	w.Write(body)
 	return
 }
 
 //EventReviews ...  handles GET /event/reviews/:id request
 func (rh *ReviewHandler) EventReviews(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-
+	//this id is event id
 	id, err := strconv.Atoi(ps.ByName("id"))
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -121,37 +123,37 @@ func (rh *ReviewHandler) EventReviews(w http.ResponseWriter, req *http.Request, 
 
 }
 
-//GetMyReviews ... handles GET /user/reviews
-func (rh *ReviewHandler) GetMyReviews(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	id, err := strconv.Atoi(ps.ByName("id"))
+// //GetMyReviews ... handles GET /user/reviews
+// func (rh *ReviewHandler) GetMyReviews(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+// 	id, err := strconv.Atoi(ps.ByName("id"))
 
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
+// 	if err != nil {
+// 		w.Header().Set("Content-Type", "application/json")
+// 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+// 		return
+// 	}
 
-	rvws, errs := rh.revserv.GetMyReviews(uint(id))
+// 	rvws, errs := rh.revserv.GetMyReviews(uint(id))
 
-	if len(errs) > 0 {
+// 	if len(errs) > 0 {
 
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-	fmt.Println("rvws,,---", rvws) //prints the reviews
-	output, err := json.MarshalIndent(rvws, "", "\t\t")
-	fmt.Println("output---", output)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(output)
-	return
+// 		w.Header().Set("Content-Type", "application/json")
+// 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+// 		return
+// 	}
+// 	fmt.Println("rvws,,---", rvws) //prints the reviews
+// 	output, err := json.MarshalIndent(rvws, "", "\t\t")
+// 	fmt.Println("output---", output)
+// 	if err != nil {
+// 		w.Header().Set("Content-Type", "application/json")
+// 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+// 		return
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.Write(output)
+// 	return
 
-}
+// }
 
 //EditReview handles PUT /event/review/:id request
 func (rh *ReviewHandler) EditReview(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

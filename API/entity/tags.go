@@ -6,8 +6,8 @@ type Tag struct {
 	Name string `json:"name" gorm:"type:varchar(255);not null;unique"` 
 	//description string `gorm:"type:text;not null"` 
 	//icon        string `gorm:"type:varchar(255);not null"` 
-	User []User `gorm:"many2many:user_tag"`
-	Event []Event `gorm:"many2many:event_tag"`
+	//User []User `gorm:"many2many:user_tag"`
+	//Event []Event `gorm:"many2many:event_tag"`
 
 }
 

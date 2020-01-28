@@ -10,13 +10,14 @@ type User struct {
 	ID uint
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
-	UserName  string `json:"username"`
-	Email     string `json:"email"`
-	Password  []byte `json:"password"`
-	Phone     string `json:"phone"`
+	UserName  string `json:"username" gorm:"type:varchar(255);not null"`
+	Email     string `json:"email" gorm:"type:varchar(255);not null; unique"`
+	Password  string `json:"password" gorm:"type:varchar(255)"`
+	Phone     string `json:"phone" gorm:"type:varchar(100);not null; unique"`
 	Image     string `json:"image"`
-	Event []Event `gorm:"foreignkey:UserRefer"`
-	Review []Review `gorm:"foreignkey:UserRefer"`
+	RoleID 		uint `json:"roleid"`
+	Event []Event `gorm:"foreignkey:UserID"` //tells users have a "has many = one to many r/n with event"
+	Review []Review `gorm:"foreignkey:UserID"` //tells users have a "has many = one to many r/n with event"
 	Tag []Tag `gorm:"many2many:user_tag"`
 	PlacedAt time.Time
 }

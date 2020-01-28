@@ -17,7 +17,7 @@ var baseEventURL = "http://localhost:8181/el/event/"
 //AllEvents ... handles GET  baseURL/allevents
 func AllEvents() (*[]entity.Event,error){
 	client := &http.Client{}
-	URL := fmt.Sprintf("%s%s",baseEventURL,"allevent")
+	URL := fmt.Sprintf("%s%s",baseEventURL,"allevents")
 	req,_ := http.NewRequest("GET",URL,nil)
 
 	//DO return an http responce
@@ -41,7 +41,7 @@ func AllEvents() (*[]entity.Event,error){
 //GetEvent ... request on baseURL/:id
 func GetEvent(id uint) (*entity.Event,error){
 	client := &http.Client{}
-	URL := fmt.Sprintf("%s%d",baseEventURL,id)
+	URL := fmt.Sprintf("%s%s%d",baseEventURL,"event/",id)
 	req,_ := http.NewRequest("GET",URL,nil)
 
 	//DO return an http response
@@ -141,7 +141,7 @@ func DeleteEvent(id uint) (*entity.Event,error){
 	client := &http.Client{}
 
 	URL := fmt.Sprintf("%s%s/%d",baseEventURL,"remove",id)
-	req,_ := http.NewRequest("GET",URL,nil)
+	req,_ := http.NewRequest("POST",URL,nil)
 
 	//DO return an http responce
 	res,err := client.Do(req)

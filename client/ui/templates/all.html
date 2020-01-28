@@ -1,0 +1,24 @@
+{{ define "all.layout" }}
+{{ template "index.layout" . }}
+{{ template "navbar.layout" . }}
+{{ template "all.content" . }}
+{{ template "footer.layout" . }}
+{{ end }}
+
+{{ define "all.content"}}
+<div class="container text-center">
+    <h2 >Event in Addis Ababa</h2>
+    <div class="row" >
+    {{ range .Data }}
+        <div class="card col-md-4" style="width: 18rem;">
+            <img src="/assets/img/anthony-intraversato-360221-unsplash.jpg" class="card-img-top" alt="...">
+            <div class="card-body"> 
+              <h5 class="card-title">{{ .Name }}</h5>
+              <p class="card-text">{{ .Details }}</p>
+              <a href="/e1/event?id={{.ID}}" class="btn btn-primary">See More</a>
+            </div>
+          </div>
+    {{ end }}
+    </div>
+</div>
+{{end}}

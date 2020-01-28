@@ -1,7 +1,7 @@
 package entity
 
-//Authenticate ... used for sending username and password to the server for authentication
+//Authenticate ... used for Authentication() in user handler
 type Authenticate struct{
-	Name string
-	Pass string
+UserName string `json:"username"`
+Password string	 `json:"password"`
 }

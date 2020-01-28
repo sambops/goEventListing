@@ -1,0 +1,310 @@
+{{ define "event.layout" }}
+
+{{ template "fixednav.layout" . }}
+{{ template "event.single.content" . }}
+{{ template "footer.layout" }}
+{{ end }}
+{{ define "event.single.content" }}
+<!--   container-->
+<div class="container">
+
+        <!--       bread crumbs
+        <div class="container breadcrumbs">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Library</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Data
+                    </li>
+                </ol>
+            </nav>
+        </div>
+        /bread crumbs-->
+
+        <!--top-->
+        <div class="top row mt-5">
+            <div class="col-md-1"></div>
+
+            <!--        image and tags-->
+
+            <div class="event col-md-6">
+                <!--           tags-->
+                <div class="tags ">
+
+                    {{ with .Event }}
+                    <div class="img mt-3">
+                        <figure class="figure">
+                            <img
+                            src="/assets/img/anthony-intraversato-360221-unsplash.jpg"
+                            class="figure-img img-fluid rounded"
+                            alt="..."
+                            />
+                            <figcaption class="figure-caption">
+                                this event is posted on jan 20-2015 at 00:00
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+
+                <!--         /top image and tags-->
+
+                <!--        event details-->
+
+                <div class="event-details col-md-4 ml-5">
+                    <div class="details mt-4">
+                        <h2>{{.Name}}</h2>
+                        <div class="event-det ml-2">
+                            <div class="price mt-4"><h4>100 birr only</h4></div>
+                            <div class="location">
+                                <div class="loc">country:{{.Country}}</div>
+                                <div class="loc">city:{{.City}}}</div>
+                                <div class="loc">place:{{.Place}}</div>
+                                <div class="loc">date:{{.PlacedAt}}</div>
+                            </div>
+                            <div
+                            class="desc overflow-hidden"
+                            style="height: 7em;"
+                            >
+                            <h4>descreption</h4>
+                            <p>
+                                {{.Details}}
+                            </p>
+                        </div>
+                        <div class="but">
+                            <a
+                            href="#pills-home"
+                            type="button"
+                            class="btn btn-secondary btn-sm active"
+                            role="button"
+                            aria-pressed="true"
+                            >Link</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--       / event details-->
+        </div>
+        <!--/top-->
+
+        <!--bottom-->
+        
+        <div class="container" style="height:400px;">
+            <div class="bottom mt-5">
+                <!--nav links-->
+                <ul  class="nav nav-tabs mb-3 justify-content-center"
+                id="pills-tab"
+                role="tablist"
+                style="width:%;"
+                >
+                <li class="nav-item" style="width:20%;">
+                    <a
+                    class="nav-link active"
+                    id="pills-home-tab"
+                    data-toggle="pill"
+                    href="#pills-home"
+                    role="tab"
+                    aria-controls="pills-home"
+                    aria-selected="true"
+                    >Details</a
+                    >
+                </li>
+                <li class="nav-item" style="width:20%;">
+                    <a
+                    class="nav-link"
+                    id="pills-profile-tab"
+                    data-toggle="pill"
+                    href="#pills-profile"
+                    role="tab"
+                    aria-controls="pills-profile"
+                    aria-selected="false"
+                    >reviews</a
+                    >
+                </li>
+                <li class="nav-item" style="width:20%;">
+                    <a
+                    class="nav-link"
+                    id="pills-contact-tab"
+                    data-toggle="pill"
+                    href="#pills-contact"
+                    role="tab"
+                    aria-controls="pills-contact"
+                    aria-selected="false"
+                    >Contact</a
+                    >
+                </li>
+            </ul>
+            <!--/nav links-->
+
+            <!--tab content-->
+            <div class="tab-content" id="pills-tabContent">
+                <!--tab1-->
+                <div
+                class="tab-pane fade show active"
+                id="pills-home"
+                role="tabpanel"
+                aria-labelledby="pills-home-tab"
+                >
+                <div class="details">
+                    <div class="event-details">
+                        {{.Details}}
+                    </div>
+                    
+                </div>
+            </div>
+            <!--/tab1      -->
+            {{end}}
+            <!--tab2-->
+            <div
+            class="tab-pane fade"
+            id="pills-profile"
+            role="tabpanel"
+            aria-labelledby="pills-profile-tab"
+            >
+            <!--review row-->
+            <div class="review row">
+                <!--reviews-->
+                <div class="col-md-8">
+                    <div class="reviews">
+                        <ul class="list-unstyled">
+                            {{ range .Reviews }}
+                            <li class="media">
+                                <div class="media-body">
+                                    <h5 class="mt-0 mb-1">
+                                        {{.Rating}}
+                                    </h5>
+                                    {{.Message}}
+                                </div>
+                            </li>
+                            {{end}}
+                        </ul>
+                    </div>
+                </div>
+                <!--/reviews-->
+                <!--make review-->
+                <div class="col-md-4">
+                    <div class="make-review">
+                    {{ if .LoggedIn }}
+                        <form action="/el/review/make?id={{.Event.ID}}" method="POST">
+                            <div
+                            class="form-row align-items-center"
+                            >
+                            <div class="col-auto my-1">
+                                <label
+                                class="mr-sm-2 sr-only"
+                                for="inlineFormCustomSelect"
+                                >Preference</label
+                                >
+                                <select
+                                name="rating"
+                                class="custom-select mr-sm-2"
+                                id="inlineFormCustomSelect"
+                                required>
+                                <option selected value=""
+                                >Choose...</option
+                                >
+                                <option value="1"
+                                >One</option
+                                >
+                                <option value="2"
+                                >Two</option
+                                >
+                                <option value="3"
+                                >Three</option
+                                >
+                                <option value="4"
+                                >four</option
+                                >
+                                <option value="5"
+                                >five</option
+                                >
+                            </select>
+                        </div>
+
+                        <div
+                        class="custom-control  mr-sm-2"
+                        >
+                        <label
+                        >choose your rating</label
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label
+                        for="exampleFormControlTextarea1"
+                        >write your review
+                        here</label
+                        >
+                        <textarea
+                        name="message"
+                        class="form-control"
+                        id="exampleFormControlTextarea1"
+                        rows="3"
+                        required></textarea>
+                    </div>
+                    <div class="col-9  my-1">
+                        <button
+                        type="submit"
+                        class="btn btn-primary"
+                        >
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </form>
+        {{ end }}
+    </div>
+</div>
+<!--/make review-->
+</div>
+<!--/review row-->
+</div>
+
+<!--/tab2-->
+
+<!--tab 3-->
+<div class="tab-pane fade" id="pills-contact"
+role="tabpanel"
+aria-labelledby="pills-contact-tab"
+>
+<div class="contact row container">
+    <div class="col-md-6 "></div>
+    <div class="col-md-6" style="margin-left: auto;">
+        <form>
+            <div class="form-group">
+                <label for="exampleFormControlInput1"
+                >Email address</label
+                >
+                <input
+                type="email"
+                class="form-control"
+                id="exampleFormControlInput1"
+                placeholder="name@example.com"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1"
+                >write your comments</label
+                >
+                <textarea
+                class="form-control"
+                id="exampleFormControlTextarea1"
+                rows="3"
+                ></textarea>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<!--/tab3-->
+</div>
+<!--/tab content-->
+</div>
+
+</div>
+<!--/bottom-->
+</div>
+<!--/container-->
+{{end}}
